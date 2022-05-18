@@ -1,8 +1,15 @@
 player:
   parameters:
     - life:
-        value: 10
+        value: 20
   inventory:
+    - water:
+        commands:
+          - drink:
+              {
+                println Water is great! You gain 1 point of life!
+                player.life = player.life + 1
+              }
   leftHand:
     empty
   rightHand:
@@ -26,7 +33,7 @@ rooms:
         - nop:
             {
               print You have 
-              printval 2*player.life
+              printval player.life
               println  points of life
               if player.life <= 0 then 
               {
@@ -35,7 +42,7 @@ rooms:
               else
               {
                 println You are still alive...
-                player.life = player.life - 1
+                player.life = player.life - 2
               }
               goto jeden
             }
