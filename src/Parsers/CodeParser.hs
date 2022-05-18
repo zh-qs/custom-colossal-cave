@@ -54,6 +54,9 @@ conditionalParser =
     )
     <?> "Conditional definition"
 
+--takeItemParser :: Parser (StIO ())
+--takeItemParser = baseCodeLineParser "take " () "take"
+
 codeLineParser :: Parser (StIO ())
 codeLineParser = 
     (skipSpaces *> (

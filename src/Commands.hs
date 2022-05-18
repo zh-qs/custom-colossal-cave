@@ -5,10 +5,17 @@ import Control.Monad
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.State.Strict
 import DataStructures
+import Data.List
 import System.IO
 
 noAction :: StIO ()
 noAction = lift $ return ()
+
+showInventory :: StIO ()
+showInventory = gets (playerInventory . player) >>= (\inv -> lift $ putStrLn $ foldl' (\s it -> s ++ itemName it ++ "\n") "Your inventory:\n" inv)
+
+--takeItem :: Item -> StIO ()
+--takeItem item = modify' (\(Game (Player ps i lh rh) im rs n) -> Game (Player ps (item:i) lh rh) im rs n)
 
 printMessage :: String -> StIO ()
 printMessage s = lift $ putStr s >> hFlush stdout

@@ -26,3 +26,8 @@ main = do
   eitherGame <- either (\msg -> return $ Left msg) (\file -> parseGameFromFile file) eitherFile
   either (\msg -> putStrLn msg) (\game -> execStateT_ mainStart game) eitherGame
 
+ghciMain :: String -> IO ()
+ghciMain path = do
+  eitherGame <- parseGameFromFile path
+  either (\msg -> putStrLn msg) (\game -> execStateT_ mainStart game) eitherGame
+
