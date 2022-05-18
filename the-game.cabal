@@ -22,6 +22,7 @@ executable the-game
   other-modules:
       Commands
       DataStructures
+      GameIO
       GameParser
       GamePlay
       Parsers.ArithmeticExpressionParser

@@ -18,6 +18,10 @@ rooms:
       items:
         - axe:
             commands:
+              - throw:
+                  {
+                    println WHOOOSH! What a throw!
+                  }
       commands:
         - nop:
             {

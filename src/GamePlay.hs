@@ -7,6 +7,7 @@ import Control.Monad.Trans.State.Strict
 import System.Environment
 import System.IO.Error
 import System.IO
+import GameIO
 import qualified Data.Map.Strict as M
 
 saveGameCommand :: StIO ()
@@ -36,7 +37,9 @@ getCurrentRoom :: StIO Room
 getCurrentRoom = gets (\g -> rooms g M.! currentRoomName g)
 
 getCommandsForRoom :: StIO [Command]
-getCommandsForRoom = gets (\g -> roomCommands $ rooms g M.! currentRoomName g)
+getCommandsForRoom = gets (\g -> 
+  roomCommands $ rooms g M.! currentRoomName g
+  ++ foldl' (++) [] map (\it -> map (++ itemName it) $ itemCommands it) $ items g)
 
 processCommand :: String -> StIO Bool
 processCommand cmd = getCommandsForRoom >>= (\cmds -> M.findWithDefault unknownCommand cmd $ combinedCommands cmds)
