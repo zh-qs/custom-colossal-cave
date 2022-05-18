@@ -1,0 +1,1 @@
+$env:LOCALAPPDATA = 'E:\Users\szymo\AppData\Local'
