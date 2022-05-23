@@ -20,13 +20,15 @@ getFileNameFromArgs _ = return $ Left usage
 execStateT_ :: Monad m => StateT s m a -> s -> m ()
 execStateT_ st s = void $ execStateT st s
 
+-- |The main entry of the application.
 main :: IO ()
 main = do
   eitherFile <- getArgs >>= getFileNameFromArgs
   eitherGame <- either (\msg -> return $ Left msg) (\file -> parseGameFromFile file) eitherFile
   either (\msg -> putStrLn msg) (\game -> execStateT_ mainStart game) eitherGame
 
-ghciMain :: String -> IO ()
+-- |Parse a file from 'FilePath' and run a game.
+ghciMain :: FilePath -> IO ()
 ghciMain path = do
   eitherGame <- parseGameFromFile path
   either (\msg -> putStrLn msg) (\game -> execStateT_ mainStart game) eitherGame

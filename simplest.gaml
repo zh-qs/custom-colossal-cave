@@ -49,7 +49,7 @@ rooms:
               else
               {
                 println You are still alive...
-                player.life = player.life - 2
+                player.life -= 2
               }
               goto jeden
             }

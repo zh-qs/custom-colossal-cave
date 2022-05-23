@@ -16,6 +16,7 @@ import Data.Maybe
 import Parsers.Utilities
 import Parsers.CodeParser
 
+-- |Match a command name with a code block.
 commandParser :: Parser (StIO ()) -> Parser Command
 commandParser parser = 
     ((,) 
@@ -23,5 +24,6 @@ commandParser parser =
         <*> (char ':' *> skipSpaces *> parser <* newLines)) 
     <?> "Command definition"
 
+-- |Match a command list.
 commandListParser :: Int -> Parser (StIO ()) -> Parser [Command]
 commandListParser indentationLevel parser = listParser "commands" (commandParser parser) indentationLevel "Command list"
