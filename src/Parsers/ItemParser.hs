@@ -15,16 +15,24 @@ import Control.Applicative
 import Data.Maybe
 import Parsers.Utilities
 import Parsers.CommandParser
+import Parsers.CodeParser
 
-itemParser :: Int -> Parser Item
+modifyItemMapIfNeeded :: Int -> ItemName -> StParser ItemName
+modifyItemMapIfNeeded indentationLevel name = 
+    gets (M.member name) 
+    >>= (\exists -> if exists
+        then lift (pure name)
+        else lift (Item <$> (char ':' *> newLines *> tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser name) <* newLines))
+            >>= (\item -> modify' (\m -> M.insert name item m))
+            >> (lift $ pure name))
+
+itemParser :: Int -> StParser ItemName
 itemParser indentationLevel = 
-    (Item 
-        <$> (unpack <$> takeWhile1 isAlphaNum) 
-        <*> (char ':' *> newLines *> tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) <* newLines)) 
-    <?> "Item definition"
+    (lift (unpack <$> takeWhile1 isAlphaNum) >>= modifyItemMapIfNeeded indentationLevel)
+    <??> "Item definition"
 
-itemListParser :: Text -> Int -> String -> Parser [Item]
-itemListParser keyword indentationLevel msg = listParser keyword (itemParser indentationLevel) indentationLevel msg
+itemListParser :: Text -> Int -> String -> StParser [ItemName]
+itemListParser keyword indentationLevel msg = listParserSt keyword (itemParser indentationLevel) indentationLevel msg
 
-testItemParser :: Result Item
-testItemParser = feed (parse ((itemParser 1) <* endOfInput) "axe:\n      commands:\n        - kill: { print Kill!\n }\n") ""
+testItemParser :: Result ItemName
+testItemParser = feed (parse (evalStateT (itemParser 1) M.empty <* endOfInput) "axe:\n      commands:\n        - kill: { print Kill!\n }\n") ""

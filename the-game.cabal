@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 216e0761146b7c920c1e3857f4e5808d690db09c86d23f3ba1a63e1a3ab7d3c1
+-- hash: e923dfb66ace338e264b1d8724a77400b2c52521d5f2b6202de345c951ef6f5c
 
 name:           the-game
 version:        0.1.0.0
@@ -35,6 +35,7 @@ executable the-game
       Parsers.PlayerParser
       Parsers.RoomParser
       Parsers.Utilities
+      PartialMap
       Paths_the_game
   hs-source-dirs:
       src

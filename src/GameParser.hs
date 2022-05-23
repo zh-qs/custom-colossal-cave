@@ -19,30 +19,33 @@ import Parsers.PlayerParser
 import Parsers.Utilities
 import Parsers.RoomParser
 
-startRoomParser :: Parser Name
-startRoomParser = (string "start: " *> (unpack <$> takeWhile1 isAlphaNum) <* newLines) <?> "Start room name"
+startRoomParser :: StParser Name
+startRoomParser = lift ((string "start: " *> (unpack <$> takeWhile1 isAlphaNum) <* newLines) <?> "Start room name")
 
-initialMessageParser :: Parser String
-initialMessageParser = multilineContentParser "initialMessage" 0 "Initial message definition"
+initialMessageParser :: StParser String
+initialMessageParser = lift $ multilineContentParser "initialMessage" 0 "Initial message definition"
 
-gameParser :: Parser Game
-gameParser = 
+gameParserSt :: StParser (M.Map ItemName Item -> Game)
+gameParserSt = 
     (Game
         <$> playerParser
         <*> initialMessageParser
         <*> roomMapParser
         <*> startRoomParser)
-    <?> "Game definition"
+    <??> "Game definition"
     where
         roomMapParser = M.fromList <$> roomListParser -- PRZEROBIĆ TAK, ŻEBY DZIAŁAŁ PARITAMI!!!!!
+
+gameParser :: Parser Game
+gameParser = (\(a,s) -> a s) <$> runStateT gameParserSt M.empty 
 
 checkGame :: Game -> Either String Game
 checkGame g = if M.member (currentRoomName g) (rooms g) 
     then Right g
     else Left "Unknown start room name"
 
-parseGame :: Text -> Either String Game
-parseGame gaml = (eitherResult $ feed (parse (gameParser <* endOfInput) gaml) "") >>= checkGame
+parseGame :: Text -> Either String Game 
+parseGame gaml = (eitherResult' $ feed (parse (gameParser <* endOfInput) gaml) "") >>= checkGame -- ZMIENIĆ BO NIE DZIAŁA!!!
 
 parseGameFromFile :: FilePath -> IO (Either String Game)
 parseGameFromFile path = parseGame <$> Data.Text.IO.readFile path

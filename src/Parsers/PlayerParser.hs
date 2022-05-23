@@ -28,33 +28,33 @@ singleParameterParser =
 parametersHeaderParser :: Parser Text
 parametersHeaderParser = (tabOrTwoSpaces *> string "parameters:" <* newLines) <?> "Player parameters header"
 
-parametersParser :: Parser (M.Map Name Int)
-parametersParser = (parametersHeaderParser *> (M.fromList <$> many' singleParameterParser)) <?> "Player parameters definition"
+parametersParser :: StParser (M.Map Name Int)
+parametersParser = lift ((parametersHeaderParser *> (M.fromList <$> many' singleParameterParser)) <?> "Player parameters definition")
 
-inventoryParser :: Parser Inventory
-inventoryParser = tabOrTwoSpaces *> itemListParser "inventory" 2 "Inventory definition" <* newLines
+inventoryParser :: StParser Inventory
+inventoryParser = lift tabOrTwoSpaces *> itemListParser "inventory" 2 "Inventory definition" <* lift newLines
 
-handParser :: Text -> Parser Hand
+handParser :: Text -> StParser Hand
 handParser keyword = 
-    (((tabOrTwoSpaces *> string keyword *> char ':' *> newLines) <?> (unpack keyword ++ " header"))
-    *> (tabs 2)
+    (lift ((tabOrTwoSpaces *> string keyword *> char ':' *> newLines) <?> (unpack keyword ++ " header"))
+    *> lift (tabs 2)
     *> (
-        (string "empty" *> newLines *> return Nothing)
+        lift (string "empty" *> newLines *> return Nothing)
         <|> (Just <$> itemParser 1)
-    )) <?> (unpack keyword ++ " definition")
+    )) <??> (unpack keyword ++ " definition")
 
-playerParser :: Parser Player
-playerParser = (string "player:\n" 
+playerParser :: StParser Player
+playerParser = (lift (string "player:\n") 
     *> (Player 
         <$> parametersParser 
         <*> inventoryParser
         <*> handParser "leftHand" 
         <*> handParser "rightHand")) 
-    <?> "Player definition"
+    <??> "Player definition"
 
 testPlayerParser :: Result Player
 testPlayerParser = feed 
-    (parse (playerParser <* endOfInput) 
+    (parse (evalStateT playerParser M.empty <* endOfInput) 
         "player:\n\
         \  parameters:\n\
         \    - health:\n\

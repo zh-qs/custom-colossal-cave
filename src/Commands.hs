@@ -12,10 +12,40 @@ noAction :: StIO ()
 noAction = lift $ return ()
 
 showInventory :: StIO ()
-showInventory = gets (playerInventory . player) >>= (\inv -> lift $ putStrLn $ foldl' (\s it -> s ++ itemName it ++ "\n") "Your inventory:\n" inv)
+showInventory = gets (playerInventory . player) >>= (\inv -> lift $ putStrLn $ foldl' (\s itName -> s ++ itName ++ "\n") "Your inventory:\n" inv)
 
---takeItem :: Item -> StIO ()
---takeItem item = modify' (\(Game (Player ps i lh rh) im rs n) -> Game (Player ps (item:i) lh rh) im rs n)
+takeItem :: ItemName -> StIO ()
+takeItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+    Game 
+        (Player ps (item:i) lh rh) 
+        im 
+        (M.adjust 
+            (\(Room d its cmds) -> Room d (filter (/=item) its) cmds)
+            n rs) 
+        n 
+        itMap)
+
+dropItem :: ItemName -> StIO ()
+dropItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+    Game 
+        (Player ps (filter (/= item) i) lh rh) 
+        im 
+        (M.adjust 
+            (\(Room d its cmds) -> Room d (item:its) cmds)
+            n rs) 
+        n 
+        itMap)
+
+discardItem :: ItemName -> StIO ()
+discardItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+    Game 
+        (Player ps (filter (/= item) i) lh rh) 
+        im 
+        (M.adjust 
+            (\(Room d its cmds) -> Room d (filter (/=item) its) cmds)
+            n rs) 
+        n 
+        itMap)
 
 printMessage :: String -> StIO ()
 printMessage s = lift $ putStr s >> hFlush stdout
@@ -27,13 +57,13 @@ printInt :: Int -> StIO ()
 printInt x = lift $ (putStr $ show x) >> hFlush stdout
 
 goToRoom :: Name -> StIO ()
-goToRoom newName = gets (\(Game p im rs n) -> show $ rs M.! n) >>= printMessage >> modify' (\(Game p im rs n) -> Game p im rs newName)
+goToRoom newName = gets (\(Game p im rs n itmap) -> show $ rs M.! newName) >>= printMessage >> modify' (\(Game p im rs n itmap) -> Game p im rs newName itmap)
 
 changePlayerParameter :: Name -> (Int -> Int) -> StIO ()
-changePlayerParameter name f = modify' (\(Game (Player ps i lh rh) im rs n) -> Game (Player (M.adjust f name ps) i lh rh) im rs n)
+changePlayerParameter name f = modify' (\(Game (Player ps i lh rh) im rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im rs n itmap)
 
 getPlayerParameter :: Name -> StIO Int
-getPlayerParameter name = gets (\(Game p im rs n) -> playerParameters p M.! name)
+getPlayerParameter name = gets (\(Game p im rs n itMap) -> playerParameters p M.! name)
 
 conditionallyPerformAction :: StIO Bool -> StIO () -> StIO () -> StIO ()
 conditionallyPerformAction cond trueaction falseaction = cond >>= (\c -> if c then trueaction else falseaction)

@@ -16,12 +16,12 @@ import Data.Maybe
 import Parsers.Utilities
 import Parsers.CodeParser
 
-commandParser :: Parser Command
-commandParser = 
+commandParser :: Parser (StIO ()) -> Parser Command
+commandParser parser = 
     ((,) 
         <$> (unpack <$> takeWhile1 isAlphaNum) 
-        <*> (char ':' *> skipSpaces *> codeParser <* newLines)) 
+        <*> (char ':' *> skipSpaces *> parser <* newLines)) 
     <?> "Command definition"
 
-commandListParser :: Int -> Parser [Command]
-commandListParser indentationLevel = listParser "commands" commandParser indentationLevel "Command list"
+commandListParser :: Int -> Parser (StIO ()) -> Parser [Command]
+commandListParser indentationLevel parser = listParser "commands" (commandParser parser) indentationLevel "Command list"

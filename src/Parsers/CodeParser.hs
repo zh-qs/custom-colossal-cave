@@ -54,8 +54,15 @@ conditionalParser =
     )
     <?> "Conditional definition"
 
---takeItemParser :: Parser (StIO ())
---takeItemParser = baseCodeLineParser "take " () "take"
+
+takeItemParser :: ItemName -> Parser (StIO ())
+takeItemParser item = baseCodeLineParser "take" (pure $ takeItem item) "take"
+
+dropItemParser :: ItemName -> Parser (StIO ())
+dropItemParser item = baseCodeLineParser "drop" (pure $ dropItem item) "drop"
+
+discardItemParser :: ItemName -> Parser (StIO ())
+discardItemParser item = baseCodeLineParser "discard" (pure $ discardItem item) "discard"
 
 codeLineParser :: Parser (StIO ())
 codeLineParser = 
@@ -70,5 +77,21 @@ codeLineParser =
     )) 
     <?> "Command definition"
 
+baseCodeParser :: Parser (StIO ()) -> Parser (StIO ())
+baseCodeParser parser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' parser) <* skipSpaces <* closeCurlyBrace
+
 codeParser :: Parser (StIO ())
-codeParser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' codeLineParser) <* skipSpaces <* closeCurlyBrace
+codeParser = baseCodeParser codeLineParser
+
+itemCodeLineParser :: ItemName -> Parser (StIO ())
+itemCodeLineParser item = 
+    (skipSpaces *> (
+        codeLineParser
+        <|> takeItemParser item
+        <|> dropItemParser item
+        <|> discardItemParser item
+    ))
+    <?> "Item command definition"
+
+itemCodeParser :: ItemName -> Parser (StIO ())
+itemCodeParser item = baseCodeParser $ itemCodeLineParser item

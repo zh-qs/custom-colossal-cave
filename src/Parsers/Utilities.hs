@@ -30,7 +30,7 @@ stringWithSpaces s = skipSpaces *> string s <* skipSpaces
 newLines :: Parser ()
 newLines = (skipWhile isNewline) <?> "no newline"
 
-newLines1 :: Parser()
+newLines1 :: Parser ()
 newLines1 = (skip isNewline *> skipWhile isNewline) <?> "no newline"
 
 tabOrTwoSpaces :: Parser ()
@@ -46,6 +46,13 @@ listParser keyword parser indentationLevel msg =
     *> (many' (tabs indentationLevel *> string "- " *> parser)))
     <?> msg
 
+listParserSt :: Text -> StParser a -> Int -> String -> StParser [a]
+listParserSt keyword parser indentationLevel msg = 
+    (lift ((string keyword *> char ':') <?> "keyword") 
+    *> lift newLines  
+    *> (many' (lift (tabs indentationLevel) *> lift (string "- ") *> parser)))
+    <??> msg
+
 baseCodeLineParser :: Text -> Parser a -> String -> Parser a
 baseCodeLineParser cmd parser msg = ((string cmd <?> "keyword") *> parser <* newLines) <?> msg 
 
@@ -54,3 +61,9 @@ multilineContentParser keyword indentationLevel msg = (string keyword *> char ':
 
 liftPStIO :: (a -> a -> b) -> Parser (StIO a -> StIO a -> StIO b)
 liftPStIO f = return (\stx sty -> f <$> stx <*> sty)
+
+eitherResult' :: Result r -> Either String r
+eitherResult' (Done _ r)        = Right r
+eitherResult' (Fail txt [] msg)   = Left (msg ++ " near: " ++ Data.List.take 100 (unpack txt))
+eitherResult' (Fail txt ctxs msg) = Left (Data.List.intercalate " > " ctxs ++ ": " ++ msg ++ " near: " ++ Data.List.take 100 (unpack txt))
+eitherResult' _                   = Left "Result: incomplete input"

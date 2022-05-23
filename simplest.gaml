@@ -9,6 +9,7 @@ player:
               {
                 println Water is great! You gain 1 point of life!
                 player.life = player.life + 1
+                discard
               }
   leftHand:
     empty
@@ -28,6 +29,12 @@ rooms:
               - throw:
                   {
                     println WHOOOSH! What a throw!
+                    discard
+                  }
+              - take:
+                  {
+                    println You took axe into inventory.
+                    take
                   }
       commands:
         - nop:

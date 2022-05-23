@@ -17,29 +17,30 @@ import Data.Maybe
 import Parsers.Utilities
 import Parsers.ItemParser
 import Parsers.CommandParser
+import Parsers.CodeParser
 
 descriptionParser :: Parser Desc
 descriptionParser = multilineContentParser "description" 3 "Description definition"
 
-roomParser :: Parser (Name,Room)
+roomParser :: StParser (Name,Room)
 roomParser = 
     ((,)
-        <$> ((unpack <$> takeWhile1 isAlphaNum) <* char ':' <* newLines) 
+        <$> lift ((unpack <$> takeWhile1 isAlphaNum) <* char ':' <* newLines) 
         <*> (Room 
-            <$> (((tabs 3) *> descriptionParser <* newLines) <?> "Description")
-            <*> (((tabs 3) *> itemListParser "items" 4 "Item list definition" <* newLines) <?> "Item List")
-            <*> (((tabs 3) *> commandListParser 4 <* newLines) <?> "Command List")))
-    <?> "Room definition"
+            <$> lift (((tabs 3) *> descriptionParser <* newLines) <?> "Description")
+            <*> ((lift (tabs 3) *> itemListParser "items" 4 "Item list definition" <* lift newLines) <??> "Item List")
+            <*> lift (((tabs 3) *> commandListParser 4 codeParser <* newLines) <?> "Command List")))
+    <??> "Room definition"
 
-roomListParser :: Parser [(Name,Room)]
-roomListParser = listParser "rooms" roomParser 1 "Room list definition"
+roomListParser :: StParser [(Name,Room)]
+roomListParser = listParserSt "rooms" roomParser 1 "Room list definition"
 
 testDescriptionParser :: Result Desc
 testDescriptionParser = feed (parse (descriptionParser <* endOfInput) "description:\n        AAAAAAAAA\n        BBBBBBBB\n") ""
 
 testRoomParser :: Result (Name,Room)
 testRoomParser = feed 
-    (parse (roomParser <* endOfInput)
+    (parse (evalStateT roomParser M.empty <* endOfInput)
         "kitchen:\n\
         \      description:\n\
         \        You are in your kitchen, looking at the table.\n\

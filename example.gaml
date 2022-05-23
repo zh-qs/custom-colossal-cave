@@ -1,6 +1,6 @@
 player:
   parameters:
-    - life: 
+    - life:
         value: 100
     - hunger:
         value: 50
@@ -10,30 +10,41 @@ player:
   rightHand:
     empty
 
+initialMessage:
+  Hej!
+
 rooms:
   - kitchen:
       description:
-        You are in your kitchen, looking at the table. 
+        You are in your kitchen, looking at the table.
       items:
         - food:
             commands:
-              - eat: 
+              - eat:
                   {
-                    player.hunger += 10
+                    println Delicious!
+                    player.hunger = player.hunger + 10
                     discard
                   }
         - drink:
             commands:
               - drink:
                   {
-                    if player.hunger < 99 then player.hunger += 2 else player.hunger = 100
-                    discard
+                    println So fresh!
+                    if player.hunger < 99 then 
+                    {
+                      player.hunger = player.hunger + 2
+                    }
+                    else
+                    {
+                      player.hunger = 100
+                    }
                   }
       commands:
         - nop:
             {
-              echo You just wait and do nothing.
+              println You just wait and do nothing.
               goto kitchen
             }
-            
+
 start: kitchen
