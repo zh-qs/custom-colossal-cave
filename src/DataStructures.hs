@@ -16,7 +16,7 @@ type Inventory = [ItemName]
 
 type StIO a = StateT Game IO a
 
-type StParser a = StateT (M.Map ItemName Item) Parser a
+type StParser a = StateT (M.Map Name Interactable) Parser a
 
 -- |Name a stateful 'Parser'. The lifted equivalent of '<?>' from attoparsec.
 (<??>) :: StParser a -> String -> StParser a
@@ -25,20 +25,24 @@ type StParser a = StateT (M.Map ItemName Item) Parser a
 -- |Representation of a command entered in a console by user
 type Command = (Name, StIO ())
 
-data Item = Item { itemCommands :: [Command] }
+data Interactable = Item { getCommands :: [Command] }
+    | Entity { entityParameters :: M.Map Name Int, getCommands :: [Command] }
 
-instance Show Item where
-    show item = "Item(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (itemCommands item) ++ ")"
+--data Item = Item { itemCommands :: [Command] }
 
-data Entity = Entity Name [Command] -- ...
+instance Show Interactable where
+    show item@(Item _) = "Item(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands item) ++ ")"
+    show entity@(Entity _ _) = "Entity(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands entity) ++ ")"
 
-data Room = Room { description :: Desc, items :: [ItemName], roomCommands :: [Command] }
+--data Entity = Entity { entityParameters :: M.Map Name Int, entityCommands :: [Command] }
+
+data Room = Room { description :: Desc, interactables :: [Name], roomCommands :: [Command] }
 
 instance Show Room where
-    show room = description room ++ (foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ items room)
+    show room = description room ++ (foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables room)
 
 type Hand = Maybe ItemName
 
 data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving Show
 
-data Game = Game { player :: Player, initialMessage :: String, rooms :: M.Map Name Room, currentRoomName :: Name, globalItemMap :: M.Map ItemName Item } deriving Show
+data Game = Game { player :: Player, initialMessage :: String, rooms :: M.Map Name Room, currentRoomName :: Name, globalNameMap :: M.Map Name Interactable } deriving Show

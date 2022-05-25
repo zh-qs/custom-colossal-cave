@@ -40,6 +40,7 @@ rooms:
                       player.hunger = 100
                     }
                   }
+      entities:
       commands:
         - nop:
             {

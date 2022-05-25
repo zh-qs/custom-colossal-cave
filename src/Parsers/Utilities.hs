@@ -81,3 +81,4 @@ eitherResult' (Done _ r)        = Right r
 eitherResult' (Fail txt [] msg)   = Left (msg ++ " near: " ++ Data.List.take 100 (unpack txt))
 eitherResult' (Fail txt ctxs msg) = Left (Data.List.intercalate " > " ctxs ++ ": " ++ msg ++ " near: " ++ Data.List.take 100 (unpack txt))
 eitherResult' _                   = Left "Result: incomplete input"
+

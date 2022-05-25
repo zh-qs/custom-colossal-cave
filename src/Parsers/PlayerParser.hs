@@ -15,21 +15,7 @@ import Control.Applicative
 import Data.Maybe
 import Parsers.Utilities
 import Parsers.ItemParser
-
-singleParameterParser :: Parser (Name, Int)
-singleParameterParser = 
-    ((tabs 2) 
-    *> "- " 
-    *> ((,) 
-        <$> (unpack <$> takeWhile1 isAlphaNum) 
-        <*> (char ':' *> newLines *> (tabs 4) *> string "value: " *> (decimal <?> "Parameter value") <* newLines))) 
-    <?> "Single parameter"
-
-parametersHeaderParser :: Parser Text
-parametersHeaderParser = (tabOrTwoSpaces *> string "parameters:" <* newLines) <?> "Player parameters header"
-
-parametersParser :: StParser (M.Map Name Int)
-parametersParser = lift ((parametersHeaderParser *> (M.fromList <$> many' singleParameterParser)) <?> "Player parameters definition")
+import Parsers.ParametersParser
 
 inventoryParser :: StParser Inventory
 inventoryParser = lift tabOrTwoSpaces *> itemListParser "inventory" 2 "Inventory definition" <* lift newLines
@@ -46,7 +32,7 @@ handParser keyword =
 playerParser :: StParser Player
 playerParser = (lift (string "player:\n") 
     *> (Player 
-        <$> parametersParser 
+        <$> lift (parametersParser 2)
         <*> inventoryParser
         <*> handParser "leftHand" 
         <*> handParser "rightHand")) 

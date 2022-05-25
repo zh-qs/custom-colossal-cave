@@ -18,6 +18,7 @@ import Parsers.Utilities
 import Parsers.ItemParser
 import Parsers.CommandParser
 import Parsers.CodeParser
+import Parsers.EntityParser
 
 descriptionParser :: Parser Desc
 descriptionParser = multilineContentParser "description" 3 "Description definition"
@@ -28,7 +29,11 @@ roomParser =
         <$> lift ((unpack <$> takeWhile1 isAlphaNum) <* char ':' <* newLines) 
         <*> (Room 
             <$> lift (((tabs 3) *> descriptionParser <* newLines) <?> "Description")
-            <*> ((lift (tabs 3) *> itemListParser "items" 4 "Item list definition" <* lift newLines) <??> "Item List")
+            <*> (
+                (++)
+                <$> ((lift (tabs 3) *> itemListParser "items" 4 "Item list definition" <* lift newLines) <??> "Item List")
+                <*> ((lift (tabs 3) *> entityListParser <* lift newLines) <??> "Entity List")
+            )
             <*> lift (((tabs 3) *> commandListParser 4 codeParser <* newLines) <?> "Command List")))
     <??> "Room definition"
 

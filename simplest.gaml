@@ -36,6 +36,7 @@ rooms:
                     println You took axe into inventory.
                     take
                   }
+      entities:
       commands:
         - nop:
             {

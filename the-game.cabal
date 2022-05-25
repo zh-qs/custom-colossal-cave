@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e923dfb66ace338e264b1d8724a77400b2c52521d5f2b6202de345c951ef6f5c
+-- hash: 84dbc84a91bba37976ab4297b9d718ee1e99f8c8c7859e4289be48949b2118f6
 
 name:           the-game
 version:        0.1.0.0
@@ -31,7 +31,9 @@ executable the-game
       Parsers.BooleanExpressionParser
       Parsers.CodeParser
       Parsers.CommandParser
+      Parsers.EntityParser
       Parsers.ItemParser
+      Parsers.ParametersParser
       Parsers.PlayerParser
       Parsers.RoomParser
       Parsers.Utilities

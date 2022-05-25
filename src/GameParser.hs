@@ -25,7 +25,7 @@ startRoomParser = lift ((string "start: " *> (unpack <$> takeWhile1 isAlphaNum) 
 initialMessageParser :: StParser String
 initialMessageParser = lift $ multilineContentParser "initialMessage" 0 "Initial message definition"
 
-gameParserSt :: StParser (M.Map ItemName Item -> Game)
+gameParserSt :: StParser (M.Map Name Interactable -> Game)
 gameParserSt = 
     (Game
         <$> playerParser
