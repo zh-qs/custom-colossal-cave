@@ -1,0 +1,1 @@
+GameState {playerState = Player {playerParameters = fromList [("life",4)], playerInventory = ["water"], leftHand = Nothing, rightHand = Nothing}, roomStates = fromList [("jeden",RoomState {interactableStates = ["axe"]})], currentRoomStateName = "jeden", globalNameStateMap = fromList [("axe",ItemState),("water",ItemState)]}

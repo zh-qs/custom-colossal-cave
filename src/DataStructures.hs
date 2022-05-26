@@ -13,6 +13,7 @@ type ParamName = String
 type Id = Int
 type ItemName = Name
 type Inventory = [ItemName]
+type Hand = Maybe ItemName
 
 type StIO a = StateT Game IO a
 
@@ -41,8 +42,6 @@ data Room = Room { description :: Desc, interactables :: [Name], roomCommands ::
 instance Show Room where
     show room = description room ++ (foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables room)
 
-type Hand = Maybe ItemName
-
-data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving Show
+data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
 
 data Game = Game { player :: Player, initialMessage :: String, rooms :: M.Map Name Room, currentRoomName :: Name, globalNameMap :: M.Map Name Interactable } deriving Show

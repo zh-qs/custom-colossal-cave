@@ -13,10 +13,16 @@ import Commands
 import qualified Data.Map.Strict as M
 
 saveGameCommand :: StIO ()
-saveGameCommand = return ()
+saveGameCommand = do
+  filename <- lift $ putStr "File name: " >> hFlush stdout >> getLine
+  game <- get
+  lift $ exportGameStateToFile filename game
 
 restoreGameCommand :: StIO ()
-restoreGameCommand = return ()
+restoreGameCommand = do
+  maybeGameState <- lift $ putStr "File name: " >> hFlush stdout >> getLine >>= importGameStateFromFile
+  game <- get
+  put $ maybe game (flip setGameState game) maybeGameState
 
 constantCommands :: [(String, StIO Bool)]
 constantCommands = [
