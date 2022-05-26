@@ -41,6 +41,19 @@ rooms:
                     }
                   }
       entities:
+        - dragon:
+            parameters:
+              - money:
+                  value: 1000
+            commands:
+              - touch:
+                  {
+                    println You touched dragon. Nothing happened.
+                    entity.dragon.money -= 1
+                    print But... he dropped 1 money! (sadeg). Now he has 
+                    printval entity.dragon.money
+                    println  money!
+                  }
       commands:
         - nop:
             {

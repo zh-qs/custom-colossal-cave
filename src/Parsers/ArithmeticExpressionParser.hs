@@ -15,17 +15,21 @@ import Control.Applicative
 import Data.Maybe
 import Parsers.Utilities
 
+-- |Match an expression of type @entity.<entity name>.<parameter name>@.
+entityParameterAccessorParser :: Parser (Name,Name)
+entityParameterAccessorParser = baseCodeLineParser "entity" ((char '.' *> ((,) <$> (unpack <$> takeWhile1 isAlphaNum) <*> (char '.' *> (unpack <$> takeWhile1 isAlphaNum)) <?> "parameter"))) "entity"
+
 -- |Match an expression of type @player.<parameter name>@.
-parameterAccessorParser :: Parser Name
-parameterAccessorParser = baseCodeLineParser "player" ((char '.' *> (unpack <$> takeWhile1 isAlphaNum) <* skipSpaces) <?> "parameter") "player"
+playerParameterAccessorParser :: Parser Name
+playerParameterAccessorParser = baseCodeLineParser "player" ((char '.' *> (unpack <$> takeWhile1 isAlphaNum) <* skipSpaces) <?> "parameter") "player"
 
 -- |Match a number.
 constantParser :: Parser (StIO Int)
 constantParser = (lift . return) <$> (signed decimal)
 
--- |Match either a number or a parameter expression.
+-- |Match a parameter accessor expression.
 identificatorParser :: Parser (StIO Int)
-identificatorParser = getPlayerParameter <$> parameterAccessorParser
+identificatorParser = (getPlayerParameter <$> playerParameterAccessorParser) <|> ((uncurry getEntityParameter) <$> entityParameterAccessorParser)
 
 -- |Match multiplication or division operator.
 mulOpParser :: Parser (StIO Int -> StIO Int -> StIO Int)

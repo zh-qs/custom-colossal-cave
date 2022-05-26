@@ -26,8 +26,8 @@ singleParameterParser indentationLevel =
         <*> (char ':' *> newLines *> (tabs (indentationLevel + 2)) *> string "value: " *> (decimal <?> "Parameter value") <* newLines))) 
     <?> "Single parameter"
 
-parametersHeaderParser :: Parser Text
-parametersHeaderParser = (tabOrTwoSpaces *> string "parameters:" <* newLines) <?> "Parameters header"
+parametersHeaderParser :: Int -> Parser Text
+parametersHeaderParser indentationLevel = (tabs indentationLevel *> string "parameters:" <* newLines) <?> "Parameters header"
 
 parametersParser :: Int -> Parser (M.Map Name Int)
-parametersParser indentationLevel = (parametersHeaderParser *> (M.fromList <$> many' (singleParameterParser indentationLevel))) <?> "Parameters definition"
+parametersParser indentationLevel = (parametersHeaderParser indentationLevel *> (M.fromList <$> many' (singleParameterParser (indentationLevel + 1)))) <?> "Parameters definition"

@@ -64,7 +64,11 @@ parameterFunctionParser = assignmentParser <|> modificationParser
 
 -- |Match an instruction of type @player.<parameter> =/+=/-=/*= <expression>@.
 changePlayerParameterParser :: Parser (StIO ())
-changePlayerParameterParser = (flip (>>=) <$> (changePlayerParameter <$> parameterAccessorParser)) <*> parameterFunctionParser
+changePlayerParameterParser = (flip (>>=) <$> (changePlayerParameter <$> playerParameterAccessorParser)) <*> parameterFunctionParser
+
+-- |Match an instruction of type @entity.<entity name>.<parameter> =/+=/-=/*= <expression>@.
+changeEntityParameterParser :: Parser (StIO ())
+changeEntityParameterParser = (flip (>>=) <$> (uncurry changeEntityParameter <$> entityParameterAccessorParser)) <*> parameterFunctionParser
 
 -- |Match a conditional instruction.
 conditionalParser :: Parser (StIO ())
@@ -96,6 +100,7 @@ codeLineParser =
         <|> printLineParser
         <|> printValueParser
         <|> changePlayerParameterParser
+        <|> changeEntityParameterParser
         <|> conditionalParser
     )) 
     <?> "Command definition"

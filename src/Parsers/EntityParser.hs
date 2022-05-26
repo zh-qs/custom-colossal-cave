@@ -22,8 +22,8 @@ modifyNameMapIfNeeded :: Name -> StParser Name
 modifyNameMapIfNeeded name = 
     gets (M.member name) 
     >>= (\exists -> if exists
-        then lift (fail "An item or entity woth provided name already exists!")
-        else lift (Entity <$> parametersParser 4 <*> (char ':' *> newLines *> tabs 3 *> commandListParser 4 codeParser <* newLines))
+        then lift (fail "An item or entity with provided name already exists!")
+        else lift (Entity <$> (char ':' *> newLines *> parametersParser 6) <*> (tabs 6 *> commandListParser 7 codeParser <* newLines))
             >>= (\item -> modify' (\m -> M.insert name item m))
             >> (lift $ pure name))
 
@@ -37,3 +37,10 @@ entityParser =
 
 entityListParser :: StParser [Name]
 entityListParser = listParserSt "entities" entityParser 4 "Entity list definition"
+
+test :: Result Name
+test = feed (parse (evalStateT entityParser $ M.fromList []) 
+    "dragon:\n\
+    \            parameters:\n\
+    \            commands:\n"
+    ) ""

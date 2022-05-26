@@ -32,7 +32,7 @@ handParser keyword =
 playerParser :: StParser Player
 playerParser = (lift (string "player:\n") 
     *> (Player 
-        <$> lift (parametersParser 2)
+        <$> lift (parametersParser 1)
         <*> inventoryParser
         <*> handParser "leftHand" 
         <*> handParser "rightHand")) 

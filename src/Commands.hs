@@ -65,5 +65,11 @@ changePlayerParameter name f = modify' (\(Game (Player ps i lh rh) im rs n itmap
 getPlayerParameter :: Name -> StIO Int
 getPlayerParameter name = gets (\(Game p im rs n itMap) -> playerParameters p M.! name)
 
+changeEntityParameter :: Name -> Name -> (Int -> Int) -> StIO ()
+changeEntityParameter entityName name f = modify' (\(Game p im rs n imap) -> Game p im rs n (M.adjust (\e -> Entity (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
+
+getEntityParameter :: Name -> Name -> StIO Int
+getEntityParameter entityName name = gets (\g -> (entityParameters $ globalNameMap g M.! entityName) M.! name)
+
 conditionallyPerformAction :: StIO Bool -> StIO () -> StIO () -> StIO ()
 conditionallyPerformAction cond trueaction falseaction = cond >>= (\c -> if c then trueaction else falseaction)
