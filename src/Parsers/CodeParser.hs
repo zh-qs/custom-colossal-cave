@@ -90,6 +90,14 @@ dropItemParser item = baseCodeLineParser "drop" (pure $ dropItem item) "drop"
 discardItemParser :: ItemName -> Parser (StIO ())
 discardItemParser item = baseCodeLineParser "discard" (pure $ discardItem item) "discard"
 
+-- |Match a @give <item name>@ instruction.
+giveItemParser :: Parser (StIO ())
+giveItemParser item = baseCodeLineParser "give " (giveItem . unpack <$> takeTill isSpace) "give"
+
+-- |Match a @put <item name>@ instruction.
+putItemParser :: Parser (StIO ())
+putItemParser item = baseCodeLineParser "put " (giveItem . unpack <$> takeTill isSpace) "put"
+
 -- |Match a single code line (or a conditional instruction)
 codeLineParser :: Parser (StIO ())
 codeLineParser = 
@@ -101,6 +109,8 @@ codeLineParser =
         <|> printValueParser
         <|> changePlayerParameterParser
         <|> changeEntityParameterParser
+        <|> giveItemParser
+        <|> putItemParser
         <|> conditionalParser
     )) 
     <?> "Command definition"

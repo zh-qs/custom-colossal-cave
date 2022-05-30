@@ -16,6 +16,10 @@ import Data.Maybe
 import Parsers.Utilities
 import Parsers.ArithmeticExpressionParser
 
+-- |Match a @has <item>@ test.
+hasItemParser :: Parser (StIO Bool)
+hasItemParser = (stringWithSpaces "has" *> (checkIfItemIsInInventory . unpack <$> takeTill isSpace))
+
 -- |Match a comparison operator.
 comparisonOpParser :: Parser (StIO Int -> StIO Int -> StIO Bool)
 comparisonOpParser = 
@@ -39,7 +43,7 @@ falseParser = (stringWithSpaces "false" <|> stringWithSpaces "False" <|> stringW
 
 -- |Match a sigle term of a boolean expression.
 boolTermParser :: Parser (StIO Bool)
-boolTermParser = trueParser <|> falseParser <|> (expressionParser <**> comparisonOpParser <*> expressionParser) <|> (charWithSpaces '(' *> booleanExpressionParser <* charWithSpaces ')')
+boolTermParser = hasItemParser <|> trueParser <|> falseParser <|> (expressionParser <**> comparisonOpParser <*> expressionParser) <|> (charWithSpaces '(' *> booleanExpressionParser <* charWithSpaces ')')
 
 -- |Match a boolean expression. 
 booleanExpressionParser :: Parser (StIO Bool)

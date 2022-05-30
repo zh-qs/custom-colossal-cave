@@ -25,6 +25,26 @@ takeItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) ->
         n 
         itMap)
 
+giveItem :: ItemName -> StIO ()
+giveItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+    Game 
+        (Player ps (item:i) lh rh) 
+        im 
+        rs 
+        n 
+        itMap)
+
+putItem :: ItemName -> StIO ()
+putItem item = modify' (\(Game p im rs n itMap) -> 
+    Game 
+        p
+        im 
+        (M.adjust 
+            (\(Room d its cmds) -> Room d (item:its) cmds)
+            n rs) 
+        n 
+        itMap)
+
 dropItem :: ItemName -> StIO ()
 dropItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
     Game 
@@ -73,3 +93,6 @@ getEntityParameter entityName name = gets (\g -> (entityParameters $ globalNameM
 
 conditionallyPerformAction :: StIO Bool -> StIO () -> StIO () -> StIO ()
 conditionallyPerformAction cond trueaction falseaction = cond >>= (\c -> if c then trueaction else falseaction)
+
+checkIfItemIsInInventory :: ItemName -> StIO Bool
+checkIfItemIsInInventory name = gets $ name `elem` playerInventory . player

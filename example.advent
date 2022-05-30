@@ -13,19 +13,22 @@ player:
 initialMessage:
   Hej!
 
+items:
+  - food:
+      commands:
+        - eat:
+            {
+              println Delicious!
+              player.hunger = player.hunger + 10
+              discard
+            }
+
 rooms:
   - kitchen:
       description:
         You are in your kitchen, looking at the table.
       items:
-        - food:
-            commands:
-              - eat:
-                  {
-                    println Delicious!
-                    player.hunger = player.hunger + 10
-                    discard
-                  }
+        - food
         - drink:
             commands:
               - drink:

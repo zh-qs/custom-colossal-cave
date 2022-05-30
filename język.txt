@@ -1,0 +1,76 @@
+GAME:
+
+player:
+  parameters:
+    $list:parameter
+  inventory:
+    $list:item
+  leftHand:
+    $item|empty
+  rightHand:
+    $item|empty
+
+initialMessage:
+  $multilineText
+
+items:
+  $list:item
+
+rooms:
+  $list:room
+
+start: $string
+
+TYPES:
+
+parameter: 
+  $(name)string:
+    value: $int
+
+item:
+  $(name)string:
+    commands:
+      $list:itemCommand
+
+room:
+  $(name)string:
+    description:
+      $multilineText
+    items:
+      $list:item
+    entities:
+      $list:entity
+    commands
+      $list:command
+
+command:
+  $(name)string:
+    {
+      <commonInstructions>
+    }
+
+itemCommand:
+  $(name)string:
+    {
+        <commonInstructions>|<itemInstructions>
+    }
+
+
+INSTRUCTIONS:
+
+commonInstructions:
+  goto <room>
+  print.
+  print <string>
+  println <string>
+  printval <expr>
+  player.<parameter> =|+=|-=|*= <expr>
+  entity.<name>.<parameter> =|+=|-=|*= <expr>
+  give <item>
+  put <item>
+  if <boolExpr> then { ... } else { ... } !!!! JEST BUG W KODZIE !!!! (wewnątrz if-a nie można itemCommand)
+
+itemInstructions:
+  take
+  drop
+  discard
