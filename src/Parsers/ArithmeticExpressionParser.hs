@@ -14,6 +14,11 @@ import Commands
 import Control.Applicative
 import Data.Maybe
 import Parsers.Utilities
+import System.Random
+
+-- |Match a @rnd@ expression.
+randomNumberParser :: Parser (StIO Int)
+randomNumberParser = stringWithSpaces "rnd" *> pure randomIO
 
 -- |Match an expression of type @entity.<entity name>.<parameter name>@.
 entityParameterAccessorParser :: Parser (Name,Name)
@@ -33,7 +38,7 @@ identificatorParser = (getPlayerParameter <$> playerParameterAccessorParser) <|>
 
 -- |Match multiplication or division operator.
 mulOpParser :: Parser (StIO Int -> StIO Int -> StIO Int)
-mulOpParser = (charWithSpaces '*' *> liftPStIO (*)) -- <|> (charWithSpaces '/' *> return (\stx sty -> (/) <$> stx <*> sty))
+mulOpParser = (charWithSpaces '*' *> liftPStIO (*)) <|> (charWithSpaces '/' *> liftPStIO div) <|> (charWithSpaces '%' *> liftPStIO mod)
 
 -- |Match addition or subtraction operator.
 addOpParser :: Parser (StIO Int -> StIO Int -> StIO Int)
@@ -49,4 +54,4 @@ expressionParser = (termParser <**> addOpParser <*> expressionParser) <|> termPa
 
 -- |Match a single factor of a term.
 factorParser :: Parser (StIO Int)
-factorParser = constantParser <|> identificatorParser <|> (charWithSpaces '(' *> expressionParser <* charWithSpaces ')')
+factorParser = randomNumberParser <|> constantParser <|> identificatorParser <|> (charWithSpaces '(' *> expressionParser <* charWithSpaces ')')

@@ -74,3 +74,13 @@ itemInstructions:
   take
   drop
   discard
+
+EXPRESSION GRAMMAR:
+  expr -> term (`+`|`-`) expr | term
+  term -> factor (`*`|`/`|`%`) term | factor
+  factor -> integer | ident | `(` expr `)` | `rnd`
+  ident -> `entity.<name>.<parameter>` | `player.<parameter>`
+
+BOOLEAN EXPRESSION GRAMMAR:
+  exprB -> termB (`&&`|`||`) exprB | termB
+  termB -> `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`) expr | `(` exprB `)` 

@@ -17,6 +17,7 @@ dependencies:
   - containers
   - transformers
   - text
+  - random
 
 executables:
   the-game:

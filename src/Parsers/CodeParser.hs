@@ -92,11 +92,11 @@ discardItemParser item = baseCodeLineParser "discard" (pure $ discardItem item) 
 
 -- |Match a @give <item name>@ instruction.
 giveItemParser :: Parser (StIO ())
-giveItemParser item = baseCodeLineParser "give " (giveItem . unpack <$> takeTill isSpace) "give"
+giveItemParser = baseCodeLineParser "give " (giveItem . unpack <$> takeTill isSpace) "give"
 
 -- |Match a @put <item name>@ instruction.
 putItemParser :: Parser (StIO ())
-putItemParser item = baseCodeLineParser "put " (giveItem . unpack <$> takeTill isSpace) "put"
+putItemParser = baseCodeLineParser "put " (giveItem . unpack <$> takeTill isSpace) "put"
 
 -- |Match a single code line (or a conditional instruction)
 codeLineParser :: Parser (StIO ())

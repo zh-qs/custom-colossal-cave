@@ -95,4 +95,4 @@ conditionallyPerformAction :: StIO Bool -> StIO () -> StIO () -> StIO ()
 conditionallyPerformAction cond trueaction falseaction = cond >>= (\c -> if c then trueaction else falseaction)
 
 checkIfItemIsInInventory :: ItemName -> StIO Bool
-checkIfItemIsInInventory name = gets $ name `elem` playerInventory . player
+checkIfItemIsInInventory name = gets (\g -> name `elem` (playerInventory . player) g)

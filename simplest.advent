@@ -19,6 +19,8 @@ player:
 initialMessage:
   Witaj w prostej grze!!!
 
+items:
+
 rooms:
   - jeden:
       description:
