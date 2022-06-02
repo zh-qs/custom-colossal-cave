@@ -1,1 +1,6 @@
 carry: jeśli 1 w pokoju, podnieś, jeśli więcej, to trzeba wskazać, który
+
+TODO:   dodać globalne komendy dla pokoi i itemów
+        co się dzieje po wyjściu
+        ciche komendy (można je przywołać z kodu, ale nie można ich wpisać)
+        komendy po przecinku
