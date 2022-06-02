@@ -26,14 +26,14 @@ type StParser a = StateT (M.Map Name Interactable) Parser a
 -- |Representation of a command entered in a console by user
 type Command = (Name, StIO ())
 
-data Interactable = Item { getCommands :: [Command] }
+data Interactable = Item { longName :: Name, description :: Desc, getCommands :: [Command] }
     | Entity { entityParameters :: M.Map Name Int, getCommands :: [Command] }
 
 --data Item = Item { itemCommands :: [Command] }
 
 instance Show Interactable where
-    show item@(Item _) = "Item(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands item) ++ ")"
-    show entity@(Entity _ _) = "Entity(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands entity) ++ ")"
+    show item@(Item {}) = "Item(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands item) ++ ")"
+    show entity@(Entity {}) = "Entity(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands entity) ++ ")"
 
 --data Entity = Entity { entityParameters :: M.Map Name Int, entityCommands :: [Command] }
 

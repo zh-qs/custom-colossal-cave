@@ -1,3 +1,5 @@
+TAB: \t lub 2 spacje
+
 GAME:
 
 player:
@@ -29,13 +31,16 @@ parameter:
 
 item:
   $(name)string:
+    longName: $string
+    description:
+      $switch
     commands:
       $list:itemCommand
 
 room:
   $(name)string:
     description:
-      $multilineText
+      $switch
     items:
       $list:item
     entities:
@@ -55,6 +60,12 @@ itemCommand:
         <commonInstructions>|<itemInstructions>
     }
 
+switch:
+  $list:(
+    <boolExpr>:
+      $multilineText
+  )
+  [jeśli żadne nie zostanie spełnione, nic nie jest wypisane]
 
 INSTRUCTIONS:
 

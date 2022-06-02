@@ -1,0 +1,1 @@
+carry: jeśli 1 w pokoju, podnieś, jeśli więcej, to trzeba wskazać, który

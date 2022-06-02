@@ -22,7 +22,7 @@ modifyItemMapIfNeeded indentationLevel name =
     gets (M.member name) 
     >>= (\exists -> if exists
         then lift (pure name <* newLines)
-        else lift (Item <$> (char ':' *> newLines *> tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser name) <* newLines))
+        else lift (Item <$> (char ':' *> newLines *> tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser name) <* newLines)) -- struktura do poprawy!
             >>= (\item -> modify' (\m -> M.insert name item m))
             >> (lift $ pure name))
 

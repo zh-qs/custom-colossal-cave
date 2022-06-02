@@ -26,7 +26,8 @@ items:
 rooms:
   - kitchen:
       description:
-        You are in your kitchen, looking at the table.
+        - true:
+            You are in your kitchen, looking at the table.
       items:
         - food
         - drink:
