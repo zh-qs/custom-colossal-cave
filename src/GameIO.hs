@@ -28,7 +28,7 @@ data GameState = GameState {
 
 toInteractableState :: Interactable -> InteractableState
 toInteractableState (Item {}) = ItemState
-interactableState (Entity params _) = EntityState params
+toInteractableState (Entity _ params _) = EntityState params
 
 toRoomState :: Room -> RoomState
 toRoomState = RoomState . interactables
@@ -44,8 +44,8 @@ setRoomStates = M.merge M.dropMissing M.dropMissing (M.zipWithMatched setRoomSta
 
 setInteractableState :: Name -> InteractableState -> Interactable -> Interactable
 setInteractableState _ ItemState i@(Item {}) = i
-setInteractableState _ (EntityState params) (Entity _ cmds) = Entity params cmds
-setInteractableState _ _ _ = Item [] -- unmatched types
+setInteractableState _ (EntityState params) (Entity desc _ cmds) = Entity desc params cmds
+setInteractableState _ _ _ = Invalid -- unmatched types
 
 setInteractableStates :: M.Map Name InteractableState -> M.Map Name Interactable -> M.Map Name Interactable
 setInteractableStates = M.merge M.dropMissing M.dropMissing (M.zipWithMatched setInteractableState)

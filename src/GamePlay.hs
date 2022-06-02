@@ -12,6 +12,9 @@ import Data.List
 import Commands
 import qualified Data.Map.Strict as M
 
+fst3 :: (a, b, c) -> a
+fst3 (a, b, c) = a
+
 saveGameCommand :: StIO ()
 saveGameCommand = do
   filename <- lift $ putStr "File name: " >> hFlush stdout >> getLine
@@ -33,7 +36,7 @@ constantCommands = [
  ]
 
 combinedCommands :: [Command] -> M.Map String (StIO Bool)
-combinedCommands cmds = M.fromList $ (map (\(n,r) -> (n, r >> return True)) cmds)++constantCommands
+combinedCommands cmds = M.fromList $ (map (\(_,n,r) -> (n, r >> return True)) cmds) ++ constantCommands
 
 unknownCommand :: StIO Bool
 unknownCommand = (lift $ putStrLn "Unknown command") >> return True
@@ -45,10 +48,10 @@ getCurrentRoom :: StIO Room
 getCurrentRoom = gets (\g -> rooms g M.! currentRoomName g)
 
 getCommandsForRoom :: StIO [Command]
-getCommandsForRoom = gets (\g -> 
+getCommandsForRoom = gets (\g -> filter fst3 $
   (roomCommands $ rooms g M.! currentRoomName g)
-  ++ (foldl' (++) [] $ map (\itName -> map (\(n,stio) -> (n ++ " " ++ itName,stio)) $ getCommands $ globalNameMap g M.! itName) $ interactables $ rooms g M.! currentRoomName g)
-  ++ (foldl' (++) [] $ map (\itName -> map (\(n,stio) -> (n ++ " " ++ itName,stio)) $ getCommands $ globalNameMap g M.! itName) $ playerInventory $ player g))
+  ++ (foldl' (++) [] $ map (\itName -> map (\(b,n,stio) -> (b,n ++ " " ++ itName,stio)) $ getCommands $ globalNameMap g M.! itName) $ interactables $ rooms g M.! currentRoomName g)
+  ++ (foldl' (++) [] $ map (\itName -> map (\(b,n,stio) -> (b,n ++ " " ++ itName,stio)) $ getCommands $ globalNameMap g M.! itName) $ playerInventory $ player g))
 
 processCommand :: String -> StIO Bool
 processCommand cmd = getCommandsForRoom >>= (\cmds -> M.findWithDefault unknownCommand cmd $ combinedCommands cmds)
@@ -57,7 +60,7 @@ readCommand :: StIO Bool
 readCommand = lift (putChar '>' >> hFlush stdout >> getLine) >>= processCommand
 
 mainStart :: StIO ()
-mainStart = getInitialMessage >>= (lift . putStrLn) >> getCurrentRoom >>= showRoom >> mainLoop
+mainStart = getInitialMessage >>= (lift . putStrLn) >> showCurrentRoom >> mainLoop
 
 mainLoop :: StIO ()
 mainLoop = do

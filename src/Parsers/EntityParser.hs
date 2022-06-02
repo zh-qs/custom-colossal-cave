@@ -17,13 +17,17 @@ import Parsers.Utilities
 import Parsers.CommandParser
 import Parsers.CodeParser
 import Parsers.ParametersParser
+import Parsers.SwitchParser
 
 modifyNameMapIfNeeded :: Name -> StParser Name
 modifyNameMapIfNeeded name = 
     gets (M.member name) 
     >>= (\exists -> if exists
         then lift (fail "An item or entity with provided name already exists!")
-        else lift (Entity <$> (char ':' *> newLines *> parametersParser 6) <*> (tabs 6 *> commandListParser 7 codeParser <* newLines))
+        else lift (Entity 
+                <$> (char ':' *> newLines *> tabs 6 *> switchParser "description" 6 "Entity description")
+                <*> (parametersParser 6) 
+                <*> (tabs 6 *> commandListParser 7 codeParser <* newLines))
             >>= (\item -> modify' (\m -> M.insert name item m))
             >> (lift $ pure name))
 

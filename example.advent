@@ -15,6 +15,10 @@ initialMessage:
 
 items:
   - food:
+      longName: Delicious food.
+      description:
+        - true:
+            On the ground there is a delicious food.
       commands:
         - eat:
             {
@@ -31,6 +35,10 @@ rooms:
       items:
         - food
         - drink:
+            longName: A drink.
+            description:
+              - true:
+                  There is a drink on a table.
             commands:
               - drink:
                   {
@@ -46,6 +54,9 @@ rooms:
                   }
       entities:
         - dragon:
+            description:
+              - true:
+                  An old dragon stares at you.
             parameters:
               - money:
                   value: 1000
@@ -59,10 +70,15 @@ rooms:
                     println  money!
                   }
       commands:
-        - nop:
+        - nop,nothing:
             {
               println You just wait and do nothing.
+              call hidden
               goto kitchen
+            }
+        - *hidden:
+            {
+              println Nothing happens.
             }
 
 start: kitchen

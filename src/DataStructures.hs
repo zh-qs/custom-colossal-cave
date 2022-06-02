@@ -13,6 +13,7 @@ type Id = Int
 type ItemName = Name
 type Inventory = [ItemName]
 type Hand = Maybe ItemName
+type Visibility = Bool
 
 type StIO a = StateT Game IO a
 type Desc = StIO String
@@ -24,16 +25,17 @@ type StParser a = StateT (M.Map Name Interactable) Parser a
 (<??>) stp msg = StateT $ \s -> runStateT stp s <?> msg
 
 -- |Representation of a command entered in a console by user
-type Command = (Name, StIO ())
+type Command = (Visibility, Name, StIO ())
 
-data Interactable = Item { longName :: Name, description :: Desc, getCommands :: [Command] }
-    | Entity { entityParameters :: M.Map Name Int, getCommands :: [Command] }
+data Interactable = Item { longName :: Name, getDescription :: Desc, getCommands :: [Command] }
+    | Entity { getDescription :: Desc, entityParameters :: M.Map Name Int, getCommands :: [Command] }
+    | Invalid
 
 --data Item = Item { itemCommands :: [Command] }
 
 instance Show Interactable where
-    show item@(Item {}) = "Item(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands item) ++ ")"
-    show entity@(Entity {}) = "Entity(commands:" ++ foldl' (\s (n,_) -> s ++ " " ++ n) "" (getCommands entity) ++ ")"
+    show item@(Item {}) = "Item(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands item) ++ ")"
+    show entity@(Entity {}) = "Entity(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands entity) ++ ")"
 
 --data Entity = Entity { entityParameters :: M.Map Name Int, entityCommands :: [Command] }
 

@@ -18,10 +18,19 @@ initialMessage:
 items:
   $list:item
 
+global: (TODO)
+  room:
+    $list:command
+  item:
+    $list:item
+
 rooms:
   $list:room
 
 start: $string
+
+finalMessage: (TODO)
+  $switch
 
 TYPES:
 
@@ -49,7 +58,7 @@ room:
       $list:command
 
 command:
-  $(name)string:
+  `*`?lista_po_przecinku($(name)string): (TODO(* i ,) *: cicha komenda)
     {
       <commonInstructions>
     }

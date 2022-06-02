@@ -16,13 +16,20 @@ import Data.Maybe
 import Parsers.Utilities
 import Parsers.CommandParser
 import Parsers.CodeParser
+import Parsers.SwitchParser
+
+longNameParser :: Int -> Parser Name
+longNameParser indentationLevel = (tabs indentationLevel *> string "longName: " *> (unpack <$> takeTill isNewline) <* newLines) <?> "Start room name"
 
 modifyItemMapIfNeeded :: Int -> ItemName -> StParser ItemName
 modifyItemMapIfNeeded indentationLevel name = 
     gets (M.member name) 
     >>= (\exists -> if exists
         then lift (pure name <* newLines)
-        else lift (Item <$> (char ':' *> newLines *> tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser name) <* newLines)) -- struktura do poprawy!
+        else lift (Item 
+                <$> (char ':' *> newLines *> longNameParser (indentationLevel + 2) <* newLines) 
+                <*> (tabs (indentationLevel + 2) *> switchParser "description" (indentationLevel + 2) "Item description")
+                <*> (tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser name) <* newLines))
             >>= (\item -> modify' (\m -> M.insert name item m))
             >> (lift $ pure name))
 
