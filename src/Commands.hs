@@ -81,7 +81,7 @@ printInt :: Int -> StIO ()
 printInt x = lift $ (putStr $ show x) >> hFlush stdout
 
 goToRoom :: Name -> StIO ()
-goToRoom newName = gets (\(Game p im rs n itmap) -> show $ rs M.! newName) >>= printMessage >> modify' (\(Game p im rs n itmap) -> Game p im rs newName itmap)
+goToRoom newName = gets (\(Game p im rs n itmap) -> rs M.! newName) >>= showRoom >> modify' (\(Game p im rs n itmap) -> Game p im rs newName itmap)
 
 changePlayerParameter :: Name -> (Int -> Int) -> StIO ()
 changePlayerParameter name f = modify' (\(Game (Player ps i lh rh) im rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im rs n itmap)

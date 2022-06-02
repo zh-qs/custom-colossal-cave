@@ -57,7 +57,7 @@ readCommand :: StIO Bool
 readCommand = lift (putChar '>' >> hFlush stdout >> getLine) >>= processCommand
 
 mainStart :: StIO ()
-mainStart = getInitialMessage >>= (lift . putStrLn) >> getCurrentRoom >>= (lift . print) >> mainLoop
+mainStart = getInitialMessage >>= (lift . putStrLn) >> getCurrentRoom >>= showRoom >> mainLoop
 
 mainLoop :: StIO ()
 mainLoop = do

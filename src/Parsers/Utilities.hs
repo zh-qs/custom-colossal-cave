@@ -71,6 +71,11 @@ baseCodeLineParser cmd parser msg = ((string cmd <?> "keyword") *> parser <* new
 multilineContentParser :: Text -> Int -> String -> Parser String
 multilineContentParser keyword indentationLevel msg = (string keyword *> char ':' *> newLines *> (Data.List.foldl' <$> return (++) <*> return "" <*> many' (tabs (indentationLevel + 1) *> (((++"\n") . unpack) <$> Data.Attoparsec.Text.takeTill isNewline) <* newLines))) <?> msg
 
+-- |Match a multiline string, 'Int' is an indentation level and 'String' is a message in case of parsing failure.
+multilineContentParser' :: Int -> String -> Parser String
+multilineContentParser' indentationLevel msg = (Data.List.foldl' <$> return (++) <*> return "" <*> many' (tabs (indentationLevel + 1) *> (((++"\n") . unpack) <$> Data.Attoparsec.Text.takeTill isNewline) <* newLines)) <?> msg
+
+
 -- |Lifts a two-argument function to 'StIO' and wraps it into a 'Parser'.
 liftPStIO :: (a -> a -> b) -> Parser (StIO a -> StIO a -> StIO b)
 liftPStIO f = return (\stx sty -> f <$> stx <*> sty)

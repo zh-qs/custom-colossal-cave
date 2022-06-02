@@ -24,7 +24,12 @@ items:
 rooms:
   - jeden:
       description:
-        Pierwszy pokoj
+        - player.life > 10:
+            Hej!!!
+            Ciesz sie zyciem!!!
+        - true:
+            Dzien dobry.
+            Czas mija.
       items:
         - axe:
             commands:

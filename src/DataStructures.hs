@@ -7,7 +7,6 @@ import Control.Monad.Trans.State.Strict
 import Data.Attoparsec.Text
 import Data.List
 
-type Desc = String
 type Name = String
 type ParamName = String
 type Id = Int
@@ -16,6 +15,7 @@ type Inventory = [ItemName]
 type Hand = Maybe ItemName
 
 type StIO a = StateT Game IO a
+type Desc = StIO String
 
 type StParser a = StateT (M.Map Name Interactable) Parser a
 
@@ -40,7 +40,10 @@ instance Show Interactable where
 data Room = Room { description :: Desc, interactables :: [Name], roomCommands :: [Command] }
 
 instance Show Room where
-    show room = description room ++ (foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables room)
+    show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
+
+showRoom :: Room -> StIO ()
+showRoom r = description r >>= lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
 
 data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
 

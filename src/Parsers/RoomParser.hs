@@ -19,9 +19,10 @@ import Parsers.ItemParser
 import Parsers.CommandParser
 import Parsers.CodeParser
 import Parsers.EntityParser
+import Parsers.SwitchParser
 
 descriptionParser :: Parser Desc
-descriptionParser = multilineContentParser "description" 3 "Description definition"
+descriptionParser = switchParser "description" 3 "Description definition"-- <|> ((lift . return) <$> multilineContentParser "description" 3 "Description definition")
 
 roomParser :: StParser (Name,Room)
 roomParser = 
@@ -39,6 +40,7 @@ roomParser =
 
 roomListParser :: StParser [(Name,Room)]
 roomListParser = listParserSt "rooms" roomParser 1 "Room list definition"
+--roomListParser = lift (string "rooms:" *> newLines *> tabs 1 *> string "- ") *> ((\a -> [a]) <$> roomParser) <??> "Room list definition" -- for testing
 
 testDescriptionParser :: Result Desc
 testDescriptionParser = feed (parse (descriptionParser <* endOfInput) "description:\n        AAAAAAAAA\n        BBBBBBBB\n") ""
