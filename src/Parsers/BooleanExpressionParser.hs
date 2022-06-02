@@ -24,6 +24,7 @@ hasItemParser = (stringWithSpaces "has" *> (checkIfItemIsInInventory . unpack <$
 comparisonOpParser :: Parser (StIO Int -> StIO Int -> StIO Bool)
 comparisonOpParser = 
     (stringWithSpaces "==" *> liftPStIO (==)) 
+    <|> (stringWithSpaces "!=" *> liftPStIO (/=)) 
     <|> (stringWithSpaces ">=" *> liftPStIO (>=))
     <|> (stringWithSpaces "<=" *> liftPStIO (<=))
     <|> (charWithSpaces '>' *> liftPStIO (>))

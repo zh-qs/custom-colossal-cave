@@ -7,12 +7,16 @@ import Control.Monad.Trans.State.Strict
 import DataStructures
 import Data.List
 import System.IO
+import Data.Maybe
 
 noAction :: StIO ()
 noAction = lift $ return ()
 
 showInventory :: StIO ()
 showInventory = gets (playerInventory . player) >>= (\inv -> lift $ putStrLn $ foldl' (\s itName -> s ++ itName ++ "\n") "Your inventory:\n" inv)
+
+callCommandForCurrentRoom :: Name -> StIO ()
+callCommandForCurrentRoom name = gets (\g -> fromJust $ lookup name $ roomCommands $ rooms g M.! currentRoomName g) >>= id
 
 takeItem :: ItemName -> StIO ()
 takeItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 

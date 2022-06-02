@@ -69,6 +69,7 @@ commonInstructions:
   give <item>
   put <item>
   if <boolExpr> then { ... } else { ... } !!!! JEST BUG W KODZIE !!!! (wewnątrz if-a nie można itemCommand)
+  call <command>
 
 itemInstructions:
   take
@@ -83,4 +84,4 @@ EXPRESSION GRAMMAR:
 
 BOOLEAN EXPRESSION GRAMMAR:
   exprB -> termB (`&&`|`||`) exprB | termB
-  termB -> `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`) expr | `(` exprB `)` 
+  termB -> `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 

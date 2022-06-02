@@ -98,6 +98,10 @@ giveItemParser = baseCodeLineParser "give " (giveItem . unpack <$> takeTill isSp
 putItemParser :: Parser (StIO ())
 putItemParser = baseCodeLineParser "put " (giveItem . unpack <$> takeTill isSpace) "put"
 
+-- |Match a @call <command>@ instruction for a room.
+callForRoomParser :: Parser (StIO ())
+callForRoomParser = baseCodeLineParser "call " (callCommandForCurrentRoom . unpack <$> takeTill isSpace) "call"
+
 -- |Match a single code line (or a conditional instruction)
 codeLineParser :: Parser (StIO ())
 codeLineParser = 
@@ -112,6 +116,7 @@ codeLineParser =
         <|> giveItemParser
         <|> putItemParser
         <|> conditionalParser
+        <|> callForRoomParser
     )) 
     <?> "Command definition"
 
