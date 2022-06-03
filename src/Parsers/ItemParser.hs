@@ -29,7 +29,7 @@ modifyItemMapIfNeeded indentationLevel name =
         else lift (Item 
                 <$> (char ':' *> newLines *> longNameParser (indentationLevel + 2) <* newLines) 
                 <*> (tabs (indentationLevel + 2) *> switchParser "description" (indentationLevel + 2) "Item description")
-                <*> (tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser name) <* newLines))
+                <*> (tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser <*> pure name) <* newLines))
             >>= (\item -> modify' (\m -> M.insert name item m))
             >> (lift $ pure name))
 

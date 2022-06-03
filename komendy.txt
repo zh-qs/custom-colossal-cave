@@ -1,7 +1,10 @@
 carry: jeśli 1 w pokoju, podnieś, jeśli więcej, to trzeba wskazać, który
 
-TODO:   dodać globalne komendy dla pokoi i itemów
+TODO:       dodać globalne komendy dla pokoi i itemów: dodać dodawanie globalnych do GamePlay, zmodyfikować testy K
         co się dzieje po wyjściu
-        ciche komendy (można je przywołać z kodu, ale nie można ich wpisać) K
-        komendy po przecinku K
-        command overriding
+            ciche komendy (można je przywołać z kodu, ale nie można ich wpisać) K
+            komendy po przecinku K
+        command overriding i domyślnych wiadomości
+        room onEntry???
+        poprawić błąd z if-else w itemach
+            wypisywanie longName w inwentarzu K

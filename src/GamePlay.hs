@@ -49,8 +49,13 @@ getCurrentRoom = gets (\g -> rooms g M.! currentRoomName g)
 
 getCommandsForRoom :: StIO [Command]
 getCommandsForRoom = gets (\g -> filter fst3 $
-  (roomCommands $ rooms g M.! currentRoomName g)
-  ++ (foldl' (++) [] $ map (\itName -> map (\(b,n,stio) -> (b,n ++ " " ++ itName,stio)) $ getCommands $ globalNameMap g M.! itName) $ interactables $ rooms g M.! currentRoomName g)
+  (globalRoomCommands g ++ (roomCommands $ rooms g M.! currentRoomName g))
+  ++ (foldl' (++) [] 
+      $ map 
+        (\itName -> map 
+                    (\(b,n,stio) -> (b,n ++ " " ++ itName,stio)) 
+                    $ (getCommands $ globalNameMap g M.! itName) ++ (globalItemCommands g itName)) 
+        $ (interactables $ rooms g M.! currentRoomName g) ++ (playerInventory $ player g))
   ++ (foldl' (++) [] $ map (\itName -> map (\(b,n,stio) -> (b,n ++ " " ++ itName,stio)) $ getCommands $ globalNameMap g M.! itName) $ playerInventory $ player g))
 
 processCommand :: String -> StIO Bool

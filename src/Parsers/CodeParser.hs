@@ -70,25 +70,29 @@ changePlayerParameterParser = (flip (>>=) <$> (changePlayerParameter <$> playerP
 changeEntityParameterParser :: Parser (StIO ())
 changeEntityParameterParser = (flip (>>=) <$> (uncurry changeEntityParameter <$> entityParameterAccessorParser)) <*> parameterFunctionParser
 
--- |Match a conditional instruction.
-conditionalParser :: Parser (StIO ())
-conditionalParser = 
+-- |Match a conditional function instruction.
+conditionalParserF :: Parser (a -> StIO ()) -> Parser (a -> StIO ())
+conditionalParserF parser = 
     (
-        baseCodeLineParser "if " (conditionallyPerformAction <$> booleanExpressionParser <*> (stringWithSpaces "then" *> codeParser) <*> ((stringWithSpaces "else" *> codeParser) <|> pure noAction)) "conditional"
+        baseCodeLineParser "if " (conditionallyEvaluateAction <$> booleanExpressionParser <*> (stringWithSpaces "then" *> parser) <*> ((stringWithSpaces "else" *> parser) <|> (pure $ const noAction))) "conditional"
     )
     <?> "Conditional definition"
 
+-- |Match a conditional instruction.
+conditionalParser :: Parser (StIO ()) -> Parser (StIO ())
+conditionalParser parser = conditionalParserF (const <$> parser) <*> pure ()
+
 -- |Match a @take@ instruction.
-takeItemParser :: ItemName -> Parser (StIO ())
-takeItemParser item = baseCodeLineParser "take" (pure $ takeItem item) "take"
+takeItemParser :: Parser (ItemName -> StIO ())
+takeItemParser = baseCodeLineParser "take" (pure takeItem) "take"
 
 -- |Match a @drop@ instruction.
-dropItemParser :: ItemName -> Parser (StIO ())
-dropItemParser item = baseCodeLineParser "drop" (pure $ dropItem item) "drop"
+dropItemParser :: Parser (ItemName -> StIO ())
+dropItemParser = baseCodeLineParser "drop" (pure dropItem) "drop"
 
 -- |Match a @discard@ instruction.
-discardItemParser :: ItemName -> Parser (StIO ())
-discardItemParser item = baseCodeLineParser "discard" (pure $ discardItem item) "discard"
+discardItemParser :: Parser (ItemName -> StIO ())
+discardItemParser = baseCodeLineParser "discard" (pure discardItem) "discard"
 
 -- |Match a @give <item name>@ instruction.
 giveItemParser :: Parser (StIO ())
@@ -102,9 +106,9 @@ putItemParser = baseCodeLineParser "put " (giveItem . unpack <$> takeTill isSpac
 callForRoomParser :: Parser (StIO ())
 callForRoomParser = baseCodeLineParser "call " (callCommandForCurrentRoom . unpack <$> takeTill isSpace) "call"
 
--- |Match a single code line (or a conditional instruction)
-codeLineParser :: Parser (StIO ())
-codeLineParser = 
+-- |Match a single code line common for items and the rest.
+commonCodeLineParser :: Parser (StIO ())
+commonCodeLineParser = 
     (skipSpaces *> (
         gotoParser 
         <|> printEmptyLineParser
@@ -115,30 +119,39 @@ codeLineParser =
         <|> changeEntityParameterParser
         <|> giveItemParser
         <|> putItemParser
-        <|> conditionalParser
         <|> callForRoomParser
     )) 
     <?> "Command definition"
 
+-- |Match a single code line (or a conditional instruction)
+codeLineParser :: Parser (StIO ())
+codeLineParser = 
+    (skipSpaces *> (
+        commonCodeLineParser
+        <|> conditionalParser codeParser
+    )) 
+    <?> "Command definition"
+
 -- |Match the code block where single line is matched by 'Parser (StIO ())'.
-baseCodeParser :: Parser (StIO ()) -> Parser (StIO ())
-baseCodeParser parser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' parser) <* skipSpaces <* closeCurlyBrace
+--baseCodeParser :: Parser (StIO ()) -> Parser (StIO ())
+--baseCodeParser parser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' parser) <* skipSpaces <* closeCurlyBrace
 
 -- |Match a code block with common instructions.
 codeParser :: Parser (StIO ())
-codeParser = baseCodeParser codeLineParser
+codeParser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' codeLineParser) <* skipSpaces <* closeCurlyBrace
 
 -- |Match single code line with instructions specific to item.
-itemCodeLineParser :: ItemName -> Parser (StIO ())
-itemCodeLineParser item = 
+itemCodeLineParser :: Parser (ItemName -> StIO ())
+itemCodeLineParser = 
     (skipSpaces *> (
-        codeLineParser
-        <|> takeItemParser item
-        <|> dropItemParser item
-        <|> discardItemParser item
-    ))
+        (pure const <*> commonCodeLineParser)
+        <|> takeItemParser
+        <|> dropItemParser
+        <|> discardItemParser
+        <|>  (conditionalParserF itemCodeParser))
+    )
     <?> "Item command definition"
 
 -- |Match a code block with instructions specific to item.
-itemCodeParser :: ItemName -> Parser (StIO ())
-itemCodeParser item = baseCodeParser $ itemCodeLineParser item
+itemCodeParser :: Parser (ItemName -> StIO ())
+itemCodeParser = openCurlyBrace *> (Prelude.foldr <$> pure (\f g -> (\n -> f n >> g n)) <*> pure (const noAction) <*> many' itemCodeLineParser) <* skipSpaces <* closeCurlyBrace

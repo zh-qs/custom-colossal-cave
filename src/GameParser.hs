@@ -19,6 +19,7 @@ import Parsers.PlayerParser
 import Parsers.Utilities
 import Parsers.RoomParser
 import Parsers.ItemParser
+import Parsers.GlobalCommandsParser
 
 startRoomParser :: StParser Name
 startRoomParser = lift ((string "start: " *> (unpack <$> takeWhile1 isAlphaNum) <* newLines) <?> "Start room name")
@@ -31,6 +32,8 @@ gameParserSt =
     (Game
         <$> playerParser
         <*> (initialMessageParser <* itemListParser "items" 1 "Initial item list")
+        <*> (globalHeaderParser *> globalRoomCommandsParser)
+        <*> globalItemCommandsParser
         <*> roomMapParser
         <*> startRoomParser)
     <??> "Game definition"

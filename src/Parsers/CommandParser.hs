@@ -13,6 +13,7 @@ import Data.Char
 import Commands
 import Control.Applicative
 import Data.Maybe
+import Data.List
 import Parsers.Utilities
 import Parsers.CodeParser
 
@@ -26,6 +27,31 @@ commandParser parser =
             <*> (char ':' *> skipSpaces *> parser <* newLines)) 
     <?> "Command definition"
 
+-- |Match an item-specific command name with a code block.
+itemCommandParser :: Parser (a -> StIO ()) -> Parser (a -> [Command])
+itemCommandParser parser = 
+    (\(b,ns,f) -> (\s -> map (\n -> (b,n,s)) ns) . f)
+        <$> ((,,) 
+            <$> ((char '*' *> pure False) <|> pure True)
+            <*> ((T.unpack <$> takeWhile1 isAlphaNum) `sepBy` (char ',')) 
+            <*> (char ':' *> skipSpaces *> parser <* newLines)) 
+    <?> "Command definition"
+
+baseItemCommandListParser :: T.Text -> Int -> Parser (a -> StIO ()) -> Parser (a -> [Command])
+baseItemCommandListParser keyword indentationLevel parser = foldl' <$> pure (\f g -> (\n -> f n ++ g n)) <*> pure (const []) <*> listParser keyword (itemCommandParser parser) indentationLevel "Command list"
+
+-- |Match a command list with custom keyword.
+baseCommandListParser :: T.Text -> Int -> Parser (StIO ()) -> Parser [Command]
+baseCommandListParser keyword indentationLevel parser = concat <$> listParser keyword (commandParser parser) indentationLevel "Command list"
+
 -- |Match a command list.
 commandListParser :: Int -> Parser (StIO ()) -> Parser [Command]
-commandListParser indentationLevel parser = concat <$> listParser "commands" (commandParser parser) indentationLevel "Command list"
+commandListParser = baseCommandListParser "commands"
+
+testCommandParser :: Result ()
+testCommandParser = void $ feed (parse (itemCommandParser itemCodeParser) "eat:\n\
+    \            {\n\
+    \              println Delicious!\n\
+    \              player.hunger = player.hunger + 10\n\
+    \              discard\n\
+    \            }\n") ""

@@ -13,22 +13,23 @@ showCurrentRoom :: StIO ()
 showCurrentRoom = ((\g -> rooms g M.! currentRoomName g) <$> get)
     >>= (\r -> 
         description r >>= lift . putStrLn
-        >> foldl' (\stio name -> stio >> gets (\g -> globalNameMap g M.! name) >>= getDescription >>= lift . putStrLn) (lift $ return ()) (interactables r))
+        >> foldl' (\stio name -> stio >> gets (\g -> globalNameMap g M.! name) >>= getDescription >>= lift . putStr) (lift $ return ()) (interactables r))
 
 noAction :: StIO ()
 noAction = lift $ return ()
 
 showInventory :: StIO ()
-showInventory = gets (playerInventory . player) >>= (\inv -> lift $ putStrLn $ foldl' (\s itName -> s ++ itName ++ "\n") "Your inventory:\n" inv)
+showInventory = gets (\g -> (playerInventory $ player g, globalNameMap g)) >>= (\(inv,imap) -> lift $ putStrLn $ foldl' (\s itName -> s ++ longName (imap M.! itName) ++ "\n") "Your inventory:\n" inv)
 
 callCommandForCurrentRoom :: Name -> StIO ()
 callCommandForCurrentRoom name = gets (\g -> fromJust $ lookup name $ map (\(_,n,r) -> (n,r)) $ roomCommands $ rooms g M.! currentRoomName g) >>= id
 
 takeItem :: ItemName -> StIO ()
-takeItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+takeItem item = modify' (\(Game (Player ps i lh rh) im gr gi rs n itMap) -> 
     Game 
         (Player ps (item:i) lh rh) 
         im 
+        gr gi
         (M.adjust 
             (\(Room d its cmds) -> Room d (filter (/=item) its) cmds)
             n rs) 
@@ -36,19 +37,21 @@ takeItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) ->
         itMap)
 
 giveItem :: ItemName -> StIO ()
-giveItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+giveItem item = modify' (\(Game (Player ps i lh rh) im gr gi rs n itMap) -> 
     Game 
         (Player ps (item:i) lh rh) 
         im 
+        gr gi
         rs 
         n 
         itMap)
 
 putItem :: ItemName -> StIO ()
-putItem item = modify' (\(Game p im rs n itMap) -> 
+putItem item = modify' (\(Game p im gr gi rs n itMap) -> 
     Game 
         p
         im 
+        gr gi
         (M.adjust 
             (\(Room d its cmds) -> Room d (item:its) cmds)
             n rs) 
@@ -56,10 +59,11 @@ putItem item = modify' (\(Game p im rs n itMap) ->
         itMap)
 
 dropItem :: ItemName -> StIO ()
-dropItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+dropItem item = modify' (\(Game (Player ps i lh rh) im gr gi rs n itMap) -> 
     Game 
         (Player ps (filter (/= item) i) lh rh) 
         im 
+        gr gi
         (M.adjust 
             (\(Room d its cmds) -> Room d (item:its) cmds)
             n rs) 
@@ -67,10 +71,11 @@ dropItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) ->
         itMap)
 
 discardItem :: ItemName -> StIO ()
-discardItem item = modify' (\(Game (Player ps i lh rh) im rs n itMap) -> 
+discardItem item = modify' (\(Game (Player ps i lh rh) im gr gi rs n itMap) -> 
     Game 
         (Player ps (filter (/= item) i) lh rh) 
         im 
+        gr gi
         (M.adjust 
             (\(Room d its cmds) -> Room d (filter (/=item) its) cmds)
             n rs) 
@@ -87,22 +92,25 @@ printInt :: Int -> StIO ()
 printInt x = lift $ (putStr $ show x) >> hFlush stdout
 
 goToRoom :: Name -> StIO ()
-goToRoom newName = modify' (\(Game p im rs n itmap) -> Game p im rs newName itmap) >> showCurrentRoom
+goToRoom newName = modify' (\(Game p im gr gi rs n itmap) -> Game p im gr gi rs newName itmap) >> showCurrentRoom
 --gets (\(Game p im rs n itmap) -> rs M.! newName) >>= showRoom >> 
 changePlayerParameter :: Name -> (Int -> Int) -> StIO ()
-changePlayerParameter name f = modify' (\(Game (Player ps i lh rh) im rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im rs n itmap)
+changePlayerParameter name f = modify' (\(Game (Player ps i lh rh) im gr gi rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im gr gi rs n itmap)
 
 getPlayerParameter :: Name -> StIO Int
-getPlayerParameter name = gets (\(Game p im rs n itMap) -> playerParameters p M.! name)
+getPlayerParameter name = gets (\(Game p im gr gi rs n itMap) -> playerParameters p M.! name)
 
 changeEntityParameter :: Name -> Name -> (Int -> Int) -> StIO ()
-changeEntityParameter entityName name f = modify' (\(Game p im rs n imap) -> Game p im rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
+changeEntityParameter entityName name f = modify' (\(Game p im gr gi rs n imap) -> Game p im gr gi rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
 
 getEntityParameter :: Name -> Name -> StIO Int
 getEntityParameter entityName name = gets (\g -> (entityParameters $ globalNameMap g M.! entityName) M.! name)
 
 conditionallyPerformAction :: StIO Bool -> StIO () -> StIO () -> StIO ()
 conditionallyPerformAction cond trueaction falseaction = cond >>= (\c -> if c then trueaction else falseaction)
+
+conditionallyEvaluateAction :: StIO Bool -> (a -> StIO ()) -> (a -> StIO ()) -> a -> StIO ()
+conditionallyEvaluateAction cond ftrue ffalse a = conditionallyPerformAction cond (ftrue a) (ffalse a)
 
 checkIfItemIsInInventory :: ItemName -> StIO Bool
 checkIfItemIsInInventory name = gets (\g -> name `elem` (playerInventory . player) g)

@@ -22,7 +22,7 @@ global: (TODO)
   room:
     $list:command
   item:
-    $list:item
+    $list:command
 
 rooms:
   $list:room
@@ -58,7 +58,7 @@ room:
       $list:command
 
 command:
-  `*`?lista_po_przecinku($(name)string): (TODO(* i ,) *: cicha komenda)
+  `*`?lista_po_przecinku($(name)string):
     {
       <commonInstructions>
     }

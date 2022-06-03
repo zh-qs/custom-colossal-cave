@@ -27,6 +27,30 @@ items:
               discard
             }
 
+global:
+  room:
+    - sth:
+       {
+         println Some global command
+       }
+    - kys:
+       {
+         player.life = 0
+       }
+  item:
+    - take:
+        {
+          if player.life > 0 then
+          {
+            take
+            println OK
+          }
+          else
+          {
+            println Ghosts can't take items!!!
+          }
+        }
+
 rooms:
   - kitchen:
       description:
