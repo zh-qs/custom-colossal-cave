@@ -18,7 +18,7 @@ initialMessage:
 items:
   $list:item
 
-global: (TODO)
+global:
   room:
     $list:command
   item:

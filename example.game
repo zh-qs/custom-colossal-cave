@@ -76,6 +76,11 @@ rooms:
                       player.hunger = 100
                     }
                   }
+              - take:
+                  {
+                    take
+                    println Took a drink.
+                  }
       entities:
         - dragon:
             description:
