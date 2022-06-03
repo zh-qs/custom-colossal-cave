@@ -5,6 +5,6 @@ TODO:       dodać globalne komendy dla pokoi i itemów: dodać dodawanie global
             ciche komendy (można je przywołać z kodu, ale nie można ich wpisać) K
             komendy po przecinku K
         command overriding i domyślnych wiadomości
-        room onEntry???
+            room onEntry??? K 
             poprawić błąd z if-else w itemach K
             wypisywanie longName w inwentarzu K

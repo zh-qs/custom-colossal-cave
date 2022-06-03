@@ -56,6 +56,10 @@ rooms:
       description:
         - true:
             You are in your kitchen, looking at the table.
+      onEntry:
+        {
+          println ...
+        }
       items:
         - food
         - drink:

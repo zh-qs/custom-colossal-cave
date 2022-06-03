@@ -39,7 +39,7 @@ instance Show Interactable where
 
 --data Entity = Entity { entityParameters :: M.Map Name Int, entityCommands :: [Command] }
 
-data Room = Room { description :: Desc, interactables :: [Name], roomCommands :: [Command] }
+data Room = Room { description :: Desc, onEntry :: StIO (), interactables :: [Name], roomCommands :: [Command] }
 
 instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"

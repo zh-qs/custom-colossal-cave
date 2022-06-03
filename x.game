@@ -1,0 +1,3790 @@
+player:
+  parameters:
+    - param1:
+        value: 0
+    - param2:
+        value: 0
+    - param3:
+        value: 0
+    - param4:
+        value: 0
+    - param5:
+        value: 0
+    - param6:
+        value: 0
+    - param7:
+        value: 0
+    - param8:
+        value: 0
+    - param9:
+        value: 0
+    - param10:
+        value: 0
+    - param11:
+        value: 0
+    - param12:
+        value: 0
+    - param13:
+        value: 0
+    - param14:
+        value: 0
+    - param15:
+        value: 0
+    - param16:
+        value: 0
+    - param17:
+        value: 0
+    - param18:
+        value: 0
+    - param19:
+        value: 0
+    - param20:
+        value: 0
+    - param21:
+        value: 0
+    - param22:
+        value: 0
+    - param23:
+        value: 0
+    - param24:
+        value: 0
+    - param25:
+        value: 0
+    - param26:
+        value: 0
+    - param27:
+        value: 0
+    - param28:
+        value: 0
+    - param29:
+        value: 0
+    - param30:
+        value: 0
+    - param31:
+        value: 0
+    - param32:
+        value: 0
+    - param33:
+        value: 0
+    - param34:
+        value: 0
+    - param35:
+        value: 0
+    - param36:
+        value: 0
+    - param37:
+        value: 0
+    - param38:
+        value: 0
+    - param39:
+        value: 0
+    - param40:
+        value: 0
+    - param50:
+        value: 0
+    - param51:
+        value: 0
+    - param52:
+        value: 0
+    - param53:
+        value: 0
+    - param54:
+        value: 0
+    - param55:
+        value: 0
+    - param56:
+        value: 0
+    - param57:
+        value: 0
+    - param58:
+        value: 0
+    - param59:
+        value: 0
+    - param60:
+        value: 0
+    - param61:
+        value: 0
+    - param62:
+        value: 0
+    - param63:
+        value: 0
+    - param64:
+        value: 0
+  inventory:
+  leftHand:
+    empty
+  rightHand:
+    empty
+initialMessage:
+
+items:
+global:
+  room:
+    - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        {
+          println $globalcode(1)
+        }
+    - DROP,RELEA,FREE,DISCA,DUMP:
+        {
+          println $globalcode(2)
+        }
+    - SAY,CHANT,SING,UTTER,MUMBL:
+        {
+          println $globalcode(3)
+        }
+    - UNLOC,OPEN:
+        {
+          println $globalcode(4)
+        }
+    - NOTHI:
+        {
+          println $globalcode(5)
+        }
+    - LOCK,CLOSE:
+        {
+          println $globalcode(6)
+        }
+    - LIGHT,ON:
+        {
+          println $globalcode(7)
+        }
+    - EXTIN,OFF:
+        {
+          println $globalcode(8)
+        }
+    - WAVE,SHAKE,SWING:
+        {
+          println $globalcode(9)
+        }
+    - CALM,PLACA,TAME:
+        {
+          println $globalcode(10)
+        }
+    - WALK,RUN,TRAVE,GO,PROCE,CONTI,EXPLO,GOTO,FOLLO,TURN:
+        {
+          println $globalcode(11)
+        }
+    - ATTAC,KILL,FIGHT,HIT,STRIK:
+        {
+          println $globalcode(12)
+        }
+    - POUR:
+        {
+          println $globalcode(13)
+        }
+    - EAT,DEVOU:
+        {
+          println $globalcode(14)
+        }
+    - DRINK:
+        {
+          println $globalcode(15)
+        }
+    - RUB:
+        {
+          println $globalcode(16)
+        }
+    - THROW,TOSS:
+        {
+          println $globalcode(17)
+        }
+    - QUIT:
+        {
+          println $globalcode(18)
+        }
+    - FIND,WHERE:
+        {
+          println $globalcode(19)
+        }
+    - INVEN:
+        {
+          println $globalcode(20)
+        }
+    - FEED:
+        {
+          println $globalcode(21)
+        }
+    - FILL:
+        {
+          println $globalcode(22)
+        }
+    - BLAST,DETON,IGNIT,BLOWU:
+        {
+          println $globalcode(23)
+        }
+    - SCORE:
+        {
+          println $globalcode(24)
+        }
+    - FEE,FIE,FOE,FOO,FUM:
+        {
+          println $globalcode(25)
+        }
+    - BRIEF:
+        {
+          println $globalcode(26)
+        }
+    - READ,PERUS:
+        {
+          println $globalcode(27)
+        }
+    - BREAK,SHATT,SMASH:
+        {
+          println $globalcode(28)
+        }
+    - WAKE,DISTU:
+        {
+          println $globalcode(29)
+        }
+    - SUSPE,PAUSE,SAVE:
+        {
+          println $globalcode(30)
+        }
+    - HOURS:
+        {
+          println $globalcode(31)
+        }
+  item:
+    - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        {
+          println $globalcode(1)
+        }
+    - DROP,RELEA,FREE,DISCA,DUMP:
+        {
+          println $globalcode(2)
+        }
+    - SAY,CHANT,SING,UTTER,MUMBL:
+        {
+          println $globalcode(3)
+        }
+    - UNLOC,OPEN:
+        {
+          println $globalcode(4)
+        }
+    - NOTHI:
+        {
+          println $globalcode(5)
+        }
+    - LOCK,CLOSE:
+        {
+          println $globalcode(6)
+        }
+    - LIGHT,ON:
+        {
+          println $globalcode(7)
+        }
+    - EXTIN,OFF:
+        {
+          println $globalcode(8)
+        }
+    - WAVE,SHAKE,SWING:
+        {
+          println $globalcode(9)
+        }
+    - CALM,PLACA,TAME:
+        {
+          println $globalcode(10)
+        }
+    - WALK,RUN,TRAVE,GO,PROCE,CONTI,EXPLO,GOTO,FOLLO,TURN:
+        {
+          println $globalcode(11)
+        }
+    - ATTAC,KILL,FIGHT,HIT,STRIK:
+        {
+          println $globalcode(12)
+        }
+    - POUR:
+        {
+          println $globalcode(13)
+        }
+    - EAT,DEVOU:
+        {
+          println $globalcode(14)
+        }
+    - DRINK:
+        {
+          println $globalcode(15)
+        }
+    - RUB:
+        {
+          println $globalcode(16)
+        }
+    - THROW,TOSS:
+        {
+          println $globalcode(17)
+        }
+    - QUIT:
+        {
+          println $globalcode(18)
+        }
+    - FIND,WHERE:
+        {
+          println $globalcode(19)
+        }
+    - INVEN:
+        {
+          println $globalcode(20)
+        }
+    - FEED:
+        {
+          println $globalcode(21)
+        }
+    - FILL:
+        {
+          println $globalcode(22)
+        }
+    - BLAST,DETON,IGNIT,BLOWU:
+        {
+          println $globalcode(23)
+        }
+    - SCORE:
+        {
+          println $globalcode(24)
+        }
+    - FEE,FIE,FOE,FOO,FUM:
+        {
+          println $globalcode(25)
+        }
+    - BRIEF:
+        {
+          println $globalcode(26)
+        }
+    - READ,PERUS:
+        {
+          println $globalcode(27)
+        }
+    - BREAK,SHATT,SMASH:
+        {
+          println $globalcode(28)
+        }
+    - WAKE,DISTU:
+        {
+          println $globalcode(29)
+        }
+    - SUSPE,PAUSE,SAVE:
+        {
+          println $globalcode(30)
+        }
+    - HOURS:
+        {
+          println $globalcode(31)
+        }
+rooms:
+  - room1:
+      description:
+        - true:
+            YOU ARE STANDING AT THE END OF A ROAD BEFORE A SMALL BRICK BUILDING.
+            AROUND YOU IS A FOREST.  A SMALL STREAM FLOWS OUT OF THE BUILDING AND
+            DOWN A GULLY.
+      items:
+      entities:
+      commands:
+        - ROAD,HILL,WEST,W,UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room2
+            }
+        - ENTER,BUILD,HOUSE,INWAR,INSID,IN,EAST,E:
+            {
+              goto room3
+            }
+        - DOWNS,GULLY,STREA,SOUTH,S,D,DOWNW,DOWN,DESCE:
+            {
+              goto room4
+            }
+        - FORES,NORTH,N:
+            {
+              goto room5
+            }
+        - DEPRE:
+            {
+              goto room8
+            }
+  - room2:
+      description:
+        - true:
+            YOU HAVE WALKED UP A HILL, STILL IN THE FOREST.  THE ROAD SLOPES BACK
+            DOWN THE OTHER SIDE OF THE HILL.  THERE IS A BUILDING IN THE DISTANCE.
+      items:
+      entities:
+      commands:
+        - ROAD,HILL,BUILD,HOUSE,FORWA,CONTI,ONWAR,EAST,E,NORTH,N,D,DOWNW,DOWN,DESCE:
+            {
+              goto room1
+            }
+        - FORES,SOUTH,S:
+            {
+              goto room5
+            }
+  - room3:
+      description:
+        - true:
+            YOU ARE INSIDE A BUILDING, A WELL HOUSE FOR A LARGE SPRING.
+      items:
+      entities:
+      commands:
+        - ENTER,OUT,OUTSI,EXIT,LEAVE,OUTDO,WEST,W:
+            {
+              goto room1
+            }
+        - XYZZY:
+            {
+              goto room11
+            }
+        - PLUGH:
+            {
+              goto room33
+            }
+        - DOWNS,STREA:
+            {
+              goto room79
+            }
+  - room4:
+      description:
+        - true:
+            YOU ARE IN A VALLEY IN THE FOREST BESIDE A STREAM TUMBLING ALONG A
+            ROCKY BED.
+      items:
+      entities:
+      commands:
+        - UPSTR,BUILD,HOUSE,NORTH,N:
+            {
+              goto room1
+            }
+        - FORES,EAST,E,WEST,W,UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room5
+            }
+        - DOWNS,SOUTH,S,D,DOWNW,DOWN,DESCE:
+            {
+              goto room7
+            }
+        - DEPRE:
+            {
+              goto room8
+            }
+  - room5:
+      description:
+        - true:
+            YOU ARE IN OPEN FOREST, WITH A DEEP VALLEY TO ONE SIDE.
+      items:
+      entities:
+      commands:
+        - VALLE,EAST,E,D,DOWNW,DOWN,DESCE:
+            {
+              goto room4
+            }
+        - FORES,FORWA,CONTI,ONWAR,NORTH,N:
+            {
+              if rnd % 100 < 50 then
+              {
+              goto room5
+              }
+              else
+              {
+              call unnamed387
+              }
+            }
+        - *unnamed387:
+            {
+              goto room6
+            }
+        - WEST,W,SOUTH,S:
+            {
+              goto room5
+            }
+  - room6:
+      description:
+        - true:
+            YOU ARE IN OPEN FOREST NEAR BOTH A VALLEY AND A ROAD.
+      items:
+      entities:
+      commands:
+        - ROAD,HILL,NORTH,N:
+            {
+              goto room1
+            }
+        - VALLE,EAST,E,WEST,W,D,DOWNW,DOWN,DESCE:
+            {
+              goto room4
+            }
+        - FORES,SOUTH,S:
+            {
+              goto room5
+            }
+  - room7:
+      description:
+        - true:
+            AT YOUR FEET ALL THE WATER OF THE STREAM SPLASHES INTO A 2-INCH SLIT
+            IN THE ROCK.  DOWNSTREAM THE STREAMBED IS BARE ROCK.
+      items:
+      entities:
+      commands:
+        - BUILD,HOUSE:
+            {
+              goto room1
+            }
+        - UPSTR,NORTH,N:
+            {
+              goto room4
+            }
+        - FORES,EAST,E,WEST,W:
+            {
+              goto room5
+            }
+        - DOWNS,ROCK,BED,SOUTH,S:
+            {
+              goto room8
+            }
+        - SLIT,STREA,D,DOWNW,DOWN,DESCE:
+            {
+              println YOU DON'T FIT THROUGH A TWO-INCH SLIT!
+            }
+  - room8:
+      description:
+        - true:
+            YOU ARE IN A 20-FOOT DEPRESSION FLOORED WITH BARE DIRT.  SET INTO THE
+            DIRT IS A STRONG STEEL GRATE MOUNTED IN CONCRETE.  A DRY STREAMBED
+            LEADS INTO THE DEPRESSION.
+      items:
+      entities:
+      commands:
+        - FORES,EAST,E,WEST,W,SOUTH,S:
+            {
+              goto room5
+            }
+        - BUILD,HOUSE:
+            {
+              goto room1
+            }
+        - UPSTR,GULLY,NORTH,N:
+            {
+              goto room7
+            }
+        - ENTER,INWAR,INSID,IN,D,DOWNW,DOWN,DESCE:
+            {
+              if player.param3 != 0 then
+              {
+              goto room9
+              }
+              else
+              {
+              call unnamed401
+              }
+            }
+        - *unnamed401:
+            {
+              println YOU CAN'T GO THROUGH A LOCKED STEEL GRATE!
+            }
+  - room9:
+      description:
+        - true:
+            YOU ARE IN A SMALL CHAMBER BENEATH A 3X3 STEEL GRATE TO THE SURFACE.
+            A LOW CRAWL OVER COBBLES LEADS INWARD TO THE WEST.
+      items:
+      entities:
+      commands:
+        - OUT,OUTSI,EXIT,LEAVE,UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              if player.param3 != 0 then
+              {
+              goto room8
+              }
+              else
+              {
+              call unnamed403
+              }
+            }
+        - *unnamed403:
+            {
+              println YOU CAN'T GO THROUGH A LOCKED STEEL GRATE!
+            }
+        - CRAWL,COBBL,INWAR,INSID,IN,WEST,W:
+            {
+              goto room10
+            }
+        - PIT:
+            {
+              goto room14
+            }
+        - DEBRI:
+            {
+              goto room11
+            }
+  - room10:
+      description:
+        - true:
+            YOU ARE CRAWLING OVER COBBLES IN A LOW PASSAGE.  THERE IS A DIM LIGHT
+            AT THE EAST END OF THE PASSAGE.
+      items:
+      entities:
+      commands:
+        - OUT,OUTSI,EXIT,LEAVE,SURFA,NULL,NOWHE,EAST,E:
+            {
+              goto room9
+            }
+        - INWAR,INSID,IN,DARK,WEST,W,DEBRI:
+            {
+              goto room11
+            }
+        - PIT:
+            {
+              goto room14
+            }
+  - room11:
+      description:
+        - true:
+            YOU ARE IN A DEBRIS ROOM FILLED WITH STUFF WASHED IN FROM THE SURFACE.
+            A LOW WIDE PASSAGE WITH COBBLES BECOMES PLUGGED WITH MUD AND DEBRIS
+            HERE, BUT AN AWKWARD CANYON LEADS UPWARD AND WEST.  A NOTE ON THE WALL
+            SAYS "MAGIC WORD XYZZY".
+      items:
+      entities:
+      commands:
+        - DEPRE:
+            {
+              if player.param3 != 0 then
+              {
+              goto room8
+              }
+              else
+              {
+              call ENTRA
+              }
+            }
+        - ENTRA:
+            {
+              goto room9
+            }
+        - CRAWL,COBBL,PASSA,TUNNE,LOW,EAST,E:
+            {
+              goto room10
+            }
+        - CANYO,INWAR,INSID,IN,UPWAR,UP,U,ABOVE,ASCEN,WEST,W:
+            {
+              goto room12
+            }
+        - XYZZY:
+            {
+              goto room3
+            }
+        - PIT:
+            {
+              goto room14
+            }
+  - room12:
+      description:
+        - true:
+            YOU ARE IN AN AWKWARD SLOPING EAST/WEST CANYON.
+      items:
+      entities:
+      commands:
+        - DEPRE:
+            {
+              if player.param3 != 0 then
+              {
+              goto room8
+              }
+              else
+              {
+              call ENTRA
+              }
+            }
+        - ENTRA:
+            {
+              goto room9
+            }
+        - D,DOWNW,DOWN,DESCE,EAST,E,DEBRI:
+            {
+              goto room11
+            }
+        - INWAR,INSID,IN,UPWAR,UP,U,ABOVE,ASCEN,WEST,W:
+            {
+              goto room13
+            }
+        - PIT:
+            {
+              goto room14
+            }
+  - room13:
+      description:
+        - true:
+            YOU ARE IN A SPLENDID CHAMBER THIRTY FEET HIGH.  THE WALLS ARE FROZEN
+            RIVERS OF ORANGE STONE.  AN AWKWARD CANYON AND A GOOD PASSAGE EXIT
+            FROM EAST AND WEST SIDES OF THE CHAMBER.
+      items:
+      entities:
+      commands:
+        - DEPRE:
+            {
+              if player.param3 != 0 then
+              {
+              goto room8
+              }
+              else
+              {
+              call ENTRA
+              }
+            }
+        - ENTRA:
+            {
+              goto room9
+            }
+        - DEBRI:
+            {
+              goto room11
+            }
+        - CANYO,EAST,E:
+            {
+              goto room12
+            }
+        - PASSA,TUNNE,PIT,WEST,W:
+            {
+              goto room14
+            }
+  - room14:
+      description:
+        - true:
+            AT YOUR FEET IS A SMALL PIT BREATHING TRACES OF WHITE MIST.  AN EAST
+            PASSAGE ENDS HERE EXCEPT FOR A SMALL CRACK LEADING ON.
+      items:
+      entities:
+      commands:
+        - DEPRE:
+            {
+              if player.param3 != 0 then
+              {
+              goto room8
+              }
+              else
+              {
+              call ENTRA
+              }
+            }
+        - ENTRA:
+            {
+              goto room9
+            }
+        - DEBRI:
+            {
+              goto room11
+            }
+        - PASSA,TUNNE,EAST,E:
+            {
+              goto room13
+            }
+        - D,DOWNW,DOWN,DESCE,PIT,STEPS:
+            {
+              if true then
+              {
+              goto room20
+              }
+              else
+              {
+              call unnamed431
+              }
+            }
+        - *unnamed431:
+            {
+              goto room15
+            }
+        - CRACK,WEST,W:
+            {
+              goto room16
+            }
+  - room15:
+      description:
+        - true:
+            YOU ARE AT ONE END OF A VAST HALL STRETCHING FORWARD OUT OF SIGHT TO
+            THE WEST.  THERE ARE OPENINGS TO EITHER SIDE.  NEARBY, A WIDE STONE
+            STAIRCASE LEADS DOWNWARD.  THE HALL IS FILLED WITH WISPS OF WHITE MIST
+            SWAYING TO AND FRO ALMOST AS IF ALIVE.
+            STAIRCASE.  THERE IS A PASSAGE AT THE TOP OF A DOME BEHIND YOU.
+      items:
+      entities:
+      commands:
+        - LEFT,SOUTH,S:
+            {
+              goto room18
+            }
+        - FORWA,CONTI,ONWAR,HALL,WEST,W:
+            {
+              goto room17
+            }
+        - STAIR,D,DOWNW,DOWN,DESCE,NORTH,N:
+            {
+              goto room19
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN,PIT,STEPS,DOME,PASSA,TUNNE,EAST,E:
+            {
+              if true then
+              {
+              goto room22
+              }
+              else
+              {
+              call unnamed437
+              }
+            }
+        - *unnamed437:
+            {
+              goto room14
+            }
+        - Y2:
+            {
+              goto room34
+            }
+  - room16:
+      description:
+        - true:
+            THE CRACK IS FAR TOO SMALL FOR YOU TO FOLLOW.
+      onEntry:
+        {
+          goto room14
+        }
+      items:
+      entities:
+      commands:
+  - room17:
+      description:
+        - true:
+            YOU ARE ON THE EAST BANK OF A FISSURE SLICING CLEAR ACROSS THE HALL.
+            THE MIST IS QUITE THICK HERE, AND THE FISSURE IS TOO WIDE TO JUMP.
+      items:
+      entities:
+      commands:
+        - HALL,EAST,E:
+            {
+              goto room15
+            }
+        - JUMP:
+            {
+              if player.param12 != 0 then
+              {
+              println I RESPECTFULLY SUGGEST YOU GO ACROSS THE BRIDGE INSTEAD OF JUMPING.
+              }
+              else
+              {
+              call FORWA,CONTI,ONWAR
+              }
+            }
+        - FORWA,CONTI,ONWAR:
+            {
+              if player.param12 != 1 then
+              {
+              goto room21
+              }
+              else
+              {
+              call OVER
+              }
+            }
+        - OVER,ACROS,WEST,W,CROSS:
+            {
+              if player.param12 != 1 then
+              {
+              println THERE IS NO WAY ACROSS THE FISSURE.
+              }
+              else
+              {
+              call unnamed444
+              }
+            }
+        - *unnamed444:
+            {
+              goto room27
+            }
+  - room18:
+      description:
+        - true:
+            THIS IS A LOW ROOM WITH A CRUDE NOTE ON THE WALL.  THE NOTE SAYS,
+            "YOU WON'T GET IT UP THE STEPS".
+      items:
+      entities:
+      commands:
+        - HALL,OUT,OUTSI,EXIT,LEAVE,NORTH,N:
+            {
+              goto room15
+            }
+  - room19:
+      description:
+        - true:
+            YOU ARE IN THE HALL OF THE MOUNTAIN KING, WITH PASSAGES OFF IN ALL
+            DIRECTIONS.
+      items:
+      entities:
+      commands:
+        - STAIR,UPWAR,UP,U,ABOVE,ASCEN,EAST,E:
+            {
+              goto room15
+            }
+        - NORTH,N,LEFT:
+            {
+              if player.param11 != 0 then
+              {
+              goto room28
+              }
+              else
+              {
+              call SOUTH,S
+              }
+            }
+        - SOUTH,S,RIGHT:
+            {
+              if player.param11 != 0 then
+              {
+              goto room29
+              }
+              else
+              {
+              call WEST,W
+              }
+            }
+        - WEST,W,FORWA,CONTI,ONWAR:
+            {
+              if player.param11 != 0 then
+              {
+              goto room30
+              }
+              else
+              {
+              call unnamed450
+              }
+            }
+        - *unnamed450:
+            {
+              goto room32
+            }
+        - SW:
+            {
+              if rnd % 100 < 35 then
+              {
+              goto room74
+              }
+              else
+              {
+              call unnamed452
+              }
+            }
+        - *unnamed452:
+            {
+              if true then
+              {
+              goto room32
+              }
+              else
+              {
+              call SECRE
+              }
+            }
+        - SECRE:
+            {
+              goto room74
+            }
+  - room20:
+      description:
+        - true:
+            YOU ARE AT THE BOTTOM OF THE PIT WITH A BROKEN NECK.
+      onEntry:
+        {
+          goto room0
+        }
+      items:
+      entities:
+      commands:
+  - room21:
+      description:
+        - true:
+            YOU DIDN'T MAKE IT.
+      onEntry:
+        {
+          goto room0
+        }
+      items:
+      entities:
+      commands:
+  - room22:
+      description:
+        - true:
+            THE DOME IS UNCLIMBABLE.
+      onEntry:
+        {
+          goto room15
+        }
+      items:
+      entities:
+      commands:
+  - room23:
+      description:
+        - true:
+            YOU ARE AT THE WEST END OF THE TWOPIT ROOM.  THERE IS A LARGE HOLE IN
+            THE WALL ABOVE THE PIT AT THIS END OF THE ROOM.
+      items:
+      entities:
+      commands:
+        - EAST,E,ACROS:
+            {
+              goto room67
+            }
+        - WEST,W,SLAB,SLABR:
+            {
+              goto room68
+            }
+        - D,DOWNW,DOWN,DESCE,PIT:
+            {
+              goto room25
+            }
+        - HOLE:
+            {
+              println IT IS TOO FAR UP FOR YOU TO REACH.
+            }
+  - room24:
+      description:
+        - true:
+            YOU ARE AT THE BOTTOM OF THE EASTERN PIT IN THE TWOPIT ROOM.  THERE IS
+            A SMALL POOL OF OIL IN ONE CORNER OF THE PIT.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room67
+            }
+  - room25:
+      description:
+        - true:
+            YOU ARE AT THE BOTTOM OF THE WESTERN PIT IN THE TWOPIT ROOM.  THERE IS
+            A LARGE HOLE IN THE WALL ABOUT 25 FEET ABOVE YOU.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room23
+            }
+        - CLIMB:
+            {
+              if player.param24 != 4 then
+              {
+              goto room31
+              }
+              else
+              {
+              call unnamed464
+              }
+            }
+        - *unnamed464:
+            {
+              goto room26
+            }
+  - room26:
+      description:
+        - true:
+            YOU CLAMBER UP THE PLANT AND SCURRY THROUGH THE HOLE AT THE TOP.
+      onEntry:
+        {
+          goto room88
+        }
+      items:
+      entities:
+      commands:
+  - room27:
+      description:
+        - true:
+            YOU ARE ON THE WEST SIDE OF THE FISSURE IN THE HALL OF MISTS.
+      items:
+      entities:
+      commands:
+        - JUMP:
+            {
+              if player.param12 != 0 then
+              {
+              println I RESPECTFULLY SUGGEST YOU GO ACROSS THE BRIDGE INSTEAD OF JUMPING.
+              }
+              else
+              {
+              call FORWA,CONTI,ONWAR
+              }
+            }
+        - FORWA,CONTI,ONWAR:
+            {
+              if player.param12 != 1 then
+              {
+              goto room21
+              }
+              else
+              {
+              call OVER
+              }
+            }
+        - OVER,ACROS,EAST,E,CROSS:
+            {
+              if player.param12 != 1 then
+              {
+              println THERE IS NO WAY ACROSS THE FISSURE.
+              }
+              else
+              {
+              call unnamed469
+              }
+            }
+        - *unnamed469:
+            {
+              goto room17
+            }
+        - NORTH,N:
+            {
+              goto room40
+            }
+        - WEST,W:
+            {
+              goto room41
+            }
+  - room28:
+      description:
+        - true:
+            YOU ARE IN A LOW N/S PASSAGE AT A HOLE IN THE FLOOR.  THE HOLE GOES
+            DOWN TO AN E/W PASSAGE.
+      items:
+      entities:
+      commands:
+        - HALL,OUT,OUTSI,EXIT,LEAVE,SOUTH,S:
+            {
+              goto room19
+            }
+        - NORTH,N,Y2:
+            {
+              goto room33
+            }
+        - D,DOWNW,DOWN,DESCE,HOLE:
+            {
+              goto room36
+            }
+  - room29:
+      description:
+        - true:
+            YOU ARE IN THE SOUTH SIDE CHAMBER.
+      items:
+      entities:
+      commands:
+        - HALL,OUT,OUTSI,EXIT,LEAVE,NORTH,N:
+            {
+              goto room19
+            }
+  - room30:
+      description:
+        - true:
+            YOU ARE IN THE WEST SIDE CHAMBER OF THE HALL OF THE MOUNTAIN KING.
+            A PASSAGE CONTINUES WEST AND UP HERE.
+      items:
+      entities:
+      commands:
+        - HALL,OUT,OUTSI,EXIT,LEAVE,EAST,E:
+            {
+              goto room19
+            }
+        - WEST,W,UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room62
+            }
+  - room31:
+      description:
+        - true:
+            
+      onEntry:
+        {
+          goto room90
+        }
+      items:
+      entities:
+      commands:
+  - room32:
+      description:
+        - true:
+            YOU CAN'T GET BY THE SNAKE.
+      onEntry:
+        {
+          goto room19
+        }
+      items:
+      entities:
+      commands:
+  - room33:
+      description:
+        - true:
+            YOU ARE IN A LARGE ROOM, WITH A PASSAGE TO THE SOUTH, A PASSAGE TO THE
+            WEST, AND A WALL OF BROKEN ROCK TO THE EAST.  THERE IS A LARGE "Y2" ON
+            A ROCK IN THE ROOM'S CENTER.
+      items:
+      entities:
+      commands:
+        - PLUGH:
+            {
+              goto room3
+            }
+        - SOUTH,S:
+            {
+              goto room28
+            }
+        - EAST,E,WALL,BROKE:
+            {
+              goto room34
+            }
+        - WEST,W:
+            {
+              goto room35
+            }
+        - PLOVE:
+            {
+              if true then
+              {
+              println $code(2)
+              }
+              else
+              {
+              call unnamed486
+              }
+            }
+        - *unnamed486:
+            {
+              goto room100
+            }
+  - room34:
+      description:
+        - true:
+            YOU ARE IN A JUMBLE OF ROCK, WITH CRACKS EVERYWHERE.
+      items:
+      entities:
+      commands:
+        - D,DOWNW,DOWN,DESCE,Y2:
+            {
+              goto room33
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room15
+            }
+  - room35:
+      description:
+        - true:
+            YOU'RE AT A LOW WINDOW OVERLOOKING A HUGE PIT, WHICH EXTENDS UP OUT OF
+            SIGHT.
+            WHITE MIST COVER THE FLOOR OF THE PIT, BECOMING THICKER TO THE RIGHT.
+            MARKS IN THE DUST AROUND THE WINDOW WOULD SEEM TO INDICATE THAT
+            SOMEONE HAS BEEN HERE RECENTLY.  DIRECTLY ACROSS THE PIT FROM YOU AND
+            25 FEET AWAY THERE IS A SIMILAR WINDOW LOOKING INTO A LIGHTED ROOM.  A
+            SHADOWY FIGURE CAN BE SEEN THERE PEERING BACK AT YOU.
+      items:
+      entities:
+      commands:
+        - EAST,E,Y2:
+            {
+              goto room33
+            }
+        - JUMP:
+            {
+              goto room20
+            }
+  - room36:
+      description:
+        - true:
+            YOU ARE IN A DIRTY BROKEN PASSAGE.  TO THE EAST IS A CRAWL.  TO THE
+            WEST IS A LARGE PASSAGE.  ABOVE YOU IS A HOLE TO ANOTHER PASSAGE.
+      items:
+      entities:
+      commands:
+        - EAST,E,CRAWL:
+            {
+              goto room37
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN,HOLE:
+            {
+              goto room28
+            }
+        - WEST,W:
+            {
+              goto room39
+            }
+        - BEDQU:
+            {
+              goto room65
+            }
+  - room37:
+      description:
+        - true:
+            YOU ARE ON THE BRINK OF A SMALL CLEAN CLIMBABLE PIT.  A CRAWL LEADS
+            WEST.
+      items:
+      entities:
+      commands:
+        - WEST,W,CRAWL:
+            {
+              goto room36
+            }
+        - D,DOWNW,DOWN,DESCE,PIT,CLIMB:
+            {
+              goto room38
+            }
+  - room38:
+      description:
+        - true:
+            YOU ARE IN THE BOTTOM OF A SMALL PIT WITH A LITTLE STREAM, WHICH
+            ENTERS AND EXITS THROUGH TINY SLITS.
+      items:
+      entities:
+      commands:
+        - CLIMB,UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room37
+            }
+        - SLIT,STREA,D,DOWNW,DOWN,DESCE,UPSTR,DOWNS:
+            {
+              println YOU DON'T FIT THROUGH A TWO-INCH SLIT!
+            }
+  - room39:
+      description:
+        - true:
+            YOU ARE IN A LARGE ROOM FULL OF DUSTY ROCKS.  THERE IS A BIG HOLE IN
+            THE FLOOR.  THERE ARE CRACKS EVERYWHERE, AND A PASSAGE LEADING EAST.
+      items:
+      entities:
+      commands:
+        - EAST,E,PASSA,TUNNE:
+            {
+              goto room36
+            }
+        - D,DOWNW,DOWN,DESCE,HOLE,FLOOR:
+            {
+              goto room64
+            }
+        - BEDQU:
+            {
+              goto room65
+            }
+  - room40:
+      description:
+        - true:
+            YOU HAVE CRAWLED THROUGH A VERY LOW WIDE PASSAGE PARALLEL TO AND NORTH
+            OF THE HALL OF MISTS.
+      onEntry:
+        {
+          goto room41
+        }
+      items:
+      entities:
+      commands:
+  - room41:
+      description:
+        - true:
+            YOU ARE AT THE WEST END OF HALL OF MISTS.  A LOW WIDE CRAWL CONTINUES
+            WEST AND ANOTHER GOES NORTH.  TO THE SOUTH IS A LITTLE PASSAGE 6 FEET
+            OFF THE FLOOR.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,UPWAR,UP,U,ABOVE,ASCEN,PASSA,TUNNE,CLIMB:
+            {
+              goto room42
+            }
+        - EAST,E:
+            {
+              goto room27
+            }
+        - NORTH,N:
+            {
+              goto room59
+            }
+        - WEST,W,CRAWL:
+            {
+              goto room60
+            }
+  - room42:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room41
+            }
+        - NORTH,N:
+            {
+              goto room42
+            }
+        - EAST,E:
+            {
+              goto room43
+            }
+        - SOUTH,S:
+            {
+              goto room45
+            }
+        - WEST,W:
+            {
+              goto room80
+            }
+  - room43:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room42
+            }
+        - SOUTH,S:
+            {
+              goto room44
+            }
+        - EAST,E:
+            {
+              goto room45
+            }
+  - room44:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room43
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room48
+            }
+        - SOUTH,S:
+            {
+              goto room50
+            }
+        - NORTH,N:
+            {
+              goto room82
+            }
+  - room45:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room42
+            }
+        - NORTH,N:
+            {
+              goto room43
+            }
+        - EAST,E:
+            {
+              goto room46
+            }
+        - SOUTH,S:
+            {
+              goto room47
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN,D,DOWNW,DOWN,DESCE:
+            {
+              goto room87
+            }
+  - room46:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - WEST,W,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room45
+            }
+  - room47:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - EAST,E,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room45
+            }
+  - room48:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room44
+            }
+  - room49:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room50
+            }
+        - WEST,W:
+            {
+              goto room51
+            }
+  - room50:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room44
+            }
+        - WEST,W:
+            {
+              goto room49
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room51
+            }
+        - SOUTH,S:
+            {
+              goto room52
+            }
+  - room51:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room49
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room50
+            }
+        - EAST,E:
+            {
+              goto room52
+            }
+        - SOUTH,S:
+            {
+              goto room53
+            }
+  - room52:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room50
+            }
+        - EAST,E:
+            {
+              goto room51
+            }
+        - SOUTH,S:
+            {
+              goto room52
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room53
+            }
+        - NORTH,N:
+            {
+              goto room55
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room86
+            }
+  - room53:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room51
+            }
+        - NORTH,N:
+            {
+              goto room52
+            }
+        - SOUTH,S:
+            {
+              goto room54
+            }
+  - room54:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - WEST,W,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room53
+            }
+  - room55:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room52
+            }
+        - NORTH,N:
+            {
+              goto room55
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room56
+            }
+        - EAST,E:
+            {
+              goto room57
+            }
+  - room56:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room55
+            }
+  - room57:
+      description:
+        - true:
+            YOU ARE ON THE BRINK OF A THIRTY FOOT PIT WITH A MASSIVE ORANGE COLUMN
+            DOWN ONE WALL.
+            UP.  THE MAZE CONTINUES AT THIS LEVEL.
+      items:
+      entities:
+      commands:
+        - D,DOWNW,DOWN,DESCE,CLIMB:
+            {
+              goto room13
+            }
+        - WEST,W:
+            {
+              goto room55
+            }
+        - SOUTH,S:
+            {
+              goto room58
+            }
+        - NORTH,N:
+            {
+              goto room83
+            }
+        - EAST,E:
+            {
+              goto room84
+            }
+  - room58:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - EAST,E,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room57
+            }
+  - room59:
+      description:
+        - true:
+            YOU HAVE CRAWLED THROUGH A VERY LOW WIDE PASSAGE PARALLEL TO AND NORTH
+            OF THE HALL OF MISTS.
+      onEntry:
+        {
+          goto room27
+        }
+      items:
+      entities:
+      commands:
+  - room60:
+      description:
+        - true:
+            YOU ARE AT THE EAST END OF A VERY LONG HALL APPARENTLY WITHOUT SIDE
+            CHAMBERS.  TO THE EAST A LOW WIDE CRAWL SLANTS UP.  TO THE NORTH A
+            ROUND TWO FOOT HOLE SLANTS DOWN.
+      items:
+      entities:
+      commands:
+        - EAST,E,UPWAR,UP,U,ABOVE,ASCEN,CRAWL:
+            {
+              goto room41
+            }
+        - WEST,W:
+            {
+              goto room61
+            }
+        - NORTH,N,D,DOWNW,DOWN,DESCE,HOLE:
+            {
+              goto room62
+            }
+  - room61:
+      description:
+        - true:
+            YOU ARE AT THE WEST END OF A VERY LONG FEATURELESS HALL.  THE HALL
+            JOINS UP WITH A NARROW NORTH/SOUTH PASSAGE.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room60
+            }
+        - NORTH,N:
+            {
+              goto room62
+            }
+        - SOUTH,S:
+            {
+              goto room107
+            }
+  - room62:
+      description:
+        - true:
+            YOU ARE AT A CROSSOVER OF A HIGH N/S PASSAGE AND A LOW E/W ONE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room60
+            }
+        - NORTH,N:
+            {
+              goto room63
+            }
+        - EAST,E:
+            {
+              goto room30
+            }
+        - SOUTH,S:
+            {
+              goto room61
+            }
+  - room63:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - SOUTH,S,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room62
+            }
+  - room64:
+      description:
+        - true:
+            YOU ARE AT A COMPLEX JUNCTION.
+            NORTH JOINS A HIGHER CRAWL FROM THE EAST TO MAKE A WALKING PASSAGE
+            GOING WEST.  THERE IS ALSO A LARGE ROOM ABOVE.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,CLIMB,ROOM:
+            {
+              goto room39
+            }
+        - WEST,W,BEDQU:
+            {
+              goto room65
+            }
+        - NORTH,N,SHELL:
+            {
+              goto room103
+            }
+        - EAST,E:
+            {
+              goto room106
+            }
+  - room65:
+      description:
+        - true:
+            YOU ARE IN BEDQUILT, A LONG EAST/WEST PASSAGE WITH HOLES EVERYWHERE.
+            TO EXPLORE AT RANDOM SELECT NORTH, SOUTH, UP, OR DOWN.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room64
+            }
+        - WEST,W:
+            {
+              goto room66
+            }
+        - SOUTH,S:
+            {
+              if rnd % 100 < 80 then
+              {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND WOUND UP BACK IN THE
+              println MAIN PASSAGE.
+              }
+              else
+              {
+              call SLAB,SLABR
+              }
+            }
+        - SLAB,SLABR:
+            {
+              goto room68
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              if rnd % 100 < 80 then
+              {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND WOUND UP BACK IN THE
+              println MAIN PASSAGE.
+              }
+              else
+              {
+              call unnamed579
+              }
+            }
+        - *unnamed579:
+            {
+              if rnd % 100 < 50 then
+              {
+              goto room70
+              }
+              else
+              {
+              call unnamed580
+              }
+            }
+        - *unnamed580:
+            {
+              goto room39
+            }
+        - NORTH,N:
+            {
+              if rnd % 100 < 60 then
+              {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND WOUND UP BACK IN THE
+              println MAIN PASSAGE.
+              }
+              else
+              {
+              call unnamed582
+              }
+            }
+        - *unnamed582:
+            {
+              if rnd % 100 < 75 then
+              {
+              goto room72
+              }
+              else
+              {
+              call unnamed583
+              }
+            }
+        - *unnamed583:
+            {
+              goto room71
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              if rnd % 100 < 80 then
+              {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND WOUND UP BACK IN THE
+              println MAIN PASSAGE.
+              }
+              else
+              {
+              call unnamed585
+              }
+            }
+        - *unnamed585:
+            {
+              goto room106
+            }
+  - room66:
+      description:
+        - true:
+            YOU ARE IN A ROOM WHOSE WALLS RESEMBLE SWISS CHEESE.  OBVIOUS PASSAGES
+            GO WEST, EAST, NE, AND NW.  PART OF THE ROOM IS OCCUPIED BY A LARGE
+            BEDROCK BLOCK.
+      items:
+      entities:
+      commands:
+        - NE:
+            {
+              goto room65
+            }
+        - WEST,W:
+            {
+              goto room67
+            }
+        - SOUTH,S:
+            {
+              if rnd % 100 < 80 then
+              {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND WOUND UP BACK IN THE
+              println MAIN PASSAGE.
+              }
+              else
+              {
+              call CANYO
+              }
+            }
+        - CANYO:
+            {
+              goto room77
+            }
+        - EAST,E:
+            {
+              goto room96
+            }
+        - NW:
+            {
+              if rnd % 100 < 50 then
+              {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND WOUND UP BACK IN THE
+              println MAIN PASSAGE.
+              }
+              else
+              {
+              call ORIEN
+              }
+            }
+        - ORIEN:
+            {
+              goto room97
+            }
+  - room67:
+      description:
+        - true:
+            YOU ARE AT THE EAST END OF THE TWOPIT ROOM.  THE FLOOR HERE IS
+            LITTERED WITH THIN ROCK SLABS, WHICH MAKE IT EASY TO DESCEND THE PITS.
+            THERE IS A PATH HERE BYPASSING THE PITS TO CONNECT PASSAGES FROM EAST
+            AND WEST.  THERE ARE HOLES ALL OVER, BUT THE ONLY BIG ONE IS ON THE
+            WALL DIRECTLY OVER THE WEST PIT WHERE YOU CAN'T GET TO IT.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room66
+            }
+        - WEST,W,ACROS:
+            {
+              goto room23
+            }
+        - D,DOWNW,DOWN,DESCE,PIT:
+            {
+              goto room24
+            }
+  - room68:
+      description:
+        - true:
+            YOU ARE IN A LARGE LOW CIRCULAR CHAMBER WHOSE FLOOR IS AN IMMENSE SLAB
+            FALLEN FROM THE CEILING (SLAB ROOM).  EAST AND WEST THERE ONCE WERE
+            LARGE PASSAGES, BUT THEY ARE NOW FILLED WITH BOULDERS.
+            PASSAGES GO NORTH AND SOUTH, AND THE SOUTH ONE QUICKLY BENDS WEST
+            AROUND THE BOULDERS.
+      items:
+      entities:
+      commands:
+        - SOUTH,S:
+            {
+              goto room23
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN,CLIMB:
+            {
+              goto room69
+            }
+        - NORTH,N:
+            {
+              goto room65
+            }
+  - room69:
+      description:
+        - true:
+            YOU ARE IN A SECRET N/S CANYON ABOVE A LARGE ROOM.
+      items:
+      entities:
+      commands:
+        - D,DOWNW,DOWN,DESCE,SLAB,SLABR:
+            {
+              goto room68
+            }
+        - SOUTH,S:
+            {
+              if player.param31 != 0 then
+              {
+              goto room120
+              }
+              else
+              {
+              call unnamed601
+              }
+            }
+        - *unnamed601:
+            {
+              goto room119
+            }
+        - NORTH,N:
+            {
+              goto room109
+            }
+        - RESER:
+            {
+              goto room113
+            }
+  - room70:
+      description:
+        - true:
+            YOU ARE IN A SECRET N/S CANYON ABOVE A SIZABLE PASSAGE.
+      items:
+      entities:
+      commands:
+        - NORTH,N:
+            {
+              goto room71
+            }
+        - D,DOWNW,DOWN,DESCE,PASSA,TUNNE:
+            {
+              goto room65
+            }
+        - SOUTH,S:
+            {
+              goto room111
+            }
+  - room71:
+      description:
+        - true:
+            YOU ARE IN A SECRET CANYON AT A JUNCTION OF THREE CANYONS, BEARING
+            NORTH, SOUTH, AND SE.  THE NORTH ONE IS AS TALL AS THE OTHER TWO
+            COMBINED.
+      items:
+      entities:
+      commands:
+        - SE:
+            {
+              goto room65
+            }
+        - SOUTH,S:
+            {
+              goto room70
+            }
+        - NORTH,N:
+            {
+              goto room110
+            }
+  - room72:
+      description:
+        - true:
+            YOU ARE IN A LARGE LOW ROOM.  CRAWLS LEAD NORTH, SE, AND SW.
+      items:
+      entities:
+      commands:
+        - BEDQU:
+            {
+              goto room65
+            }
+        - SW:
+            {
+              goto room118
+            }
+        - NORTH,N:
+            {
+              goto room73
+            }
+        - SE,ORIEN:
+            {
+              goto room97
+            }
+  - room73:
+      description:
+        - true:
+            DEAD END CRAWL.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,CRAWL,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room72
+            }
+  - room74:
+      description:
+        - true:
+            YOU ARE IN A SECRET CANYON WHICH HERE RUNS E/W.  IT CROSSES OVER A
+            VERY TIGHT CANYON 15 FEET BELOW.  IF YOU GO DOWN YOU MAY NOT BE ABLE
+            TO GET BACK UP.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room19
+            }
+        - WEST,W:
+            {
+              if player.param31 != 0 then
+              {
+              goto room120
+              }
+              else
+              {
+              call unnamed617
+              }
+            }
+        - *unnamed617:
+            {
+              goto room121
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room75
+            }
+  - room75:
+      description:
+        - true:
+            YOU ARE AT A WIDE PLACE IN A VERY TIGHT N/S CANYON.
+      items:
+      entities:
+      commands:
+        - SOUTH,S:
+            {
+              goto room76
+            }
+        - NORTH,N:
+            {
+              goto room77
+            }
+  - room76:
+      description:
+        - true:
+            THE CANYON HERE BECOMES TOO TIGHT TO GO FURTHER SOUTH.
+      items:
+      entities:
+      commands:
+        - NORTH,N:
+            {
+              goto room75
+            }
+  - room77:
+      description:
+        - true:
+            YOU ARE IN A TALL E/W CANYON.  A LOW TIGHT CRAWL GOES 3 FEET NORTH AND
+            SEEMS TO OPEN UP.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room75
+            }
+        - WEST,W:
+            {
+              goto room78
+            }
+        - NORTH,N,CRAWL:
+            {
+              goto room66
+            }
+  - room78:
+      description:
+        - true:
+            THE CANYON RUNS INTO A MASS OF BOULDERS -- DEAD END.
+      items:
+      entities:
+      commands:
+        - SOUTH,S:
+            {
+              goto room77
+            }
+  - room79:
+      description:
+        - true:
+            THE STREAM FLOWS OUT THROUGH A PAIR OF 1 FOOT DIAMETER SEWER PIPES.
+            IT WOULD BE ADVISABLE TO USE THE EXIT.
+      onEntry:
+        {
+          goto room3
+        }
+      items:
+      entities:
+      commands:
+  - room80:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - NORTH,N:
+            {
+              goto room42
+            }
+        - WEST,W:
+            {
+              goto room80
+            }
+        - SOUTH,S:
+            {
+              goto room80
+            }
+        - EAST,E:
+            {
+              goto room81
+            }
+  - room81:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - WEST,W,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room80
+            }
+  - room82:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - SOUTH,S,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room44
+            }
+  - room83:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - SOUTH,S:
+            {
+              goto room57
+            }
+        - EAST,E:
+            {
+              goto room84
+            }
+        - WEST,W:
+            {
+              goto room85
+            }
+  - room84:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - NORTH,N:
+            {
+              goto room57
+            }
+        - WEST,W:
+            {
+              goto room83
+            }
+        - NW:
+            {
+              goto room114
+            }
+  - room85:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - EAST,E,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room83
+            }
+  - room86:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room52
+            }
+  - room87:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,D,DOWNW,DOWN,DESCE:
+            {
+              goto room45
+            }
+  - room88:
+      description:
+        - true:
+            YOU ARE IN A LONG, NARROW CORRIDOR STRETCHING OUT OF SIGHT TO THE
+            WEST.  AT THE EASTERN END IS A HOLE THROUGH WHICH YOU CAN SEE A
+            PROFUSION OF LEAVES.
+      items:
+      entities:
+      commands:
+        - D,DOWNW,DOWN,DESCE,CLIMB,EAST,E:
+            {
+              goto room25
+            }
+        - JUMP:
+            {
+              goto room20
+            }
+        - WEST,W,GIANT:
+            {
+              goto room92
+            }
+  - room89:
+      description:
+        - true:
+            THERE IS NOTHING HERE TO CLIMB.  USE "UP" OR "OUT" TO LEAVE THE PIT.
+      onEntry:
+        {
+          goto room25
+        }
+      items:
+      entities:
+      commands:
+  - room90:
+      description:
+        - true:
+            YOU HAVE CLIMBED UP THE PLANT AND OUT OF THE PIT.
+      onEntry:
+        {
+          goto room23
+        }
+      items:
+      entities:
+      commands:
+  - room91:
+      description:
+        - true:
+            YOU ARE AT THE TOP OF A STEEP INCLINE ABOVE A LARGE ROOM.  YOU COULD
+            CLIMB DOWN HERE, BUT YOU WOULD NOT BE ABLE TO CLIMB UP.  THERE IS A
+            PASSAGE LEADING BACK TO THE NORTH.
+      items:
+      entities:
+      commands:
+        - NORTH,N,CAVER,PASSA,TUNNE:
+            {
+              goto room95
+            }
+        - D,DOWNW,DOWN,DESCE,CLIMB:
+            {
+              goto room72
+            }
+  - room92:
+      description:
+        - true:
+            YOU ARE IN THE GIANT ROOM.  THE CEILING HERE IS TOO HIGH UP FOR YOUR
+            LAMP TO SHOW IT.  CAVERNOUS PASSAGES LEAD EAST, NORTH, AND SOUTH.  ON
+            THE WEST WALL IS SCRAWLED THE INSCRIPTION, "FEE FIE FOE FOO" [SIC].
+      items:
+      entities:
+      commands:
+        - SOUTH,S:
+            {
+              goto room88
+            }
+        - EAST,E:
+            {
+              goto room93
+            }
+        - NORTH,N:
+            {
+              goto room94
+            }
+  - room93:
+      description:
+        - true:
+            THE PASSAGE HERE IS BLOCKED BY A RECENT CAVE-IN.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,GIANT,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room92
+            }
+  - room94:
+      description:
+        - true:
+            YOU ARE AT ONE END OF AN IMMENSE NORTH/SOUTH PASSAGE.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,GIANT,PASSA,TUNNE:
+            {
+              goto room92
+            }
+        - NORTH,N,ENTER,CAVER:
+            {
+              if player.param9 != 0 then
+              {
+              goto room95
+              }
+              else
+              {
+              call unnamed655
+              }
+            }
+        - *unnamed655:
+            {
+              println THE DOOR IS EXTREMELY RUSTY AND REFUSES TO OPEN.
+            }
+  - room95:
+      description:
+        - true:
+            YOU ARE IN A MAGNIFICENT CAVERN WITH A RUSHING STREAM, WHICH CASCADES
+            OVER A SPARKLING WATERFALL INTO A ROARING WHIRLPOOL WHICH DISAPPEARS
+            THROUGH A HOLE IN THE FLOOR.  PASSAGES EXIT TO THE SOUTH AND WEST.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room94
+            }
+        - GIANT:
+            {
+              goto room92
+            }
+        - WEST,W:
+            {
+              goto room91
+            }
+  - room96:
+      description:
+        - true:
+            YOU ARE IN THE SOFT ROOM.  THE WALLS ARE COVERED WITH HEAVY CURTAINS,
+            THE FLOOR WITH A THICK PILE CARPET.  MOSS COVERS THE CEILING.
+      items:
+      entities:
+      commands:
+        - WEST,W,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room66
+            }
+  - room97:
+      description:
+        - true:
+            THIS IS THE ORIENTAL ROOM.  ANCIENT ORIENTAL CAVE DRAWINGS COVER THE
+            WALLS.
+            PASSAGE LEADS SE, AND A HANDS AND KNEES CRAWL LEADS WEST.
+      items:
+      entities:
+      commands:
+        - SE:
+            {
+              goto room66
+            }
+        - WEST,W,CRAWL:
+            {
+              goto room72
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN,NORTH,N,CAVER:
+            {
+              goto room98
+            }
+  - room98:
+      description:
+        - true:
+            YOU ARE FOLLOWING A WIDE PATH AROUND THE OUTER EDGE OF A LARGE CAVERN.
+            FAR BELOW, THROUGH A HEAVY WHITE MIST, STRANGE SPLASHING NOISES CAN BE
+            HEARD.
+            EXITS TO THE SOUTH AND WEST.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,ORIEN:
+            {
+              goto room97
+            }
+        - WEST,W:
+            {
+              goto room99
+            }
+  - room99:
+      description:
+        - true:
+            YOU ARE IN AN ALCOVE.  A SMALL NW PATH SEEMS TO WIDEN AFTER A SHORT
+            DISTANCE.  AN EXTREMELY TIGHT TUNNEL LEADS EAST.  IT LOOKS LIKE A VERY
+            TIGHT SQUEEZE.
+      items:
+      entities:
+      commands:
+        - NW,CAVER:
+            {
+              goto room98
+            }
+        - EAST,E,PASSA,TUNNE:
+            {
+              println $code(1)
+            }
+        - *unnamed667:
+            {
+              goto room100
+            }
+  - room100:
+      description:
+        - true:
+            YOU'RE IN A SMALL CHAMBER LIT BY AN EERIE GREEN LIGHT.
+            NARROW TUNNEL EXITS TO THE WEST.  A DARK CORRIDOR LEADS NE.
+      items:
+      entities:
+      commands:
+        - WEST,W,PASSA,TUNNE,OUT,OUTSI,EXIT,LEAVE:
+            {
+              println $code(1)
+            }
+        - *unnamed669:
+            {
+              goto room99
+            }
+        - PLOVE:
+            {
+              if true then
+              {
+              println $code(2)
+              }
+              else
+              {
+              call unnamed671
+              }
+            }
+        - *unnamed671:
+            {
+              goto room33
+            }
+        - NE,DARK:
+            {
+              goto room101
+            }
+  - room101:
+      description:
+        - true:
+            YOU'RE IN THE DARK-ROOM.  A CORRIDOR LEADING SOUTH IS THE ONLY EXIT.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,PLOVE,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room100
+            }
+  - room102:
+      description:
+        - true:
+            YOU ARE IN AN ARCHED HALL.  A CORAL PASSAGE ONCE CONTINUED UP AND EAST
+            FROM HERE, BUT IS NOW BLOCKED BY DEBRIS.  THE AIR SMELLS OF SEA WATER.
+      items:
+      entities:
+      commands:
+        - D,DOWNW,DOWN,DESCE,SHELL,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room103
+            }
+  - room103:
+      description:
+        - true:
+            YOU'RE IN A LARGE ROOM CARVED OUT OF SEDIMENTARY ROCK.
+            WALLS ARE LITTERED WITH BITS OF SHELLS IMBEDDED IN THE STONE.  A
+            SHALLOW PASSAGE PROCEEDS DOWNWARD, AND A SOMEWHAT STEEPER ONE LEADS
+            UP.  A LOW HANDS AND KNEES PASSAGE ENTERS FROM THE SOUTH.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,HALL:
+            {
+              goto room102
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room104
+            }
+        - SOUTH,S:
+            {
+              if true then
+              {
+              println YOU CAN'T FIT THIS FIVE-FOOT CLAM THROUGH THAT LITTLE PASSAGE!
+              }
+              else
+              {
+              call unnamed678
+              }
+            }
+        - *unnamed678:
+            {
+              if true then
+              {
+              println YOU CAN'T FIT THIS FIVE-FOOT OYSTER THROUGH THAT LITTLE PASSAGE!
+              }
+              else
+              {
+              call unnamed679
+              }
+            }
+        - *unnamed679:
+            {
+              goto room64
+            }
+  - room104:
+      description:
+        - true:
+            YOU ARE IN A LONG SLOPING CORRIDOR WITH RAGGED SHARP WALLS.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,SHELL:
+            {
+              goto room103
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room105
+            }
+  - room105:
+      description:
+        - true:
+            YOU ARE IN A CUL-DE-SAC ABOUT EIGHT FEET ACROSS.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room104
+            }
+        - SHELL:
+            {
+              goto room103
+            }
+  - room106:
+      description:
+        - true:
+            YOU ARE IN AN ANTEROOM LEADING TO A LARGE PASSAGE TO THE EAST.
+            PASSAGES GO WEST AND UP.  THE REMNANTS OF RECENT DIGGING ARE EVIDENT.
+            A SIGN IN MIDAIR HERE SAYS "CAVE UNDER CONSTRUCTION BEYOND THIS POINT.
+            PROCEED AT OWN RISK.  [WITT CONSTRUCTION COMPANY]"
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room64
+            }
+        - WEST,W:
+            {
+              goto room65
+            }
+        - EAST,E:
+            {
+              goto room108
+            }
+  - room107:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - SOUTH,S:
+            {
+              goto room131
+            }
+        - SW:
+            {
+              goto room132
+            }
+        - NE:
+            {
+              goto room133
+            }
+        - SE:
+            {
+              goto room134
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room135
+            }
+        - NW:
+            {
+              goto room136
+            }
+        - EAST,E:
+            {
+              goto room137
+            }
+        - WEST,W:
+            {
+              goto room138
+            }
+        - NORTH,N:
+            {
+              goto room139
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room61
+            }
+  - room108:
+      description:
+        - true:
+            YOU ARE AT WITT'S END.
+      items:
+      entities:
+      commands:
+        - EAST,E,NORTH,N,SOUTH,S,NE,SE,SW,NW,UPWAR,UP,U,ABOVE,ASCEN,D,DOWNW,DOWN,DESCE:
+            {
+              if rnd % 100 < 95 then
+              {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND WOUND UP BACK IN THE
+              println MAIN PASSAGE.
+              }
+              else
+              {
+              call unnamed698
+              }
+            }
+        - *unnamed698:
+            {
+              goto room106
+            }
+        - WEST,W:
+            {
+              println YOU HAVE CRAWLED AROUND IN SOME LITTLE HOLES AND FOUND YOUR WAY
+              println BLOCKED BY A RECENT CAVE-IN.  YOU ARE NOW BACK IN THE MAIN PASSAGE.
+            }
+  - room109:
+      description:
+        - true:
+            YOU ARE IN A NORTH/SOUTH CANYON ABOUT 25 FEET ACROSS.  THE FLOOR IS
+            COVERED BY WHITE MIST SEEPING IN FROM THE NORTH.  THE WALLS EXTEND
+            UPWARD FOR WELL OVER 100 FEET.
+            ABOVE YOU, AN ENORMOUS TWO-SIDED MIRROR IS HANGING PARALLEL TO AND
+            MIDWAY BETWEEN THE CANYON WALLS.  (THE MIRROR IS OBVIOUSLY PROVIDED
+            FOR THE USE OF THE DWARVES, WHO AS YOU KNOW, ARE EXTREMELY VAIN.)  A
+            SMALL WINDOW CAN BE SEEN IN EITHER WALL, SOME FIFTY FEET UP.
+      items:
+      entities:
+      commands:
+        - SOUTH,S:
+            {
+              goto room69
+            }
+        - NORTH,N,RESER:
+            {
+              goto room113
+            }
+  - room110:
+      description:
+        - true:
+            YOU'RE AT A LOW WINDOW OVERLOOKING A HUGE PIT, WHICH EXTENDS UP OUT OF
+            SIGHT.
+            WHITE MIST COVER THE FLOOR OF THE PIT, BECOMING THICKER TO THE LEFT.
+            MARKS IN THE DUST AROUND THE WINDOW WOULD SEEM TO INDICATE THAT
+            SOMEONE HAS BEEN HERE RECENTLY.  DIRECTLY ACROSS THE PIT FROM YOU AND
+            25 FEET AWAY THERE IS A SIMILAR WINDOW LOOKING INTO A LIGHTED ROOM.  A
+            SHADOWY FIGURE CAN BE SEEN THERE PEERING BACK AT YOU.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room71
+            }
+        - JUMP:
+            {
+              goto room20
+            }
+  - room111:
+      description:
+        - true:
+            A LARGE STALACTITE EXTENDS FROM THE ROOF AND ALMOST REACHES THE FLOOR
+            BELOW.
+            HAVING DONE SO YOU WOULD BE UNABLE TO REACH IT TO CLIMB BACK UP.
+      items:
+      entities:
+      commands:
+        - NORTH,N:
+            {
+              goto room70
+            }
+        - D,DOWNW,DOWN,DESCE,JUMP,CLIMB:
+            {
+              if rnd % 100 < 40 then
+              {
+              goto room50
+              }
+              else
+              {
+              call unnamed706
+              }
+            }
+        - *unnamed706:
+            {
+              if rnd % 100 < 50 then
+              {
+              goto room53
+              }
+              else
+              {
+              call unnamed707
+              }
+            }
+        - *unnamed707:
+            {
+              goto room45
+            }
+  - room112:
+      description:
+        - true:
+            YOU ARE IN A LITTLE MAZE OF TWISTING PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - SW:
+            {
+              goto room131
+            }
+        - NORTH,N:
+            {
+              goto room132
+            }
+        - EAST,E:
+            {
+              goto room133
+            }
+        - NW:
+            {
+              goto room134
+            }
+        - SE:
+            {
+              goto room135
+            }
+        - NE:
+            {
+              goto room136
+            }
+        - WEST,W:
+            {
+              goto room137
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room138
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room139
+            }
+        - SOUTH,S:
+            {
+              goto room140
+            }
+  - room113:
+      description:
+        - true:
+            YOU ARE AT THE EDGE OF A LARGE UNDERGROUND RESERVOIR.  AN OPAQUE CLOUD
+            OF WHITE MIST FILLS THE ROOM AND RISES RAPIDLY UPWARD.
+            FED BY A STREAM, WHICH TUMBLES OUT OF A HOLE IN THE WALL ABOUT 10 FEET
+            OVERHEAD AND SPLASHES NOISILY INTO THE WATER SOMEWHERE WITHIN THE
+            MIST.  THE ONLY PASSAGE GOES BACK TOWARD THE SOUTH.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room109
+            }
+  - room114:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - SE:
+            {
+              goto room84
+            }
+  - room115:
+      description:
+        - true:
+            YOU ARE AT THE NORTHEAST END OF AN IMMENSE ROOM, EVEN LARGER THAN THE
+            GIANT ROOM.  IT APPEARS TO BE A REPOSITORY FOR THE "ADVENTURE"
+            PROGRAM.  MASSIVE TORCHES FAR OVERHEAD BATHE THE ROOM WITH SMOKY
+            YELLOW LIGHT.  SCATTERED ABOUT YOU CAN BE SEEN A PILE OF BOTTLES (ALL
+            OF THEM EMPTY), A NURSERY OF YOUNG BEANSTALKS MURMURING QUIETLY, A BED
+            OF OYSTERS, A BUNDLE OF BLACK RODS WITH RUSTY STARS ON THEIR ENDS, AND
+            A COLLECTION OF BRASS LANTERNS.  OFF TO ONE SIDE A GREAT MANY DWARVES
+            ARE SLEEPING ON THE FLOOR, SNORING LOUDLY.  A SIGN NEARBY READS: "DO
+            NOT DISTURB THE DWARVES!"  AN IMMENSE MIRROR IS HANGING AGAINST ONE
+            WALL, AND STRETCHES TO THE OTHER END OF THE ROOM, WHERE VARIOUS OTHER
+            SUNDRY OBJECTS CAN BE GLIMPSED DIMLY IN THE DISTANCE.
+      items:
+      entities:
+      commands:
+        - SW:
+            {
+              goto room116
+            }
+  - room116:
+      description:
+        - true:
+            YOU ARE AT THE SOUTHWEST END OF THE REPOSITORY.  TO ONE SIDE IS A PIT
+            FULL OF FIERCE GREEN SNAKES.  ON THE OTHER SIDE IS A ROW OF SMALL
+            WICKER CAGES, EACH OF WHICH CONTAINS A LITTLE SULKING BIRD.  IN ONE
+            CORNER IS A BUNDLE OF BLACK RODS WITH RUSTY MARKS ON THEIR ENDS.  A
+            LARGE NUMBER OF VELVET PILLOWS ARE SCATTERED ABOUT ON THE FLOOR.  A
+            VAST MIRROR STRETCHES OFF TO THE NORTHEAST.  AT YOUR FEET IS A LARGE
+            STEEL GRATE, NEXT TO WHICH IS A SIGN WHICH READS, "TREASURE VAULT.
+            KEYS IN MAIN OFFICE."
+      items:
+      entities:
+      commands:
+        - NE:
+            {
+              goto room115
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              println YOU CAN'T GO THROUGH A LOCKED STEEL GRATE!
+            }
+  - room117:
+      description:
+        - true:
+            YOU ARE ON ONE SIDE OF A LARGE, DEEP CHASM.  A HEAVY WHITE MIST RISING
+            UP FROM BELOW OBSCURES ALL VIEW OF THE FAR SIDE.  A SW PATH LEADS AWAY
+            FROM THE CHASM INTO A WINDING CORRIDOR.
+      items:
+      entities:
+      commands:
+        - SW:
+            {
+              goto room118
+            }
+        - OVER,ACROS,CROSS,NE:
+            {
+              if true then
+              {
+              println THE TROLL REFUSES TO LET YOU CROSS.
+              }
+              else
+              {
+              call unnamed725
+              }
+            }
+        - *unnamed725:
+            {
+              if player.param32 != 0 then
+              {
+              println THERE IS NO LONGER ANY WAY ACROSS THE CHASM.
+              }
+              else
+              {
+              call unnamed726
+              }
+            }
+        - *unnamed726:
+            {
+              println $code(3)
+            }
+        - JUMP:
+            {
+              if player.param32 != 0 then
+              {
+              goto room21
+              }
+              else
+              {
+              call unnamed728
+              }
+            }
+        - *unnamed728:
+            {
+              println I RESPECTFULLY SUGGEST YOU GO ACROSS THE BRIDGE INSTEAD OF JUMPING.
+            }
+  - room118:
+      description:
+        - true:
+            YOU ARE IN A LONG WINDING CORRIDOR SLOPING OUT OF SIGHT IN BOTH
+            DIRECTIONS.
+      items:
+      entities:
+      commands:
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room72
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room117
+            }
+  - room119:
+      description:
+        - true:
+            YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
+      items:
+      entities:
+      commands:
+        - NORTH,N,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room69
+            }
+        - EAST,E,FORWA,CONTI,ONWAR:
+            {
+              println THE DRAGON LOOKS RATHER NASTY.
+            }
+  - room120:
+      description:
+        - true:
+            YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
+      items:
+      entities:
+      commands:
+        - NORTH,N:
+            {
+              goto room69
+            }
+        - EAST,E:
+            {
+              goto room74
+            }
+  - room121:
+      description:
+        - true:
+            YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
+      items:
+      entities:
+      commands:
+        - EAST,E,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room74
+            }
+        - NORTH,N,FORWA,CONTI,ONWAR:
+            {
+              println THE DRAGON LOOKS RATHER NASTY.
+            }
+  - room122:
+      description:
+        - true:
+            YOU ARE ON THE FAR SIDE OF THE CHASM.  A NE PATH LEADS AWAY FROM THE
+            CHASM ON THIS SIDE.
+      items:
+      entities:
+      commands:
+        - NE:
+            {
+              goto room123
+            }
+        - OVER,ACROS,CROSS,SW:
+            {
+              if true then
+              {
+              println THE TROLL REFUSES TO LET YOU CROSS.
+              }
+              else
+              {
+              call unnamed739
+              }
+            }
+        - *unnamed739:
+            {
+              println $code(3)
+            }
+        - JUMP:
+            {
+              println I RESPECTFULLY SUGGEST YOU GO ACROSS THE BRIDGE INSTEAD OF JUMPING.
+            }
+        - FORK:
+            {
+              goto room124
+            }
+        - VIEW:
+            {
+              goto room126
+            }
+        - BARRE:
+            {
+              goto room129
+            }
+  - room123:
+      description:
+        - true:
+            YOU'RE IN A LONG EAST/WEST CORRIDOR.  A FAINT RUMBLING NOISE CAN BE
+            HEARD IN THE DISTANCE.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room122
+            }
+        - EAST,E,FORK:
+            {
+              goto room124
+            }
+        - VIEW:
+            {
+              goto room126
+            }
+        - BARRE:
+            {
+              goto room129
+            }
+  - room124:
+      description:
+        - true:
+            THE PATH FORKS HERE.  THE LEFT FORK LEADS NORTHEAST.  A DULL RUMBLING
+            SEEMS TO GET LOUDER IN THAT DIRECTION.
+            DOWN A GENTLE SLOPE.  THE MAIN CORRIDOR ENTERS FROM THE WEST.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room123
+            }
+        - NE,LEFT:
+            {
+              goto room125
+            }
+        - SE,RIGHT,D,DOWNW,DOWN,DESCE:
+            {
+              goto room128
+            }
+        - VIEW:
+            {
+              goto room126
+            }
+        - BARRE:
+            {
+              goto room129
+            }
+  - room125:
+      description:
+        - true:
+            THE WALLS ARE QUITE WARM HERE.
+            ROAR, SO LOUD THAT THE ENTIRE CAVE SEEMS TO BE TREMBLING.  ANOTHER
+            PASSAGE LEADS SOUTH, AND A LOW CRAWL GOES EAST.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,FORK:
+            {
+              goto room124
+            }
+        - NORTH,N,VIEW:
+            {
+              goto room126
+            }
+        - EAST,E,CRAWL:
+            {
+              goto room127
+            }
+  - room126:
+      description:
+        - true:
+            YOU ARE ON THE EDGE OF A BREATH-TAKING VIEW.  FAR BELOW YOU IS AN
+            ACTIVE VOLCANO, FROM WHICH GREAT GOUTS OF MOLTEN LAVA COME SURGING
+            OUT, CASCADING BACK DOWN INTO THE DEPTHS.  THE GLOWING ROCK FILLS THE
+            FARTHEST REACHES OF THE CAVERN WITH A BLOOD-RED GLARE, GIVING EVERY-
+            THING AN EERIE, MACABRE APPEARANCE.  THE AIR IS FILLED WITH FLICKERING
+            SPARKS OF ASH AND A HEAVY SMELL OF BRIMSTONE.  THE WALLS ARE HOT TO
+            THE TOUCH, AND THE THUNDERING OF THE VOLCANO DROWNS OUT ALL OTHER
+            SOUNDS.  EMBEDDED IN THE JAGGED ROOF FAR OVERHEAD ARE MYRIAD TWISTED
+            FORMATIONS COMPOSED OF PURE WHITE ALABASTER, WHICH SCATTER THE MURKY
+            LIGHT INTO SINISTER APPARITIONS UPON THE WALLS.  TO ONE SIDE IS A DEEP
+            GORGE, FILLED WITH A BIZARRE CHAOS OF TORTURED ROCK WHICH SEEMS TO
+            HAVE BEEN CRAFTED BY THE DEVIL HIMSELF.  AN IMMENSE RIVER OF FIRE
+            CRASHES OUT FROM THE DEPTHS OF THE VOLCANO, BURNS ITS WAY THROUGH THE
+            GORGE, AND PLUMMETS INTO A BOTTOMLESS PIT FAR OFF TO YOUR LEFT.  TO
+            THE RIGHT, AN IMMENSE GEYSER OF BLISTERING STEAM ERUPTS CONTINUOUSLY
+            FROM A BARREN ISLAND IN THE CENTER OF A SULFUROUS LAKE, WHICH BUBBLES
+            OMINOUSLY.  THE FAR RIGHT WALL IS AFLAME WITH AN INCANDESCENCE OF ITS
+            OWN, WHICH LENDS AN ADDITIONAL INFERNAL SPLENDOR TO THE ALREADY
+            HELLISH SCENE.
+      items:
+      entities:
+      commands:
+        - SOUTH,S,PASSA,TUNNE,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room125
+            }
+        - FORK:
+            {
+              goto room124
+            }
+        - D,DOWNW,DOWN,DESCE,JUMP:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - room127:
+      description:
+        - true:
+            YOU ARE IN A SMALL CHAMBER FILLED WITH LARGE BOULDERS.
+            VERY WARM, CAUSING THE AIR IN THE ROOM TO BE ALMOST STIFLING FROM THE
+            HEAT.  THE ONLY EXIT IS A CRAWL HEADING WEST, THROUGH WHICH IS COMING
+            A LOW RUMBLING.
+      items:
+      entities:
+      commands:
+        - WEST,W,OUT,OUTSI,EXIT,LEAVE,CRAWL:
+            {
+              goto room125
+            }
+        - FORK:
+            {
+              goto room124
+            }
+        - VIEW:
+            {
+              goto room126
+            }
+  - room128:
+      description:
+        - true:
+            YOU ARE WALKING ALONG A GENTLY SLOPING NORTH/SOUTH PASSAGE LINED WITH
+            ODDLY SHAPED LIMESTONE FORMATIONS.
+      items:
+      entities:
+      commands:
+        - NORTH,N,UPWAR,UP,U,ABOVE,ASCEN,FORK:
+            {
+              goto room124
+            }
+        - SOUTH,S,D,DOWNW,DOWN,DESCE,BARRE:
+            {
+              goto room129
+            }
+        - VIEW:
+            {
+              goto room126
+            }
+  - room129:
+      description:
+        - true:
+            YOU ARE STANDING AT THE ENTRANCE TO A LARGE, BARREN ROOM.  A SIGN
+            POSTED ABOVE THE ENTRANCE READS:  "CAUTION!  BEAR IN ROOM!"
+      items:
+      entities:
+      commands:
+        - WEST,W,UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room128
+            }
+        - FORK:
+            {
+              goto room124
+            }
+        - EAST,E,INWAR,INSID,IN,BARRE,ENTER:
+            {
+              goto room130
+            }
+        - VIEW:
+            {
+              goto room126
+            }
+  - room130:
+      description:
+        - true:
+            YOU ARE INSIDE A BARREN ROOM.  THE CENTER OF THE ROOM IS COMPLETELY
+            EMPTY EXCEPT FOR SOME DUST.  MARKS IN THE DUST LEAD AWAY TOWARD THE
+            FAR END OF THE ROOM.  THE ONLY EXIT IS THE WAY YOU CAME IN.
+      items:
+      entities:
+      commands:
+        - WEST,W,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room129
+            }
+        - FORK:
+            {
+              goto room124
+            }
+        - VIEW:
+            {
+              goto room126
+            }
+  - room131:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF TWISTING LITTLE PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - WEST,W:
+            {
+              goto room107
+            }
+        - SE:
+            {
+              goto room132
+            }
+        - NW:
+            {
+              goto room133
+            }
+        - SW:
+            {
+              goto room134
+            }
+        - NE:
+            {
+              goto room135
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room136
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room137
+            }
+        - NORTH,N:
+            {
+              goto room138
+            }
+        - SOUTH,S:
+            {
+              goto room139
+            }
+        - EAST,E:
+            {
+              goto room112
+            }
+  - room132:
+      description:
+        - true:
+            YOU ARE IN A LITTLE MAZE OF TWISTY PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - NW:
+            {
+              goto room107
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room131
+            }
+        - NORTH,N:
+            {
+              goto room133
+            }
+        - SOUTH,S:
+            {
+              goto room134
+            }
+        - WEST,W:
+            {
+              goto room135
+            }
+        - SW:
+            {
+              goto room136
+            }
+        - NE:
+            {
+              goto room137
+            }
+        - EAST,E:
+            {
+              goto room138
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room139
+            }
+        - SE:
+            {
+              goto room112
+            }
+  - room133:
+      description:
+        - true:
+            YOU ARE IN A TWISTING MAZE OF LITTLE PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room107
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room131
+            }
+        - WEST,W:
+            {
+              goto room132
+            }
+        - NE:
+            {
+              goto room134
+            }
+        - SW:
+            {
+              goto room135
+            }
+        - EAST,E:
+            {
+              goto room136
+            }
+        - NORTH,N:
+            {
+              goto room137
+            }
+        - NW:
+            {
+              goto room138
+            }
+        - SE:
+            {
+              goto room139
+            }
+        - SOUTH,S:
+            {
+              goto room112
+            }
+  - room134:
+      description:
+        - true:
+            YOU ARE IN A TWISTING LITTLE MAZE OF PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - NE:
+            {
+              goto room107
+            }
+        - NORTH,N:
+            {
+              goto room131
+            }
+        - NW:
+            {
+              goto room132
+            }
+        - SE:
+            {
+              goto room133
+            }
+        - EAST,E:
+            {
+              goto room135
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room136
+            }
+        - SOUTH,S:
+            {
+              goto room137
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room138
+            }
+        - WEST,W:
+            {
+              goto room139
+            }
+        - SW:
+            {
+              goto room112
+            }
+  - room135:
+      description:
+        - true:
+            YOU ARE IN A TWISTY LITTLE MAZE OF PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - NORTH,N:
+            {
+              goto room107
+            }
+        - SE:
+            {
+              goto room131
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room132
+            }
+        - SOUTH,S:
+            {
+              goto room133
+            }
+        - EAST,E:
+            {
+              goto room134
+            }
+        - WEST,W:
+            {
+              goto room136
+            }
+        - SW:
+            {
+              goto room137
+            }
+        - NE:
+            {
+              goto room138
+            }
+        - NW:
+            {
+              goto room139
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room112
+            }
+  - room136:
+      description:
+        - true:
+            YOU ARE IN A TWISTY MAZE OF LITTLE PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - EAST,E:
+            {
+              goto room107
+            }
+        - WEST,W:
+            {
+              goto room131
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room132
+            }
+        - SW:
+            {
+              goto room133
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room134
+            }
+        - SOUTH,S:
+            {
+              goto room135
+            }
+        - NW:
+            {
+              goto room137
+            }
+        - SE:
+            {
+              goto room138
+            }
+        - NE:
+            {
+              goto room139
+            }
+        - NORTH,N:
+            {
+              goto room112
+            }
+  - room137:
+      description:
+        - true:
+            YOU ARE IN A LITTLE TWISTY MAZE OF PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - SE:
+            {
+              goto room107
+            }
+        - NE:
+            {
+              goto room131
+            }
+        - SOUTH,S:
+            {
+              goto room132
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room133
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room134
+            }
+        - NW:
+            {
+              goto room135
+            }
+        - NORTH,N:
+            {
+              goto room136
+            }
+        - SW:
+            {
+              goto room138
+            }
+        - EAST,E:
+            {
+              goto room139
+            }
+        - WEST,W:
+            {
+              goto room112
+            }
+  - room138:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF LITTLE TWISTING PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room107
+            }
+        - EAST,E:
+            {
+              goto room131
+            }
+        - NE:
+            {
+              goto room132
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room133
+            }
+        - WEST,W:
+            {
+              goto room134
+            }
+        - NORTH,N:
+            {
+              goto room135
+            }
+        - SOUTH,S:
+            {
+              goto room136
+            }
+        - SE:
+            {
+              goto room137
+            }
+        - SW:
+            {
+              goto room139
+            }
+        - NW:
+            {
+              goto room112
+            }
+  - room139:
+      description:
+        - true:
+            YOU ARE IN A MAZE OF LITTLE TWISTY PASSAGES, ALL DIFFERENT.
+      items:
+      entities:
+      commands:
+        - SW:
+            {
+              goto room107
+            }
+        - NW:
+            {
+              goto room131
+            }
+        - EAST,E:
+            {
+              goto room132
+            }
+        - WEST,W:
+            {
+              goto room133
+            }
+        - NORTH,N:
+            {
+              goto room134
+            }
+        - D,DOWNW,DOWN,DESCE:
+            {
+              goto room135
+            }
+        - SE:
+            {
+              goto room136
+            }
+        - UPWAR,UP,U,ABOVE,ASCEN:
+            {
+              goto room137
+            }
+        - SOUTH,S:
+            {
+              goto room138
+            }
+        - NE:
+            {
+              goto room112
+            }
+  - room140:
+      description:
+        - true:
+            DEAD END
+      items:
+      entities:
+      commands:
+        - NORTH,N,OUT,OUTSI,EXIT,LEAVE:
+            {
+              goto room112
+            }
+start: room1

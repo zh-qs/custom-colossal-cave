@@ -30,6 +30,7 @@ roomParser =
         <$> lift ((unpack <$> takeWhile1 isAlphaNum) <* char ':' <* newLines) 
         <*> (Room 
             <$> lift (((tabs 3) *> descriptionParser <* newLines) <?> "Description")
+            <*> lift ((tabs 3 *> string "onEntry:" *> newLines *> skipSpaces *> codeParser <* newLines) <|> pure noAction)
             <*> (
                 (++)
                 <$> ((lift (tabs 3) *> itemListParser "items" 4 "Item list definition" <* lift newLines) <??> "Item List")

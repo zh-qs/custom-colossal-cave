@@ -50,6 +50,10 @@ room:
   $(name)string:
     description:
       $switch
+    onEntry?:
+      {
+        <commonInstructions>
+      }
     items:
       $list:item
     entities:

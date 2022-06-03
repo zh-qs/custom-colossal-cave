@@ -37,7 +37,7 @@ toGameState :: Game -> GameState
 toGameState (Game p im gr gi rs n imap) = GameState p (toRoomState <$> rs) n (toInteractableState <$> imap)
 
 setRoomState :: Name -> RoomState -> Room -> Room
-setRoomState _ (RoomState ists) (Room d _ rcmds) = Room d ists rcmds
+setRoomState _ (RoomState ists) (Room d e _ rcmds) = Room d e ists rcmds
 
 setRoomStates :: M.Map Name RoomState -> M.Map Name Room -> M.Map Name Room
 setRoomStates = M.merge M.dropMissing M.dropMissing (M.zipWithMatched setRoomState) 

@@ -9,11 +9,12 @@ import Data.List
 import System.IO
 import Data.Maybe
 
-showCurrentRoom :: StIO ()
-showCurrentRoom = ((\g -> rooms g M.! currentRoomName g) <$> get)
+showAndExecuteOnEntryCurrentRoom :: StIO ()
+showAndExecuteOnEntryCurrentRoom = ((\g -> rooms g M.! currentRoomName g) <$> get)
     >>= (\r -> 
         description r >>= lift . putStrLn
-        >> foldl' (\stio name -> stio >> gets (\g -> globalNameMap g M.! name) >>= getDescription >>= lift . putStr) (lift $ return ()) (interactables r))
+        >> foldl' (\stio name -> stio >> gets (\g -> globalNameMap g M.! name) >>= getDescription >>= lift . putStr) (lift $ return ()) (interactables r)
+        >> onEntry r)
 
 noAction :: StIO ()
 noAction = lift $ return ()
@@ -31,7 +32,7 @@ takeItem item = modify' (\(Game (Player ps i lh rh) im gr gi rs n itMap) ->
         im 
         gr gi
         (M.adjust 
-            (\(Room d its cmds) -> Room d (filter (/=item) its) cmds)
+            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
             n rs) 
         n 
         itMap)
@@ -53,7 +54,7 @@ putItem item = modify' (\(Game p im gr gi rs n itMap) ->
         im 
         gr gi
         (M.adjust 
-            (\(Room d its cmds) -> Room d (item:its) cmds)
+            (\(Room d e its cmds) -> Room d e (item:its) cmds)
             n rs) 
         n 
         itMap)
@@ -65,7 +66,7 @@ dropItem item = modify' (\(Game (Player ps i lh rh) im gr gi rs n itMap) ->
         im 
         gr gi
         (M.adjust 
-            (\(Room d its cmds) -> Room d (item:its) cmds)
+            (\(Room d e its cmds) -> Room d e (item:its) cmds)
             n rs) 
         n 
         itMap)
@@ -77,7 +78,7 @@ discardItem item = modify' (\(Game (Player ps i lh rh) im gr gi rs n itMap) ->
         im 
         gr gi
         (M.adjust 
-            (\(Room d its cmds) -> Room d (filter (/=item) its) cmds)
+            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
             n rs) 
         n 
         itMap)
@@ -92,7 +93,7 @@ printInt :: Int -> StIO ()
 printInt x = lift $ (putStr $ show x) >> hFlush stdout
 
 goToRoom :: Name -> StIO ()
-goToRoom newName = modify' (\(Game p im gr gi rs n itmap) -> Game p im gr gi rs newName itmap) >> showCurrentRoom
+goToRoom newName = modify' (\(Game p im gr gi rs n itmap) -> Game p im gr gi rs newName itmap) >> showAndExecuteOnEntryCurrentRoom
 --gets (\(Game p im rs n itmap) -> rs M.! newName) >>= showRoom >> 
 changePlayerParameter :: Name -> (Int -> Int) -> StIO ()
 changePlayerParameter name f = modify' (\(Game (Player ps i lh rh) im gr gi rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im gr gi rs n itmap)
