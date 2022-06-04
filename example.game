@@ -13,6 +13,10 @@ player:
 initialMessage:
   Hej!
 
+finalMessage:
+  - true:
+      Koniec XD
+
 items:
   - food:
       longName: Delicious food.

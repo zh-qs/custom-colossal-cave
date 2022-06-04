@@ -49,4 +49,13 @@ showRoom r = description r >>= lift . putStrLn . (++(foldl' (\str item -> str ++
 
 data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
 
-data Game = Game { player :: Player, initialMessage :: String, globalRoomCommands :: [Command], globalItemCommands :: (ItemName -> [Command]), rooms :: M.Map Name Room, currentRoomName :: Name, globalNameMap :: M.Map Name Interactable } 
+data Game = Game { 
+    player :: Player, 
+    initialMessage :: String, 
+    finalMessage :: Desc,
+    globalRoomCommands :: [Command], 
+    globalItemCommands :: (ItemName -> [Command]), 
+    rooms :: M.Map Name Room, 
+    currentRoomName :: Name, 
+    globalNameMap :: M.Map Name Interactable 
+    } 

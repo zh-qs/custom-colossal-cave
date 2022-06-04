@@ -32,7 +32,7 @@ constantCommands = [
   ("save", saveGameCommand >> return True),
   ("restore", restoreGameCommand >> return True),
   ("inventory", showInventory >> return True),
-  ("quit", return False)
+  ("quit", showFinalMessage >> return False)
  ]
 
 combinedCommands :: [Command] -> M.Map String (StIO Bool)

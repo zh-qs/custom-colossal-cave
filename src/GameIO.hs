@@ -34,7 +34,7 @@ toRoomState :: Room -> RoomState
 toRoomState = RoomState . interactables
 
 toGameState :: Game -> GameState
-toGameState (Game p im gr gi rs n imap) = GameState p (toRoomState <$> rs) n (toInteractableState <$> imap)
+toGameState (Game p im fm gr gi rs n imap) = GameState p (toRoomState <$> rs) n (toInteractableState <$> imap)
 
 setRoomState :: Name -> RoomState -> Room -> Room
 setRoomState _ (RoomState ists) (Room d e _ rcmds) = Room d e ists rcmds
@@ -51,7 +51,7 @@ setInteractableStates :: M.Map Name InteractableState -> M.Map Name Interactable
 setInteractableStates = M.merge M.dropMissing M.dropMissing (M.zipWithMatched setInteractableState)
 
 setGameState :: GameState -> Game -> Game
-setGameState (GameState pst rsts n istmap) (Game _ im gr gi rs _ imap) = Game pst im gr gi (setRoomStates rsts rs) n (setInteractableStates istmap imap)
+setGameState (GameState pst rsts n istmap) (Game _ im fm gr gi rs _ imap) = Game pst im fm gr gi (setRoomStates rsts rs) n (setInteractableStates istmap imap)
 
 exportGameStateToFile :: FilePath -> Game -> IO ()
 exportGameStateToFile fp g = writeFile fp $ show $ toGameState g
