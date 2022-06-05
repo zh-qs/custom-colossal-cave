@@ -20,6 +20,7 @@ type Visibility = Bool
 type StIO a = StateT Game IO a
 type Desc = Action String
 
+-- |Stateful 'Parser' with a map of interactables already read as a state.
 type StParser a = StateT (M.Map Name Interactable) Parser a
 
 -- |Name a stateful 'Parser'. The lifted equivalent of '<?>' from attoparsec.
@@ -33,24 +34,22 @@ data Interactable = Item { longName :: Name, getDescription :: Desc, getCommands
     | Entity { getDescription :: Desc, entityParameters :: M.Map Name Int, getCommands :: [Command] }
     | Invalid
 
---data Item = Item { itemCommands :: [Command] }
-
 instance Show Interactable where
     show item@(Item {}) = "Item(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands item) ++ ")"
     show entity@(Entity {}) = "Entity(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands entity) ++ ")"
-
---data Entity = Entity { entityParameters :: M.Map Name Int, entityCommands :: [Command] }
 
 data Room = Room { description :: Desc, onEntry :: Action (), interactables :: [Name], roomCommands :: [Command] }
 
 instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
 
-showRoom :: Room -> Action ()
-showRoom r = description r >>= perform . lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
+--showRoom :: Room -> Action ()
+--showRoom r = description r >>= perform . lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
 
+-- |Structure that holds player parameters and items currently toting.
 data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
 
+-- |Structure that holds all information and state of the game.
 data Game = Game { 
     player :: Player, 
     initialMessage :: String, 
@@ -62,36 +61,8 @@ data Game = Game {
     globalNameMap :: M.Map Name Interactable 
     } 
 
--- data Action a = Perform (StIO a) | Terminate
-
--- instance Functor Action where
---     fmap _ Terminate = Terminate
---     fmap f (Perform s) = Perform $ f s 
-
--- instance Applicative Action where
---     pure a = Perform $ lift $ return a
---     (Perform f) <*> (Perform s) = Perform $ f <*> s
---     _ <*> _ = Terminate
-
--- instance Monad Action where
---     return = pure
---     Terminate >>= _ = Terminate
---     (Perform s) >>= f = do
---         a <- s
-
-
--- instance Alternative Action where
---     empty = Terminate
---     p@(Perform {}) <|> _ = p
---     Terminate <|> p = p
-
+-- |Encapsulates a 'StIO a' monad with an ability of immediate termination of a flow.
 newtype Action a = Action { fromAction :: StIO (Either String a) }
-
-perform :: StIO a -> Action a
-perform = Action . (>>= return . Right)
-
-terminate :: String -> Action a
-terminate = Action . lift . return . Left
 
 instance Functor Action where
     fmap f (Action s) = Action $ fmap (fmap f) s
@@ -113,3 +84,13 @@ instance Alternative Action where
 
 instance MonadIO Action where
     liftIO = perform . lift
+
+-- |Lift 'StIO' to an 'Action'.
+perform :: StIO a -> Action a
+perform = Action . (>>= return . Right)
+
+-- |Terminate an action flow with a custom message in 'String'.
+terminate :: String -> Action a
+terminate = Action . lift . return . Left
+
+

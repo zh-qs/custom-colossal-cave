@@ -8,9 +8,21 @@ import DataStructures
 import Data.List
 import System.IO
 import Data.Maybe
+import Data.Either
+
+-- |Find the value at a key. Returns 'Left k' when the element cannot be found.
+(!??) :: Ord k => M.Map k a -> k -> Either k a
+m !?? k = maybe (Left k) Right $ m M.!? k 
+
+assertNotNothing :: String -> Maybe a -> Action a
+assertNotNothing message = maybe (terminate message) pure  
+
+assertFound :: (String -> String) -> Either String a -> Action a
+assertFound f = either (terminate . f) pure
 
 showAndExecuteOnEntryCurrentRoom :: Action ()
-showAndExecuteOnEntryCurrentRoom = perform ((\g -> rooms g M.! currentRoomName g) <$> get)
+showAndExecuteOnEntryCurrentRoom = perform ((\g -> rooms g !?? currentRoomName g) <$> get)
+    >>= assertFound (\k -> "ERROR: Room name not found: " ++ k)
     >>= (\r -> 
         description r >>= perform . lift . putStrLn
         >> foldl' (\act name -> act >> perform (gets (\g -> globalNameMap g M.! name)) >>= getDescription >>= perform . lift . putStr) noAction (interactables r)
@@ -26,7 +38,8 @@ getFinalMessage :: Action String
 getFinalMessage = perform (gets finalMessage) >>= id
 
 callCommandForCurrentRoom :: Name -> Action ()
-callCommandForCurrentRoom name = perform (gets (\g -> fromJust $ lookup name $ map (\(_,n,r) -> (n,r)) $ roomCommands $ rooms g M.! currentRoomName g)) >>= id
+callCommandForCurrentRoom name = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ roomCommands $ rooms g M.! currentRoomName g)) 
+    >>= assertNotNothing ("ERROR: Command name not found: " ++ name) >>= id
 
 takeItem :: ItemName -> Action ()
 takeItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itMap) -> 
@@ -102,13 +115,15 @@ changePlayerParameter :: Name -> (Int -> Int) -> Action ()
 changePlayerParameter name f = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im fm gr gi rs n itmap)
 
 getPlayerParameter :: Name -> Action Int
-getPlayerParameter name = perform $ gets (\(Game p im fm gr gi rs n itMap) -> playerParameters p M.! name)
+getPlayerParameter name = perform (gets (\(Game p im fm gr gi rs n itMap) -> playerParameters p M.!? name)) >>= assertNotNothing ("ERROR: Parameter not found: player." ++ name)
 
 changeEntityParameter :: Name -> Name -> (Int -> Int) -> Action ()
 changeEntityParameter entityName name f = perform $ modify' (\(Game p im fm gr gi rs n imap) -> Game p im fm gr gi rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
 
 getEntityParameter :: Name -> Name -> Action Int
-getEntityParameter entityName name = perform $ gets (\g -> (entityParameters $ globalNameMap g M.! entityName) M.! name)
+getEntityParameter entityName name = perform (gets (\g -> globalNameMap g M.!? entityName)) >>= assertNotNothing ("ERROR: Entity not found: " ++ entityName) 
+    >>= (\e -> pure $ entityParameters e M.!? name) >>= assertNotNothing ("ERROR: Parameter not found: entity." ++ entityName ++ "." ++ name)
+--getEntityParameter entityName name = perform $ gets (\g -> (entityParameters $ globalNameMap g M.! entityName) M.! name)
 
 conditionallyPerformAction :: Action Bool -> Action () -> Action () -> Action ()
 conditionallyPerformAction cond trueaction falseaction = cond >>= (\c -> if c then trueaction else falseaction)

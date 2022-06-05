@@ -106,6 +106,10 @@ putItemParser = baseCodeLineParser "put " (giveItem . unpack <$> takeTill isSpac
 callForRoomParser :: Parser (Action ())
 callForRoomParser = baseCodeLineParser "call " (callCommandForCurrentRoom . unpack <$> takeTill isSpace) "call"
 
+-- |Match a @quit@ or @exit@ instruction.
+quitParser :: Parser (Action ())
+quitParser = baseCodeLineParser "quit" (pure $ getFinalMessage >>= terminate) "quit"
+
 -- |Match a single code line common for items and the rest.
 commonCodeLineParser :: Parser (Action ())
 commonCodeLineParser = 
@@ -120,6 +124,7 @@ commonCodeLineParser =
         <|> giveItemParser
         <|> putItemParser
         <|> callForRoomParser
+        <|> quitParser
     )) 
     <?> "Command definition"
 

@@ -94,6 +94,7 @@ commonInstructions:
   put <item>
   if <boolExpr> then { ... } else { ... } !!!! JEST BUG W KODZIE !!!! (wewnątrz if-a nie można itemCommand)
   call <command>
+  quit
 
 itemInstructions:
   take

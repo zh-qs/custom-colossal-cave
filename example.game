@@ -51,7 +51,9 @@ global:
           }
           else
           {
-            println Ghosts can't take items!!!
+            println You are dead !!!
+            quit
+            println To nie powinno zostać wypisane
           }
         }
 

@@ -86,7 +86,6 @@ liftPStIO f = return (\stx sty -> f <$> stx <*> sty)
 -- |Version of attoparsec's function 'eitherResult', which in case of failure prints additionally a piece of unconsumed GAML code.
 eitherResult' :: Result r -> Either String r
 eitherResult' (Done _ r)        = Right r
-eitherResult' (Fail txt [] msg)   = Left (msg ++ " near: " ++ Data.List.take 100 (unpack txt))
-eitherResult' (Fail txt ctxs msg) = Left (Data.List.intercalate " > " ctxs ++ ": " ++ msg ++ " near: " ++ Data.List.take 100 (unpack txt))
+eitherResult' (Fail txt [] msg)   = Left (msg ++ " near: \n" ++ Data.List.take 100 (unpack txt))
+eitherResult' (Fail txt ctxs msg) = Left (Data.List.intercalate " > " ctxs ++ ": " ++ msg ++ " near: \n" ++ Data.List.take 100 (unpack txt))
 eitherResult' _                   = Left "Result: incomplete input"
-
