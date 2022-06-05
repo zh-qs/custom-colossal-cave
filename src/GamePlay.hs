@@ -27,28 +27,28 @@ restoreGameCommand = do
   game <- get
   put $ maybe game (flip setGameState game) maybeGameState
 
-constantCommands :: [(String, StIO Bool)]
+constantCommands :: [(String, Action Bool)]
 constantCommands = [
-  ("save", saveGameCommand >> return True),
-  ("restore", restoreGameCommand >> return True),
-  ("inventory", showInventory >> return True),
-  ("quit", showFinalMessage >> return False)
+  ("save", Perform saveGameCommand),
+  ("restore", Perform restoreGameCommand),
+  ("inventory", showInventory),
+  ("quit", showFinalMessage >> Terminate)
  ]
 
-combinedCommands :: [Command] -> M.Map String (StIO Bool)
-combinedCommands cmds = M.fromList $ (map (\(_,n,r) -> (n, r >> return True)) cmds) ++ constantCommands
+combinedCommands :: [Command] -> M.Map String (Action Bool)
+combinedCommands cmds = M.fromList $ (map (\(_,n,r) -> (n, r)) cmds) ++ constantCommands
 
-unknownCommand :: StIO Bool
-unknownCommand = (lift $ putStrLn "Unknown command") >> return True
+unknownCommand :: Action ()
+unknownCommand = Perform $ lift $ putStrLn "Unknown command"
 
 getInitialMessage :: StIO String
 getInitialMessage = gets (\g -> initialMessage g)
 
-getCurrentRoom :: StIO Room
-getCurrentRoom = gets (\g -> rooms g M.! currentRoomName g)
+getCurrentRoom :: Action Room
+getCurrentRoom = Perform $ gets (\g -> rooms g M.! currentRoomName g)
 
-getCommandsForRoom :: StIO [Command]
-getCommandsForRoom = gets (\g -> filter fst3 $
+getCommandsForRoom :: Action [Command]
+getCommandsForRoom = Perform $ gets (\g -> filter fst3 $
   (globalRoomCommands g ++ (roomCommands $ rooms g M.! currentRoomName g))
   ++ (foldl' (++) [] 
       $ map 
@@ -57,18 +57,15 @@ getCommandsForRoom = gets (\g -> filter fst3 $
                     $ (globalItemCommands g itName) ++ (getCommands $ globalNameMap g M.! itName)) 
         $ (interactables $ rooms g M.! currentRoomName g) ++ (playerInventory $ player g)))
 
-processCommand :: String -> StIO Bool
+processCommand :: String -> Action ()
 processCommand cmd = getCommandsForRoom >>= (\cmds -> M.findWithDefault unknownCommand cmd $ combinedCommands cmds)
 
-readCommand :: StIO Bool
-readCommand = lift (putChar '>' >> hFlush stdout >> getLine) >>= processCommand
+readCommand :: Action ()
+readCommand = Perform (lift (putChar '>' >> hFlush stdout >> getLine)) >>= processCommand
 
 mainStart :: StIO ()
-mainStart = getInitialMessage >>= (lift . putStrLn) >> showAndExecuteOnEntryCurrentRoom >> mainLoop
+mainStart = getInitialMessage >>= (lift . putStrLn) >> mainLoop showAndExecuteOnEntryCurrentRoom
 
-mainLoop :: StIO ()
-mainLoop = do
-  result <- readCommand
-  if result
-    then mainLoop
-    else return ()
+mainLoop :: Action () -> StIO ()
+mainLoop Terminate = return ()
+mainLoop (Perform _) = mainLoop readCommand

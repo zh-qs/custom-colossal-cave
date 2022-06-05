@@ -5,6 +5,7 @@ import Control.Monad
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.State.Strict
 import Data.Attoparsec.Text
+import Control.Applicative
 import Data.List
 
 type Name = String
@@ -16,7 +17,7 @@ type Hand = Maybe ItemName
 type Visibility = Bool
 
 type StIO a = StateT Game IO a
-type Desc = StIO String
+type Desc = Action String
 
 type StParser a = StateT (M.Map Name Interactable) Parser a
 
@@ -25,7 +26,7 @@ type StParser a = StateT (M.Map Name Interactable) Parser a
 (<??>) stp msg = StateT $ \s -> runStateT stp s <?> msg
 
 -- |Representation of a command entered in a console by user
-type Command = (Visibility, Name, StIO ())
+type Command = (Visibility, Name, Action ())
 
 data Interactable = Item { longName :: Name, getDescription :: Desc, getCommands :: [Command] }
     | Entity { getDescription :: Desc, entityParameters :: M.Map Name Int, getCommands :: [Command] }
@@ -39,13 +40,13 @@ instance Show Interactable where
 
 --data Entity = Entity { entityParameters :: M.Map Name Int, entityCommands :: [Command] }
 
-data Room = Room { description :: Desc, onEntry :: StIO (), interactables :: [Name], roomCommands :: [Command] }
+data Room = Room { description :: Desc, onEntry :: Action (), interactables :: [Name], roomCommands :: [Command] }
 
 instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
 
-showRoom :: Room -> StIO ()
-showRoom r = description r >>= lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
+showRoom :: Room -> Action ()
+showRoom r = description r >>= Perform . lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
 
 data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
 
@@ -59,3 +60,24 @@ data Game = Game {
     currentRoomName :: Name, 
     globalNameMap :: M.Map Name Interactable 
     } 
+
+data Action a = Perform (StIO a) | Terminate
+
+instance Functor Action where
+    fmap _ Terminate = Terminate
+    fmap f (Perform s) = Perform $ f s 
+
+instance Applicative Action where
+    pure a = Perform $ lift $ return a
+    (Perform f) <*> (Perform s) = Perform $ f <*> s
+    _ <*> _ = Terminate
+
+instance Monad Action where
+    return = pure
+    Terminate >>= _ = Terminate
+    (Perform s) >>= f = f 
+
+instance Alternative Action where
+    empty = Terminate
+    p@(Perform {}) <|> _ = p
+    Terminate <|> p = p

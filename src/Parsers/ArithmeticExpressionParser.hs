@@ -17,7 +17,7 @@ import Parsers.Utilities
 import System.Random
 
 -- |Match a @rnd@ expression.
-randomNumberParser :: Parser (StIO Int)
+randomNumberParser :: Parser (Action Int)
 randomNumberParser = stringWithSpaces "rnd" *> pure randomIO
 
 -- |Match an expression of type @entity.<entity name>.<parameter name>@.
@@ -29,29 +29,29 @@ playerParameterAccessorParser :: Parser Name
 playerParameterAccessorParser = baseCodeLineParser "player" ((char '.' *> (unpack <$> takeWhile1 isAlphaNum) <* skipSpaces) <?> "parameter") "player"
 
 -- |Match a number.
-constantParser :: Parser (StIO Int)
+constantParser :: Parser (Action Int)
 constantParser = (lift . return) <$> (signed decimal)
 
 -- |Match a parameter accessor expression.
-identificatorParser :: Parser (StIO Int)
+identificatorParser :: Parser (Action Int)
 identificatorParser = (getPlayerParameter <$> playerParameterAccessorParser) <|> ((uncurry getEntityParameter) <$> entityParameterAccessorParser)
 
 -- |Match multiplication or division operator.
-mulOpParser :: Parser (StIO Int -> StIO Int -> StIO Int)
-mulOpParser = (charWithSpaces '*' *> liftPStIO (*)) <|> (charWithSpaces '/' *> liftPStIO div) <|> (charWithSpaces '%' *> liftPStIO mod)
+mulOpParser :: Parser (Action Int -> Action Int -> Action Int)
+mulOpParser = (charWithSpaces '*' *> liftPAction (*)) <|> (charWithSpaces '/' *> liftPAction div) <|> (charWithSpaces '%' *> liftPAction mod)
 
 -- |Match addition or subtraction operator.
-addOpParser :: Parser (StIO Int -> StIO Int -> StIO Int)
-addOpParser = (charWithSpaces '+' *> liftPStIO (+)) <|> (charWithSpaces '-' *> liftPStIO (-))
+addOpParser :: Parser (Action Int -> Action Int -> Action Int)
+addOpParser = (charWithSpaces '+' *> liftPAction (+)) <|> (charWithSpaces '-' *> liftPAction (-))
 
 -- |Match a single term of a sum.
-termParser :: Parser (StIO Int)
+termParser :: Parser (Action Int)
 termParser = (factorParser <**> mulOpParser <*> termParser) <|> factorParser
 
 -- |Match an arithmetic expression and return its symbolic representation in a parser.
-expressionParser :: Parser (StIO Int)
+expressionParser :: Parser (Action Int)
 expressionParser = (termParser <**> addOpParser <*> expressionParser) <|> termParser
 
 -- |Match a single factor of a term.
-factorParser :: Parser (StIO Int)
+factorParser :: Parser (Action Int)
 factorParser = randomNumberParser <|> constantParser <|> identificatorParser <|> (charWithSpaces '(' *> expressionParser <* charWithSpaces ')')

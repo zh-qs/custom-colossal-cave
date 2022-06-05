@@ -17,35 +17,35 @@ import Parsers.Utilities
 import Parsers.ArithmeticExpressionParser
 
 -- |Match a @has <item>@ test.
-hasItemParser :: Parser (StIO Bool)
+hasItemParser :: Parser (Action Bool)
 hasItemParser = (stringWithSpaces "has" *> (checkIfItemIsInInventory . unpack <$> takeTill isSpace))
 
 -- |Match a comparison operator.
-comparisonOpParser :: Parser (StIO Int -> StIO Int -> StIO Bool)
+comparisonOpParser :: Parser (Action Int -> Action Int -> Action Bool)
 comparisonOpParser = 
-    (stringWithSpaces "==" *> liftPStIO (==)) 
-    <|> (stringWithSpaces "!=" *> liftPStIO (/=)) 
-    <|> (stringWithSpaces ">=" *> liftPStIO (>=))
-    <|> (stringWithSpaces "<=" *> liftPStIO (<=))
-    <|> (charWithSpaces '>' *> liftPStIO (>))
-    <|> (charWithSpaces '<' *> liftPStIO (<))
+    (stringWithSpaces "==" *> liftPAction (==)) 
+    <|> (stringWithSpaces "!=" *> liftPAction (/=)) 
+    <|> (stringWithSpaces ">=" *> liftPAction (>=))
+    <|> (stringWithSpaces "<=" *> liftPAction (<=))
+    <|> (charWithSpaces '>' *> liftPAction (>))
+    <|> (charWithSpaces '<' *> liftPAction (<))
 
 -- |Match either a boolean sum or product.
-boolOpParser :: Parser (StIO Bool -> StIO Bool -> StIO Bool)
-boolOpParser = (stringWithSpaces "&&" *> liftPStIO (&&)) <|> (stringWithSpaces "||" *> liftPStIO (||))
+boolOpParser :: Parser (Action Bool -> Action Bool -> Action Bool)
+boolOpParser = (stringWithSpaces "&&" *> liftPAction (&&)) <|> (stringWithSpaces "||" *> liftPAction (||))
 
 -- |Match true value. The following representations are correct: @true@, @True@, @TRUE@.
-trueParser :: Parser (StIO Bool)
+trueParser :: Parser (Action Bool)
 trueParser = (stringWithSpaces "true" <|> stringWithSpaces "True" <|> stringWithSpaces "TRUE") *> (pure . lift . return) True
 
 -- |Match false value. The following representations are correct: @false@, @False@, @FALSE@.
-falseParser :: Parser (StIO Bool)
+falseParser :: Parser (Action Bool)
 falseParser = (stringWithSpaces "false" <|> stringWithSpaces "False" <|> stringWithSpaces "FALSE") *> (pure . lift . return) False
 
 -- |Match a sigle term of a boolean expression.
-boolTermParser :: Parser (StIO Bool)
+boolTermParser :: Parser (Action Bool)
 boolTermParser = hasItemParser <|> trueParser <|> falseParser <|> (expressionParser <**> comparisonOpParser <*> expressionParser) <|> (charWithSpaces '(' *> booleanExpressionParser <* charWithSpaces ')')
 
 -- |Match a boolean expression. 
-booleanExpressionParser :: Parser (StIO Bool)
+booleanExpressionParser :: Parser (Action Bool)
 booleanExpressionParser = (boolTermParser <**> boolOpParser <*> booleanExpressionParser) <|> boolTermParser

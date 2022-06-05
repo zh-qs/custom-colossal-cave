@@ -75,6 +75,9 @@ multilineContentParser keyword indentationLevel msg = (string keyword *> char ':
 multilineContentParser' :: Int -> String -> Parser String
 multilineContentParser' indentationLevel msg = (Data.List.foldl' <$> return (++) <*> return "" <*> many' (tabs (indentationLevel + 1) *> (((++"\n") . unpack) <$> Data.Attoparsec.Text.takeTill isNewline) <* newLines)) <?> msg
 
+-- |Lifts a two-argument function to 'Action' and wraps it into a 'Parser'.
+liftPAction :: (a -> a -> b) -> Parser (Action a -> Action a -> Action b)
+liftPStIO f = return (\ax ay -> f <$> ax <*> ay)
 
 -- |Lifts a two-argument function to 'StIO' and wraps it into a 'Parser'.
 liftPStIO :: (a -> a -> b) -> Parser (StIO a -> StIO a -> StIO b)
