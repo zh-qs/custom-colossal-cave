@@ -27,28 +27,28 @@ restoreGameCommand = do
   game <- get
   put $ maybe game (flip setGameState game) maybeGameState
 
-constantCommands :: [(String, Action Bool)]
+constantCommands :: [(String, Action ())]
 constantCommands = [
-  ("save", Perform saveGameCommand),
-  ("restore", Perform restoreGameCommand),
+  ("save", perform saveGameCommand),
+  ("restore", perform restoreGameCommand),
   ("inventory", showInventory),
-  ("quit", showFinalMessage >> Terminate)
+  ("quit", getFinalMessage >>= terminate)
  ]
 
-combinedCommands :: [Command] -> M.Map String (Action Bool)
+combinedCommands :: [Command] -> M.Map String (Action ())
 combinedCommands cmds = M.fromList $ (map (\(_,n,r) -> (n, r)) cmds) ++ constantCommands
 
 unknownCommand :: Action ()
-unknownCommand = Perform $ lift $ putStrLn "Unknown command"
+unknownCommand = perform $ lift $ putStrLn "Unknown command"
 
 getInitialMessage :: StIO String
 getInitialMessage = gets (\g -> initialMessage g)
 
 getCurrentRoom :: Action Room
-getCurrentRoom = Perform $ gets (\g -> rooms g M.! currentRoomName g)
+getCurrentRoom = perform $ gets (\g -> rooms g M.! currentRoomName g)
 
 getCommandsForRoom :: Action [Command]
-getCommandsForRoom = Perform $ gets (\g -> filter fst3 $
+getCommandsForRoom = perform $ gets (\g -> filter fst3 $
   (globalRoomCommands g ++ (roomCommands $ rooms g M.! currentRoomName g))
   ++ (foldl' (++) [] 
       $ map 
@@ -61,11 +61,10 @@ processCommand :: String -> Action ()
 processCommand cmd = getCommandsForRoom >>= (\cmds -> M.findWithDefault unknownCommand cmd $ combinedCommands cmds)
 
 readCommand :: Action ()
-readCommand = Perform (lift (putChar '>' >> hFlush stdout >> getLine)) >>= processCommand
+readCommand = perform (lift (putChar '>' >> hFlush stdout >> getLine)) >>= processCommand
 
 mainStart :: StIO ()
 mainStart = getInitialMessage >>= (lift . putStrLn) >> mainLoop showAndExecuteOnEntryCurrentRoom
 
 mainLoop :: Action () -> StIO ()
-mainLoop Terminate = return ()
-mainLoop (Perform _) = mainLoop readCommand
+mainLoop a = fromAction a >>= either (lift . putStrLn) (const $ mainLoop readCommand)

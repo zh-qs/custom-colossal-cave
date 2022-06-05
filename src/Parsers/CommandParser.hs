@@ -18,7 +18,7 @@ import Parsers.Utilities
 import Parsers.CodeParser
 
 -- |Match a command name with a code block.
-commandParser :: Parser (StIO ()) -> Parser [Command]
+commandParser :: Parser (Action ()) -> Parser [Command]
 commandParser parser = 
     (\(b,ns,r) -> map (\n -> (b,n,r)) ns)
         <$> ((,,) 
@@ -28,7 +28,7 @@ commandParser parser =
     <?> "Command definition"
 
 -- |Match an item-specific command name with a code block.
-itemCommandParser :: Parser (a -> StIO ()) -> Parser (a -> [Command])
+itemCommandParser :: Parser (a -> Action ()) -> Parser (a -> [Command])
 itemCommandParser parser = 
     (\(b,ns,f) -> (\s -> map (\n -> (b,n,s)) ns) . f)
         <$> ((,,) 
@@ -37,15 +37,15 @@ itemCommandParser parser =
             <*> (char ':' *> skipSpaces *> parser <* newLines)) 
     <?> "Command definition"
 
-baseItemCommandListParser :: T.Text -> Int -> Parser (a -> StIO ()) -> Parser (a -> [Command])
+baseItemCommandListParser :: T.Text -> Int -> Parser (a -> Action ()) -> Parser (a -> [Command])
 baseItemCommandListParser keyword indentationLevel parser = foldl' <$> pure (\f g -> (\n -> f n ++ g n)) <*> pure (const []) <*> listParser keyword (itemCommandParser parser) indentationLevel "Command list"
 
 -- |Match a command list with custom keyword.
-baseCommandListParser :: T.Text -> Int -> Parser (StIO ()) -> Parser [Command]
+baseCommandListParser :: T.Text -> Int -> Parser (Action ()) -> Parser [Command]
 baseCommandListParser keyword indentationLevel parser = concat <$> listParser keyword (commandParser parser) indentationLevel "Command list"
 
 -- |Match a command list.
-commandListParser :: Int -> Parser (StIO ()) -> Parser [Command]
+commandListParser :: Int -> Parser (Action ()) -> Parser [Command]
 commandListParser = baseCommandListParser "commands"
 
 testCommandParser :: Result ()

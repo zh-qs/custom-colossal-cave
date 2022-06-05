@@ -6,6 +6,7 @@ import Control.Monad.Trans.Class
 import Control.Monad.Trans.State.Strict
 import Data.Attoparsec.Text
 import Control.Applicative
+import Control.Monad.IO.Class
 import Data.List
 
 type Name = String
@@ -46,7 +47,7 @@ instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
 
 showRoom :: Room -> Action ()
-showRoom r = description r >>= Perform . lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
+showRoom r = description r >>= perform . lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
 
 data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
 
@@ -61,23 +62,54 @@ data Game = Game {
     globalNameMap :: M.Map Name Interactable 
     } 
 
-data Action a = Perform (StIO a) | Terminate
+-- data Action a = Perform (StIO a) | Terminate
+
+-- instance Functor Action where
+--     fmap _ Terminate = Terminate
+--     fmap f (Perform s) = Perform $ f s 
+
+-- instance Applicative Action where
+--     pure a = Perform $ lift $ return a
+--     (Perform f) <*> (Perform s) = Perform $ f <*> s
+--     _ <*> _ = Terminate
+
+-- instance Monad Action where
+--     return = pure
+--     Terminate >>= _ = Terminate
+--     (Perform s) >>= f = do
+--         a <- s
+
+
+-- instance Alternative Action where
+--     empty = Terminate
+--     p@(Perform {}) <|> _ = p
+--     Terminate <|> p = p
+
+newtype Action a = Action { fromAction :: StIO (Either String a) }
+
+perform :: StIO a -> Action a
+perform = Action . (>>= return . Right)
+
+terminate :: String -> Action a
+terminate = Action . lift . return . Left
 
 instance Functor Action where
-    fmap _ Terminate = Terminate
-    fmap f (Perform s) = Perform $ f s 
+    fmap f (Action s) = Action $ fmap (fmap f) s
 
 instance Applicative Action where
-    pure a = Perform $ lift $ return a
-    (Perform f) <*> (Perform s) = Perform $ f <*> s
-    _ <*> _ = Terminate
+    pure = Action . lift . return . Right
+    (Action f) <*> (Action s) = Action $ do
+        ef <- f
+        es <- s
+        return $ ef <*> es
 
 instance Monad Action where
     return = pure
-    Terminate >>= _ = Terminate
-    (Perform s) >>= f = f 
+    (Action s) >>= f = Action $ s >>= either (lift . return . Left) (fromAction . f)
 
 instance Alternative Action where
-    empty = Terminate
-    p@(Perform {}) <|> _ = p
-    Terminate <|> p = p
+    empty = Action $ lift $ return $ Left ""
+    (Action p) <|> (Action q) = Action $ p >>= either (const q) (const p)
+
+instance MonadIO Action where
+    liftIO = perform . lift

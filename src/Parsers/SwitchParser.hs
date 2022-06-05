@@ -17,14 +17,14 @@ import Data.List
 import Parsers.BooleanExpressionParser
 import Parsers.Utilities
 
-conditionPairParser :: Int -> Parser (StIO Bool, String)
+conditionPairParser :: Int -> Parser (Action Bool, String)
 conditionPairParser indentationLevel = (,) <$> booleanExpressionParser <*> (char ':' *> newLines *> multilineContentParser' indentationLevel "multiline text")
 
-conditionPairListParser :: Text -> Int -> String -> Parser [(StIO Bool, String)]
+conditionPairListParser :: Text -> Int -> String -> Parser [(Action Bool, String)]
 conditionPairListParser keyword indentationLevel msg = listParser keyword (conditionPairParser (indentationLevel + 2)) (indentationLevel + 1) msg
 
-switchParser :: Text -> Int -> String -> Parser (StIO String)
-switchParser keyword indentationLevel msg = Data.List.foldr (\(sbool,str) sstr -> sbool >>= (\b -> if b then return str else sstr)) (lift $ return "") <$> conditionPairListParser keyword indentationLevel msg
+switchParser :: Text -> Int -> String -> Parser (Action String)
+switchParser keyword indentationLevel msg = Data.List.foldr (\(sbool,str) sstr -> sbool >>= (\b -> if b then return str else sstr)) (pure "") <$> conditionPairListParser keyword indentationLevel msg
 
 testSwitchParser :: Result [String]
 testSwitchParser = Data.List.map (\(sbool,str) -> str) <$> feed (parse (conditionPairListParser "description" 3 "AAA")

@@ -36,11 +36,11 @@ boolOpParser = (stringWithSpaces "&&" *> liftPAction (&&)) <|> (stringWithSpaces
 
 -- |Match true value. The following representations are correct: @true@, @True@, @TRUE@.
 trueParser :: Parser (Action Bool)
-trueParser = (stringWithSpaces "true" <|> stringWithSpaces "True" <|> stringWithSpaces "TRUE") *> (pure . lift . return) True
+trueParser = (stringWithSpaces "true" <|> stringWithSpaces "True" <|> stringWithSpaces "TRUE") *> (pure . pure) True
 
 -- |Match false value. The following representations are correct: @false@, @False@, @FALSE@.
 falseParser :: Parser (Action Bool)
-falseParser = (stringWithSpaces "false" <|> stringWithSpaces "False" <|> stringWithSpaces "FALSE") *> (pure . lift . return) False
+falseParser = (stringWithSpaces "false" <|> stringWithSpaces "False" <|> stringWithSpaces "FALSE") *> (pure . pure) False
 
 -- |Match a sigle term of a boolean expression.
 boolTermParser :: Parser (Action Bool)

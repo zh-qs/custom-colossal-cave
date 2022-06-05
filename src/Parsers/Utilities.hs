@@ -77,7 +77,7 @@ multilineContentParser' indentationLevel msg = (Data.List.foldl' <$> return (++)
 
 -- |Lifts a two-argument function to 'Action' and wraps it into a 'Parser'.
 liftPAction :: (a -> a -> b) -> Parser (Action a -> Action a -> Action b)
-liftPStIO f = return (\ax ay -> f <$> ax <*> ay)
+liftPAction f = return (\ax ay -> f <$> ax <*> ay)
 
 -- |Lifts a two-argument function to 'StIO' and wraps it into a 'Parser'.
 liftPStIO :: (a -> a -> b) -> Parser (StIO a -> StIO a -> StIO b)

@@ -30,7 +30,7 @@ playerParameterAccessorParser = baseCodeLineParser "player" ((char '.' *> (unpac
 
 -- |Match a number.
 constantParser :: Parser (Action Int)
-constantParser = (lift . return) <$> (signed decimal)
+constantParser = (perform . lift . return) <$> (signed decimal)
 
 -- |Match a parameter accessor expression.
 identificatorParser :: Parser (Action Int)
