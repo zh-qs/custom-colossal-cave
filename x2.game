@@ -1,5 +1,11 @@
 player:
   parameters:
+    - closing:
+        value: 0
+    - panic:
+        value: 0
+    - clock2:
+        value: 0
     - score:
         value: 0
     - param1:
@@ -138,9 +144,510 @@ finalMessage:
       YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS A.
   - player.score <= 9999:
       ALL OF ADVENTUREDOM GIVES TRIBUTE TO YOU, ADVENTURER GRANDMASTER!
-
-
 items:
+  - KEYS:
+      longName: SET OF KEYS
+      description:
+        - player.param1 == 0:
+            THERE ARE SOME KEYS ON THE GROUND HERE.
+      commands:
+  - LAMP:
+      longName: BRASS LANTERN
+      description:
+        - player.param2 == 0:
+            THERE IS A SHINY BRASS LAMP NEARBY.
+        - player.param2 == 1:
+            THERE IS A LAMP SHINING NEARBY.
+      commands:
+  - GRATE:
+      longName: *GRATE
+      description:
+        - player.param3 == 0:
+            THE GRATE IS LOCKED.
+        - player.param3 == 1:
+            THE GRATE IS OPEN.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - CAGE:
+      longName: WICKER CAGE
+      description:
+        - player.param4 == 0:
+            THERE IS A SMALL WICKER CAGE DISCARDED NEARBY.
+      commands:
+  - ROD:
+      longName: BLACK ROD
+      description:
+        - player.param5 == 0:
+            A THREE FOOT BLACK ROD WITH A RUSTY STAR ON AN END LIES NEARBY.
+      commands:
+  - ROD2:
+      longName: BLACK ROD
+      description:
+        - player.param6 == 0:
+            A THREE FOOT BLACK ROD WITH A RUSTY MARK ON AN END LIES NEARBY.
+      commands:
+  - STEPS:
+      longName: *STEPS
+      description:
+        - player.param7 == 0:
+            ROUGH STONE STEPS LEAD DOWN THE PIT.
+        - player.param7 == 1:
+            ROUGH STONE STEPS LEAD UP THE DOME.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - BIRD:
+      longName: LITTLE BIRD IN CAGE
+      description:
+        - player.param8 == 0:
+            A CHEERFUL LITTLE BIRD IS SITTING HERE SINGING.
+        - player.param8 == 1:
+            THERE IS A LITTLE BIRD IN THE CAGE.
+      commands:
+  - DOOR:
+      longName: *RUSTY DOOR
+      description:
+        - player.param9 == 0:
+            THE WAY NORTH IS BARRED BY A MASSIVE, RUSTY, IRON DOOR.
+        - player.param9 == 1:
+            THE WAY NORTH LEADS THROUGH A MASSIVE, RUSTY, IRON DOOR.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - PILLO:
+      longName: VELVET PILLOW
+      description:
+        - player.param10 == 0:
+            A SMALL VELVET PILLOW LIES ON THE FLOOR.
+      commands:
+  - SNAKE:
+      longName: *SNAKE
+      description:
+        - player.param11 == 0:
+            A HUGE GREEN FIERCE SNAKE BARS THE WAY!
+        - player.param11 == 1:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - FISSU:
+      longName: *FISSURE
+      description:
+        - player.param12 == 0:
+            
+        - player.param12 == 1:
+            A CRYSTAL BRIDGE NOW SPANS THE FISSURE.
+        - player.param12 == 2:
+            THE CRYSTAL BRIDGE HAS VANISHED!
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - TABLE:
+      longName: *STONE TABLET
+      description:
+        - player.param13 == 0:
+            A MASSIVE STONE TABLET IMBEDDED IN THE WALL READS:
+            "CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!"
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - CLAM:
+      longName: GIANT CLAM  >GRUNT!<
+      description:
+        - player.param14 == 0:
+            THERE IS AN ENORMOUS CLAM HERE WITH ITS SHELL TIGHTLY CLOSED.
+      commands:
+  - OYSTE:
+      longName: GIANT OYSTER  >GROAN!<
+      description:
+        - player.param15 == 0:
+            THERE IS AN ENORMOUS OYSTER HERE WITH ITS SHELL TIGHTLY CLOSED.
+        - player.param15 == 1:
+            INTERESTING.  THERE SEEMS TO BE SOMETHING WRITTEN ON THE UNDERSIDE OF
+            THE OYSTER.
+      commands:
+  - MAGAZ:
+      longName: "SPELUNKER TODAY"
+      description:
+        - player.param16 == 0:
+            THERE ARE A FEW RECENT ISSUES OF "SPELUNKER TODAY" MAGAZINE HERE.
+      commands:
+  - DWARF:
+      longName: 
+      description:
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - KNIFE:
+      longName: 
+      description:
+      commands:
+  - FOOD:
+      longName: TASTY FOOD
+      description:
+        - player.param19 == 0:
+            THERE IS FOOD HERE.
+      commands:
+  - BOTTL:
+      longName: SMALL BOTTLE
+      description:
+        - player.param20 == 0:
+            THERE IS A BOTTLE OF WATER HERE.
+        - player.param20 == 1:
+            THERE IS AN EMPTY BOTTLE HERE.
+        - player.param20 == 2:
+            THERE IS A BOTTLE OF OIL HERE.
+      commands:
+  - WATER:
+      longName: WATER IN THE BOTTLE
+      description:
+      commands:
+  - OIL:
+      longName: OIL IN THE BOTTLE
+      description:
+      commands:
+  - MIRRO:
+      longName: *MIRROR
+      description:
+        - player.param23 == 0:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - PLANT:
+      longName: *PLANT
+      description:
+        - player.param24 == 0:
+            THERE IS A TINY LITTLE PLANT IN THE PIT, MURMURING "WATER, WATER, ..."
+        - player.param24 == 1:
+            THE PLANT SPURTS INTO FURIOUS GROWTH FOR A FEW SECONDS.
+        - player.param24 == 2:
+            THERE IS A 12-FOOT-TALL BEANSTALK STRETCHING UP OUT OF THE PIT,
+            BELLOWING "WATER!! WATER!!"
+        - player.param24 == 3:
+            THE PLANT GROWS EXPLOSIVELY, ALMOST FILLING THE BOTTOM OF THE PIT.
+        - player.param24 == 4:
+            THERE IS A GIGANTIC BEANSTALK STRETCHING ALL THE WAY UP TO THE HOLE.
+        - player.param24 == 5:
+            YOU'VE OVER-WATERED THE PLANT!
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - PLANT2:
+      longName: *PHONY PLANT (SEEN IN TWOPIT ROOM ONLY WHEN TALL ENOUGH)
+      description:
+        - player.param25 == 0:
+            
+        - player.param25 == 1:
+            THE TOP OF A 12-FOOT-TALL BEANSTALK IS POKING OUT OF THE WEST PIT.
+        - player.param25 == 2:
+            THERE IS A HUGE BEANSTALK GROWING OUT OF THE WEST PIT UP TO THE HOLE.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - STALA:
+      longName: *STALACTITE
+      description:
+        - player.param26 == 0:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - SHADO:
+      longName: *SHADOWY FIGURE
+      description:
+        - player.param27 == 0:
+            THE SHADOWY FIGURE SEEMS TO BE TRYING TO ATTRACT YOUR ATTENTION.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - AXE:
+      longName: DWARF'S AXE
+      description:
+        - player.param28 == 0:
+            THERE IS A LITTLE AXE HERE.
+        - player.param28 == 1:
+            THERE IS A LITTLE AXE LYING BESIDE THE BEAR.
+      commands:
+  - DRAWI:
+      longName: *CAVE DRAWINGS
+      description:
+        - player.param29 == 0:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - PIRAT:
+      longName: *PIRATE
+      description:
+        - player.param30 == 0:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - DRAGO:
+      longName: *DRAGON
+      description:
+        - player.param31 == 0:
+            A HUGE GREEN FIERCE DRAGON BARS THE WAY!
+        - player.param31 == 1:
+            CONGRATULATIONS!  YOU HAVE JUST VANQUISHED A DRAGON WITH YOUR BARE
+            HANDS!
+        - player.param31 == 2:
+            THE BODY OF A HUGE GREEN DEAD DRAGON IS LYING OFF TO ONE SIDE.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - CHASM:
+      longName: *CHASM
+      description:
+        - player.param32 == 0:
+            A RICKETY WOODEN BRIDGE EXTENDS ACROSS THE CHASM, VANISHING INTO THE
+            MIST.  A SIGN POSTED ON THE BRIDGE READS, "STOP! PAY TROLL!"
+        - player.param32 == 1:
+            THE WRECKAGE OF A BRIDGE (AND A DEAD BEAR) CAN BE SEEN AT THE BOTTOM
+            OF THE CHASM.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - TROLL:
+      longName: *TROLL
+      description:
+        - player.param33 == 0:
+            A BURLY TROLL STANDS BY THE BRIDGE AND INSISTS YOU THROW HIM A
+            TREASURE BEFORE YOU MAY CROSS.
+        - player.param33 == 1:
+            THE TROLL STEPS OUT FROM BENEATH THE BRIDGE AND BLOCKS YOUR WAY.
+        - player.param33 == 2:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - TROLL2:
+      longName: *PHONY TROLL
+      description:
+        - player.param34 == 0:
+            THE TROLL IS NOWHERE TO BE SEEN.
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - BEAR:
+      longName: 
+      description:
+        - player.param35 == 0:
+            THERE IS A FEROCIOUS CAVE BEAR EYING YOU FROM THE FAR END OF THE ROOM!
+        - player.param35 == 1:
+            THERE IS A GENTLE CAVE BEAR SITTING PLACIDLY IN ONE CORNER.
+        - player.param35 == 2:
+            THERE IS A CONTENTED-LOOKING BEAR WANDERING ABOUT NEARBY.
+        - player.param35 == 3:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - MESSA:
+      longName: *MESSAGE IN SECOND MAZE
+      description:
+        - player.param36 == 0:
+            THERE IS A MESSAGE SCRAWLED IN THE DUST IN A FLOWERY SCRIPT, READING:
+            "THIS IS NOT THE MAZE WHERE THE PIRATE LEAVES HIS TREASURE CHEST."
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - VOLCA:
+      longName: *VOLCANO AND/OR GEYSER
+      description:
+        - player.param37 == 0:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - MACHI:
+      longName: *VENDING MACHINE
+      description:
+        - player.param38 == 0:
+            THERE IS A MASSIVE VENDING MACHINE HERE.  THE INSTRUCTIONS ON IT READ:
+            "DROP COINS HERE TO RECEIVE FRESH BATTERIES."
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - BATTE:
+      longName: BATTERIES
+      description:
+        - player.param39 == 0:
+            THERE ARE FRESH BATTERIES HERE.
+        - player.param39 == 1:
+            SOME WORN-OUT BATTERIES HAVE BEEN DISCARDED NEARBY.
+      commands:
+  - CARPE:
+      longName: *CARPET AND/OR MOSS
+      description:
+        - player.param40 == 0:
+            
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - GOLD:
+      longName: LARGE GOLD NUGGET
+      description:
+        - player.param50 == 0:
+            THERE IS A LARGE SPARKLING NUGGET OF GOLD HERE!
+      commands:
+  - DIAMO:
+      longName: SEVERAL DIAMONDS
+      description:
+        - player.param51 == 0:
+            THERE ARE DIAMONDS HERE!
+      commands:
+  - SILVE:
+      longName: BARS OF SILVER
+      description:
+        - player.param52 == 0:
+            THERE ARE BARS OF SILVER HERE!
+      commands:
+  - JEWEL:
+      longName: PRECIOUS JEWELRY
+      description:
+        - player.param53 == 0:
+            THERE IS PRECIOUS JEWELRY HERE!
+      commands:
+  - COINS:
+      longName: RARE COINS
+      description:
+        - player.param54 == 0:
+            THERE ARE MANY COINS HERE!
+      commands:
+  - CHEST:
+      longName: TREASURE CHEST
+      description:
+        - player.param55 == 0:
+            THE PIRATE'S TREASURE CHEST IS HERE!
+      commands:
+  - EGGS:
+      longName: GOLDEN EGGS
+      description:
+        - player.param56 == 0:
+            THERE IS A LARGE NEST HERE, FULL OF GOLDEN EGGS!
+        - player.param56 == 1:
+            THE NEST OF GOLDEN EGGS HAS VANISHED!
+        - player.param56 == 2:
+            DONE!
+      commands:
+  - TRIDE:
+      longName: JEWELED TRIDENT
+      description:
+        - player.param57 == 0:
+            THERE IS A JEWEL-ENCRUSTED TRIDENT HERE!
+      commands:
+  - VASE:
+      longName: MING VASE
+      description:
+        - player.param58 == 0:
+            THERE IS A DELICATE, PRECIOUS, MING VASE HERE!
+        - player.param58 == 1:
+            THE VASE IS NOW RESTING, DELICATELY, ON A VELVET PILLOW.
+        - player.param58 == 2:
+            THE FLOOR IS LITTERED WITH WORTHLESS SHARDS OF POTTERY.
+        - player.param58 == 3:
+            THE MING VASE DROPS WITH A DELICATE CRASH.
+      commands:
+  - EMERA:
+      longName: EGG-SIZED EMERALD
+      description:
+        - player.param59 == 0:
+            THERE IS AN EMERALD HERE THE SIZE OF A PLOVER'S EGG!
+      commands:
+  - PLATI:
+      longName: PLATINUM PYRAMID
+      description:
+        - player.param60 == 0:
+            THERE IS A PLATINUM PYRAMID HERE, 8 INCHES ON A SIDE!
+      commands:
+  - PEARL:
+      longName: GLISTENING PEARL
+      description:
+        - player.param61 == 0:
+            OFF TO ONE SIDE LIES A GLISTENING PEARL!
+      commands:
+  - RUG:
+      longName: PERSIAN RUG
+      description:
+        - player.param62 == 0:
+            THERE IS A PERSIAN RUG SPREAD OUT ON THE FLOOR!
+        - player.param62 == 1:
+            THE DRAGON IS SPRAWLED OUT ON A PERSIAN RUG!!
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
+  - SPICE:
+      longName: RARE SPICES
+      description:
+        - player.param63 == 0:
+            THERE ARE RARE SPICES HERE!
+      commands:
+  - CHAIN:
+      longName: GOLDEN CHAIN
+      description:
+        - player.param64 == 0:
+            THERE IS A GOLDEN CHAIN LYING IN A HEAP ON THE FLOOR!
+        - player.param64 == 1:
+            THE BEAR IS LOCKED TO THE WALL WITH A GOLDEN CHAIN!
+        - player.param64 == 2:
+            THERE IS A GOLDEN CHAIN LOCKED TO THE WALL!
+      commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              println DON'T BE RIDICULOUS!
+            }
 global:
   room:
     - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
@@ -443,6 +950,10 @@ rooms:
         - true:
             YOU ARE INSIDE A BUILDING, A WELL HOUSE FOR A LARGE SPRING.
       items:
+        - KEYS
+        - LAMP
+        - FOOD
+        - BOTTL
       entities:
       commands:
         - ENTER,OUT,OUTSI,EXIT,LEAVE,OUTDO,WEST,W:
@@ -569,6 +1080,7 @@ rooms:
             DIRT IS A STRONG STEEL GRATE MOUNTED IN CONCRETE.  A DRY STREAMBED
             LEADS INTO THE DEPRESSION.
       items:
+        - GRATE
       entities:
       commands:
         - FORES,EAST,E,WEST,W,SOUTH,S:
@@ -604,6 +1116,7 @@ rooms:
             YOU ARE IN A SMALL CHAMBER BENEATH A 3X3 STEEL GRATE TO THE SURFACE.
             A LOW CRAWL OVER COBBLES LEADS INWARD TO THE WEST.
       items:
+        - GRATE
       entities:
       commands:
         - OUT,OUTSI,EXIT,LEAVE,UPWAR,UP,U,ABOVE,ASCEN:
@@ -639,6 +1152,7 @@ rooms:
             YOU ARE CRAWLING OVER COBBLES IN A LOW PASSAGE.  THERE IS A DIM LIGHT
             AT THE EAST END OF THE PASSAGE.
       items:
+        - CAGE
       entities:
       commands:
         - OUT,OUTSI,EXIT,LEAVE,SURFA,NULL,NOWHE,EAST,E:
@@ -661,6 +1175,7 @@ rooms:
             HERE, BUT AN AWKWARD CANYON LEADS UPWARD AND WEST.  A NOTE ON THE WALL
             SAYS "MAGIC WORD XYZZY".
       items:
+        - ROD
       entities:
       commands:
         - DEPRE:
@@ -735,6 +1250,7 @@ rooms:
             RIVERS OF ORANGE STONE.  AN AWKWARD CANYON AND A GOOD PASSAGE EXIT
             FROM EAST AND WEST SIDES OF THE CHAMBER.
       items:
+        - BIRD
       entities:
       commands:
         - DEPRE:
@@ -770,6 +1286,7 @@ rooms:
             AT YOUR FEET IS A SMALL PIT BREATHING TRACES OF WHITE MIST.  AN EAST
             PASSAGE ENDS HERE EXCEPT FOR A SMALL CRACK LEADING ON.
       items:
+        - STEPS
       entities:
       commands:
         - DEPRE:
@@ -797,7 +1314,7 @@ rooms:
             }
         - D,DOWNW,DOWN,DESCE,PIT,STEPS:
             {
-              if true then
+              if has GOLD then
               {
               goto room20
               }
@@ -823,6 +1340,7 @@ rooms:
             SWAYING TO AND FRO ALMOST AS IF ALIVE.
             STAIRCASE.  THERE IS A PASSAGE AT THE TOP OF A DOME BEHIND YOU.
       items:
+        - STEPS
       entities:
       commands:
         - LEFT,SOUTH,S:
@@ -839,7 +1357,7 @@ rooms:
             }
         - UPWAR,UP,U,ABOVE,ASCEN,PIT,STEPS,DOME,PASSA,TUNNE,EAST,E:
             {
-              if true then
+              if has GOLD then
               {
               goto room22
               }
@@ -873,6 +1391,7 @@ rooms:
             YOU ARE ON THE EAST BANK OF A FISSURE SLICING CLEAR ACROSS THE HALL.
             THE MIST IS QUITE THICK HERE, AND THE FISSURE IS TOO WIDE TO JUMP.
       items:
+        - FISSU
       entities:
       commands:
         - HALL,EAST,E:
@@ -922,6 +1441,7 @@ rooms:
             THIS IS A LOW ROOM WITH A CRUDE NOTE ON THE WALL.  THE NOTE SAYS,
             "YOU WON'T GET IT UP THE STEPS".
       items:
+        - GOLD
       entities:
       commands:
         - HALL,OUT,OUTSI,EXIT,LEAVE,NORTH,N:
@@ -934,6 +1454,7 @@ rooms:
             YOU ARE IN THE HALL OF THE MOUNTAIN KING, WITH PASSAGES OFF IN ALL
             DIRECTIONS.
       items:
+        - SNAKE
       entities:
       commands:
         - STAIR,UPWAR,UP,U,ABOVE,ASCEN,EAST,E:
@@ -990,7 +1511,7 @@ rooms:
             }
         - *unnamed452:
             {
-              if true then
+              if has SNAKE then
               {
               goto room32
               }
@@ -1042,6 +1563,7 @@ rooms:
             YOU ARE AT THE WEST END OF THE TWOPIT ROOM.  THERE IS A LARGE HOLE IN
             THE WALL ABOVE THE PIT AT THIS END OF THE ROOM.
       items:
+        - PLANT2
       entities:
       commands:
         - EAST,E,ACROS:
@@ -1078,6 +1600,7 @@ rooms:
             YOU ARE AT THE BOTTOM OF THE WESTERN PIT IN THE TWOPIT ROOM.  THERE IS
             A LARGE HOLE IN THE WALL ABOUT 25 FEET ABOVE YOU.
       items:
+        - PLANT
       entities:
       commands:
         - UPWAR,UP,U,ABOVE,ASCEN,OUT,OUTSI,EXIT,LEAVE:
@@ -1115,6 +1638,8 @@ rooms:
         - true:
             YOU ARE ON THE WEST SIDE OF THE FISSURE IN THE HALL OF MISTS.
       items:
+        - FISSU
+        - DIAMO
       entities:
       commands:
         - JUMP:
@@ -1168,6 +1693,7 @@ rooms:
             YOU ARE IN A LOW N/S PASSAGE AT A HOLE IN THE FLOOR.  THE HOLE GOES
             DOWN TO AN E/W PASSAGE.
       items:
+        - SILVE
       entities:
       commands:
         - HALL,OUT,OUTSI,EXIT,LEAVE,SOUTH,S:
@@ -1187,6 +1713,7 @@ rooms:
         - true:
             YOU ARE IN THE SOUTH SIDE CHAMBER.
       items:
+        - JEWEL
       entities:
       commands:
         - HALL,OUT,OUTSI,EXIT,LEAVE,NORTH,N:
@@ -1199,6 +1726,7 @@ rooms:
             YOU ARE IN THE WEST SIDE CHAMBER OF THE HALL OF THE MOUNTAIN KING.
             A PASSAGE CONTINUES WEST AND UP HERE.
       items:
+        - COINS
       entities:
       commands:
         - HALL,OUT,OUTSI,EXIT,LEAVE,EAST,E:
@@ -1258,9 +1786,10 @@ rooms:
             }
         - PLOVE:
             {
-              if true then
+              if has EMERA then
               {
-              println $code(2)
+              drop EMERA
+              goback
               }
               else
               {
@@ -1297,6 +1826,7 @@ rooms:
             25 FEET AWAY THERE IS A SIMILAR WINDOW LOOKING INTO A LIGHTED ROOM.  A
             SHADOWY FIGURE CAN BE SEEN THERE PEERING BACK AT YOU.
       items:
+        - SHADO
       entities:
       commands:
         - EAST,E,Y2:
@@ -2021,6 +2551,7 @@ rooms:
             AND WEST.  THERE ARE HOLES ALL OVER, BUT THE ONLY BIG ONE IS ON THE
             WALL DIRECTLY OVER THE WEST PIT WHERE YOU CAN'T GET TO IT.
       items:
+        - PLANT2
       entities:
       commands:
         - EAST,E:
@@ -2450,6 +2981,7 @@ rooms:
             LAMP TO SHOW IT.  CAVERNOUS PASSAGES LEAD EAST, NORTH, AND SOUTH.  ON
             THE WEST WALL IS SCRAWLED THE INSCRIPTION, "FEE FIE FOE FOO" [SIC].
       items:
+        - EGGS
       entities:
       commands:
         - SOUTH,S:
@@ -2480,6 +3012,7 @@ rooms:
         - true:
             YOU ARE AT ONE END OF AN IMMENSE NORTH/SOUTH PASSAGE.
       items:
+        - DOOR
       entities:
       commands:
         - SOUTH,S,GIANT,PASSA,TUNNE:
@@ -2508,6 +3041,7 @@ rooms:
             OVER A SPARKLING WATERFALL INTO A ROARING WHIRLPOOL WHICH DISAPPEARS
             THROUGH A HOLE IN THE FLOOR.  PASSAGES EXIT TO THE SOUTH AND WEST.
       items:
+        - TRIDE
       entities:
       commands:
         - SOUTH,S,OUT,OUTSI,EXIT,LEAVE:
@@ -2528,6 +3062,8 @@ rooms:
             YOU ARE IN THE SOFT ROOM.  THE WALLS ARE COVERED WITH HEAVY CURTAINS,
             THE FLOOR WITH A THICK PILE CARPET.  MOSS COVERS THE CEILING.
       items:
+        - PILLO
+        - CARPE
       entities:
       commands:
         - WEST,W,OUT,OUTSI,EXIT,LEAVE:
@@ -2541,6 +3077,8 @@ rooms:
             WALLS.
             PASSAGE LEADS SE, AND A HANDS AND KNEES CRAWL LEADS WEST.
       items:
+        - DRAWI
+        - VASE
       entities:
       commands:
         - SE:
@@ -2588,7 +3126,26 @@ rooms:
             }
         - EAST,E,PASSA,TUNNE:
             {
-              println $code(1)
+              if invcount == 0 || (invcount == 1 && has EMERA) then
+              {
+                if player.closing == 1 then
+                {
+                  println A MYSTERIOUS RECORDED VOICE GROANS INTO LIFE AND ANNOUNCES:
+                  println    "THIS EXIT IS CLOSED.  PLEASE LEAVE VIA MAIN OFFICE."
+                  if player.panic == 0 then
+                  {
+                    player.clock2 = 15
+                  }
+                  player.panic = 1
+                }
+                # tu jeszcze rzeczy z krasnoludami
+                goto room100
+              }
+              else
+              {
+                println SOMETHING YOU'RE CARRYING WON'T FIT THROUGH THE TUNNEL WITH YOU.
+                println YOU'D BEST TAKE INVENTORY AND DROP SOMETHING.
+              }
             }
         - *unnamed667:
             {
@@ -2600,11 +3157,31 @@ rooms:
             YOU'RE IN A SMALL CHAMBER LIT BY AN EERIE GREEN LIGHT.
             NARROW TUNNEL EXITS TO THE WEST.  A DARK CORRIDOR LEADS NE.
       items:
+        - EMERA
       entities:
       commands:
         - WEST,W,PASSA,TUNNE,OUT,OUTSI,EXIT,LEAVE:
             {
-              println $code(1)
+              if invcount == 0 || (invcount == 1 && has EMERA) then
+              {
+                if player.closing == 1 then
+                {
+                  println A MYSTERIOUS RECORDED VOICE GROANS INTO LIFE AND ANNOUNCES:
+                  println    "THIS EXIT IS CLOSED.  PLEASE LEAVE VIA MAIN OFFICE."
+                  if player.panic == 0 then
+                  {
+                    player.clock2 = 15
+                  }
+                  player.panic = 1
+                }
+                # tu jeszcze rzeczy z krasnoludami
+                goto room100
+              }
+              else
+              {
+                println SOMETHING YOU'RE CARRYING WON'T FIT THROUGH THE TUNNEL WITH YOU.
+                println YOU'D BEST TAKE INVENTORY AND DROP SOMETHING.
+              }
             }
         - *unnamed669:
             {
@@ -2612,9 +3189,10 @@ rooms:
             }
         - PLOVE:
             {
-              if true then
+              if has EMERA then
               {
-              println $code(2)
+              drop EMERA
+              goback
               }
               else
               {
@@ -2634,6 +3212,8 @@ rooms:
         - true:
             YOU'RE IN THE DARK-ROOM.  A CORRIDOR LEADING SOUTH IS THE ONLY EXIT.
       items:
+        - TABLE
+        - PLATI
       entities:
       commands:
         - SOUTH,S,PLOVE,OUT,OUTSI,EXIT,LEAVE:
@@ -2660,6 +3240,7 @@ rooms:
             SHALLOW PASSAGE PROCEEDS DOWNWARD, AND A SOMEWHAT STEEPER ONE LEADS
             UP.  A LOW HANDS AND KNEES PASSAGE ENTERS FROM THE SOUTH.
       items:
+        - CLAM
       entities:
       commands:
         - UPWAR,UP,U,ABOVE,ASCEN,HALL:
@@ -2672,7 +3253,7 @@ rooms:
             }
         - SOUTH,S:
             {
-              if true then
+              if has CLAM then
               {
               println YOU CAN'T FIT THIS FIVE-FOOT CLAM THROUGH THAT LITTLE PASSAGE!
               }
@@ -2683,7 +3264,7 @@ rooms:
             }
         - *unnamed678:
             {
-              if true then
+              if has OYSTE then
               {
               println YOU CAN'T FIT THIS FIVE-FOOT OYSTER THROUGH THAT LITTLE PASSAGE!
               }
@@ -2734,6 +3315,7 @@ rooms:
             A SIGN IN MIDAIR HERE SAYS "CAVE UNDER CONSTRUCTION BEYOND THIS POINT.
             PROCEED AT OWN RISK.  [WITT CONSTRUCTION COMPANY]"
       items:
+        - MAGAZ
       entities:
       commands:
         - UPWAR,UP,U,ABOVE,ASCEN:
@@ -2834,6 +3416,7 @@ rooms:
             FOR THE USE OF THE DWARVES, WHO AS YOU KNOW, ARE EXTREMELY VAIN.)  A
             SMALL WINDOW CAN BE SEEN IN EITHER WALL, SOME FIFTY FEET UP.
       items:
+        - MIRRO
       entities:
       commands:
         - SOUTH,S:
@@ -2855,6 +3438,7 @@ rooms:
             25 FEET AWAY THERE IS A SIMILAR WINDOW LOOKING INTO A LIGHTED ROOM.  A
             SHADOWY FIGURE CAN BE SEEN THERE PEERING BACK AT YOU.
       items:
+        - SHADO
       entities:
       commands:
         - WEST,W:
@@ -2872,6 +3456,7 @@ rooms:
             BELOW.
             HAVING DONE SO YOU WOULD BE UNABLE TO REACH IT TO CLIMB BACK UP.
       items:
+        - STALA
       entities:
       commands:
         - NORTH,N:
@@ -3027,6 +3612,8 @@ rooms:
             UP FROM BELOW OBSCURES ALL VIEW OF THE FAR SIDE.  A SW PATH LEADS AWAY
             FROM THE CHASM INTO A WINDING CORRIDOR.
       items:
+        - CHASM
+        - TROLL
       entities:
       commands:
         - SW:
@@ -3035,7 +3622,7 @@ rooms:
             }
         - OVER,ACROS,CROSS,NE:
             {
-              if true then
+              if has TROLL then
               {
               println THE TROLL REFUSES TO LET YOU CROSS.
               }
@@ -3095,6 +3682,8 @@ rooms:
         - true:
             YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
       items:
+        - DRAGO
+        - RUG
       entities:
       commands:
         - NORTH,N,OUT,OUTSI,EXIT,LEAVE:
@@ -3125,6 +3714,8 @@ rooms:
         - true:
             YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
       items:
+        - DRAGO
+        - RUG
       entities:
       commands:
         - EAST,E,OUT,OUTSI,EXIT,LEAVE:
@@ -3141,6 +3732,8 @@ rooms:
             YOU ARE ON THE FAR SIDE OF THE CHASM.  A NE PATH LEADS AWAY FROM THE
             CHASM ON THIS SIDE.
       items:
+        - CHASM
+        - TROLL
       entities:
       commands:
         - NE:
@@ -3149,7 +3742,7 @@ rooms:
             }
         - OVER,ACROS,CROSS,SW:
             {
-              if true then
+              if has TROLL then
               {
               println THE TROLL REFUSES TO LET YOU CROSS.
               }
@@ -3275,6 +3868,7 @@ rooms:
             OWN, WHICH LENDS AN ADDITIONAL INFERNAL SPLENDOR TO THE ALREADY
             HELLISH SCENE.
       items:
+        - VOLCA
       entities:
       commands:
         - SOUTH,S,PASSA,TUNNE,OUT,OUTSI,EXIT,LEAVE:
@@ -3297,6 +3891,7 @@ rooms:
             HEAT.  THE ONLY EXIT IS A CRAWL HEADING WEST, THROUGH WHICH IS COMING
             A LOW RUMBLING.
       items:
+        - SPICE
       entities:
       commands:
         - WEST,W,OUT,OUTSI,EXIT,LEAVE,CRAWL:
@@ -3362,6 +3957,8 @@ rooms:
             EMPTY EXCEPT FOR SOME DUST.  MARKS IN THE DUST LEAD AWAY TOWARD THE
             FAR END OF THE ROOM.  THE ONLY EXIT IS THE WAY YOU CAME IN.
       items:
+        - BEAR
+        - CHAIN
       entities:
       commands:
         - WEST,W,OUT,OUTSI,EXIT,LEAVE:
@@ -3804,6 +4401,7 @@ rooms:
         - true:
             DEAD END
       items:
+        - MACHI
       entities:
       commands:
         - NORTH,N,OUT,OUTSI,EXIT,LEAVE:

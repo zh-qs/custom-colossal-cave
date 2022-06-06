@@ -1,0 +1,40 @@
+code1:
+  if invcount == 0 || (invcount == 1 && has EMERA) then
+  {
+    # panika -> będzie jeszcze gdzieś indziej
+    if player.closing == 1 then
+    {
+      println A MYSTERIOUS RECORDED VOICE GROANS INTO LIFE AND ANNOUNCES:
+      println    "THIS EXIT IS CLOSED.  PLEASE LEAVE VIA MAIN OFFICE."
+      if player.panic == 0 then
+      {
+        player.clock2 = 15
+      }
+      player.panic = 1
+    }
+    # tu jeszcze rzeczy z krasnoludami
+    goto room100 (lub 99)
+  }
+  else
+  {
+    println SOMETHING YOU'RE CARRYING WON'T FIT THROUGH THE TUNNEL WITH YOU.
+    println YOU'D BEST TAKE INVENTORY AND DROP SOMETHING.
+  }
+code2:
+  drop EMERA
+  goback
+code3:
+  if player.param33 != 1
+  {
+  }
+  else
+  {
+    println THE TROLL STEPS OUT FROM BENEATH THE BRIDGE AND BLOCKS YOUR WAY.
+	player.param33 = 0
+	remove TROLL2
+	put TROLL
+	#goto room116 (lub 122)
+	remove TROLL2 from room116
+	put TROLL to room116
+	goto (here)
+  }

@@ -44,7 +44,13 @@ falseParser = (stringWithSpaces "false" <|> stringWithSpaces "False" <|> stringW
 
 -- |Match a sigle term of a boolean expression.
 boolTermParser :: Parser (Action Bool)
-boolTermParser = hasItemParser <|> trueParser <|> falseParser <|> (expressionParser <**> comparisonOpParser <*> expressionParser) <|> (charWithSpaces '(' *> booleanExpressionParser <* charWithSpaces ')')
+boolTermParser = 
+    hasItemParser 
+    <|> trueParser 
+    <|> falseParser 
+    <|> (expressionParser <**> comparisonOpParser <*> expressionParser) 
+    <|> (charWithSpaces '(' *> booleanExpressionParser <* charWithSpaces ')')
+    <|> (charWithSpaces '!' *> ((pure not <*>) <$> boolTermParser))
 
 -- |Match a boolean expression. 
 booleanExpressionParser :: Parser (Action Bool)

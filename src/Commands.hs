@@ -14,6 +14,9 @@ import Data.Either
 (!??) :: Ord k => M.Map k a -> k -> Either k a
 m !?? k = maybe (Left k) Right $ m M.!? k 
 
+getInventoryCount :: Action Int
+getInventoryCount = perform $ gets (length . playerInventory . player)
+
 assertNotNothing :: String -> Maybe a -> Action a
 assertNotNothing message = maybe (terminate message) pure  
 

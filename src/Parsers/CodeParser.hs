@@ -110,11 +110,16 @@ callForRoomParser = baseCodeLineParser "call " (callCommandForCurrentRoom . unpa
 quitParser :: Parser (Action ())
 quitParser = baseCodeLineParser "quit" (pure $ getFinalMessage >>= terminate) "quit"
 
+-- |Match a comment.
+commentParser :: Parser (Action ())
+commentParser = baseCodeLineParser "#" (takeTill isNewline *> pure noAction) "comment"
+
 -- |Match a single code line common for items and the rest.
 commonCodeLineParser :: Parser (Action ())
 commonCodeLineParser = 
     (skipSpaces *> (
-        gotoParser 
+        commentParser
+        <|> gotoParser 
         <|> printEmptyLineParser
         <|> printParser
         <|> printLineParser

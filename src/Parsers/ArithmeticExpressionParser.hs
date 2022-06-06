@@ -16,6 +16,10 @@ import Data.Maybe
 import Parsers.Utilities
 import System.Random
 
+-- |Match an @invcount@ expression
+inventoryCountParser :: Parser (Action Int)
+inventoryCountParser = stringWithSpaces "invcount" *> pure getInventoryCount
+
 -- |Match a @rnd@ expression.
 randomNumberParser :: Parser (Action Int)
 randomNumberParser = stringWithSpaces "rnd" *> pure randomIO
@@ -54,4 +58,9 @@ expressionParser = (termParser <**> addOpParser <*> expressionParser) <|> termPa
 
 -- |Match a single factor of a term.
 factorParser :: Parser (Action Int)
-factorParser = randomNumberParser <|> constantParser <|> identificatorParser <|> (charWithSpaces '(' *> expressionParser <* charWithSpaces ')')
+factorParser = 
+    inventoryCountParser 
+    <|> randomNumberParser 
+    <|> constantParser 
+    <|> identificatorParser 
+    <|> (charWithSpaces '(' *> expressionParser <* charWithSpaces ')')
