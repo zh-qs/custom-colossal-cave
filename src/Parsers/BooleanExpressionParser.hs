@@ -8,7 +8,7 @@ import Data.Attoparsec.Text
 import Control.Monad
 import Control.Monad.Trans.Class
 import Control.Monad.Trans.State.Strict
-import Data.Text
+import qualified Data.Text as T
 import Data.Char
 import Commands
 import Control.Applicative
@@ -16,9 +16,17 @@ import Data.Maybe
 import Parsers.Utilities
 import Parsers.ArithmeticExpressionParser
 
+-- |Match an @askYesNo@ prompt.
+askYesNoParser :: Parser (Action Bool)
+askYesNoParser = stringWithSpaces "askYesNo" *> pure (perform $ lift getLine >>= (\s -> if (toLower <$> s) `elem` ["y", "yes"] then return True else return False))
+
 -- |Match a @has <item>@ test.
 hasItemParser :: Parser (Action Bool)
-hasItemParser = (stringWithSpaces "has" *> (checkIfItemIsInInventory . unpack <$> takeTill isSpace))
+hasItemParser = stringWithSpaces "has" *> (checkIfItemIsInInventory . T.unpack <$> takeTill isSpace)
+
+-- |Match a @present <item|entity>@ test.
+presentParser :: Parser (Action Bool)
+presentParser = stringWithSpaces "present" *> (checkIfInteractablePresent . T.unpack <$> takeTill isSpace)
 
 -- |Match a comparison operator.
 comparisonOpParser :: Parser (Action Int -> Action Int -> Action Bool)
@@ -45,12 +53,14 @@ falseParser = (stringWithSpaces "false" <|> stringWithSpaces "False" <|> stringW
 -- |Match a sigle term of a boolean expression.
 boolTermParser :: Parser (Action Bool)
 boolTermParser = 
-    hasItemParser 
+    hasItemParser
+    <|> presentParser 
     <|> trueParser 
     <|> falseParser 
     <|> (expressionParser <**> comparisonOpParser <*> expressionParser) 
     <|> (charWithSpaces '(' *> booleanExpressionParser <* charWithSpaces ')')
     <|> (charWithSpaces '!' *> ((pure not <*>) <$> boolTermParser))
+    <|> askYesNoParser
 
 -- |Match a boolean expression. 
 booleanExpressionParser :: Parser (Action Bool)

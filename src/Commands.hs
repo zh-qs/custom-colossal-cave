@@ -8,6 +8,7 @@ import DataStructures
 import Data.List
 import System.IO
 import Data.Maybe
+import GameIO
 import Data.Either
 
 -- |Find the value at a key. Returns 'Left k' when the element cannot be found.
@@ -35,7 +36,7 @@ noAction :: Action ()
 noAction = perform $ lift $ return ()
 
 showInventory :: Action ()
-showInventory = perform $ gets (\g -> (playerInventory $ player g, globalNameMap g)) >>= (\(inv,imap) -> lift $ putStrLn $ foldl' (\s itName -> s ++ longName (imap M.! itName) ++ "\n") "Your inventory:\n" inv)
+showInventory = perform $ gets (\g -> (playerInventory $ player g, globalNameMap g)) >>= (\(inv,imap) -> lift $ putStrLn $ foldl' (\s itName -> s ++ longName (imap M.! itName) ++ "\n") "" inv)
 
 getFinalMessage :: Action String
 getFinalMessage = perform (gets finalMessage) >>= id
@@ -90,6 +91,18 @@ dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n i
         n 
         itMap)
 
+removeItem :: ItemName -> Action ()
+removeItem item = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+    Game 
+        p
+        im fm 
+        gr gi
+        (M.adjust 
+            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
+            n rs) 
+        n 
+        itMap)
+
 discardItem :: ItemName -> Action ()
 discardItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itMap) -> 
     Game 
@@ -136,3 +149,18 @@ conditionallyEvaluateAction cond ftrue ffalse a = conditionallyPerformAction con
 
 checkIfItemIsInInventory :: ItemName -> Action Bool
 checkIfItemIsInInventory name = perform $ gets (\g -> name `elem` (playerInventory . player) g)
+
+checkIfInteractablePresent :: Name -> Action Bool
+checkIfInteractablePresent name = perform $ gets (\g -> name `elem` (playerInventory . player) g || name `elem` interactables (rooms g M.! currentRoomName g))
+
+saveGame :: Action ()
+saveGame = perform $ do
+  filename <- lift getLine
+  game <- get
+  lift $ exportGameStateToFile filename game
+
+restoreGame :: Action ()
+restoreGame = perform $ do
+  maybeGameState <- lift $ getLine >>= importGameStateFromFile
+  game <- get
+  put $ maybe game (flip setGameState game) maybeGameState

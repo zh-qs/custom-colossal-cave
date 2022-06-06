@@ -1,13 +1,10 @@
 carry: jeśli 1 w pokoju, podnieś, jeśli więcej, to trzeba wskazać, który
 
 TODO:   co się dzieje po wyjściu -> zamienić finalMessage na finalAction
-        dodać komendy save i restore (może też prompt)
-        dodać komendę inventory
-                dodać wyrażenie invcount K
         dodać goback
-        dodać wyrażenie present <item>
         dodać switch do kodu
-        dodać remove <item|entity>
+        dodać move sth to where
         put sth to where, remove sth from where
-        negacja logiczna
         command overriding i domyślnych wiadomości
+
+TODO z GAMLem: SAY <STH>

@@ -83,12 +83,20 @@ conditionalParser :: Parser (Action ()) -> Parser (Action ())
 conditionalParser parser = conditionalParserF (const <$> parser) <*> pure ()
 
 -- |Match a @take@ instruction.
-takeItemParser :: Parser (ItemName -> Action ())
-takeItemParser = baseCodeLineParser "take" (pure takeItem) "take"
+takeSelfParser :: Parser (ItemName -> Action ())
+takeSelfParser = baseCodeLineParser "take" (pure takeItem) "take"
 
 -- |Match a @drop@ instruction.
-dropItemParser :: Parser (ItemName -> Action ())
-dropItemParser = baseCodeLineParser "drop" (pure dropItem) "drop"
+dropSelfParser :: Parser (ItemName -> Action ())
+dropSelfParser = baseCodeLineParser "drop" (pure dropItem) "drop"
+
+-- |Match a @take <item name>@ instruction.
+takeItemParser :: Parser (Action ())
+takeItemParser = baseCodeLineParser "take " (takeItem . unpack <$> takeTill isSpace) "take"
+
+-- |Match a @drop <item name>@ instruction.
+dropItemParser :: Parser (Action ())
+dropItemParser = baseCodeLineParser "drop " (dropItem . unpack <$> takeTill isSpace) "drop"
 
 -- |Match a @discard@ instruction.
 discardItemParser :: Parser (ItemName -> Action ())
@@ -100,7 +108,11 @@ giveItemParser = baseCodeLineParser "give " (giveItem . unpack <$> takeTill isSp
 
 -- |Match a @put <item name>@ instruction.
 putItemParser :: Parser (Action ())
-putItemParser = baseCodeLineParser "put " (giveItem . unpack <$> takeTill isSpace) "put"
+putItemParser = baseCodeLineParser "put " (putItem . unpack <$> takeTill isSpace) "put"
+
+-- |Match a @remove <item name>@ instruction.
+removeItemParser :: Parser (Action ())
+removeItemParser = baseCodeLineParser "remove " (removeItem . unpack <$> takeTill isSpace) "remove"
 
 -- |Match a @call <command>@ instruction for a room.
 callForRoomParser :: Parser (Action ())
@@ -113,6 +125,18 @@ quitParser = baseCodeLineParser "quit" (pure $ getFinalMessage >>= terminate) "q
 -- |Match a comment.
 commentParser :: Parser (Action ())
 commentParser = baseCodeLineParser "#" (takeTill isNewline *> pure noAction) "comment"
+
+-- |Match a @save@ instruction.
+saveParser :: Parser (Action ())
+saveParser = baseCodeLineParser "save" (pure saveGame) "save"
+
+-- |Match a @restore@ instruction.
+restoreParser :: Parser (Action ())
+restoreParser = baseCodeLineParser "restore" (pure restoreGame) "restore"
+
+-- |Match a @showInventory@ instruction.
+showInventoryParser :: Parser (Action ())
+showInventoryParser = baseCodeLineParser "showInventory" (pure showInventory) "show inventory"
 
 -- |Match a single code line common for items and the rest.
 commonCodeLineParser :: Parser (Action ())
@@ -128,8 +152,14 @@ commonCodeLineParser =
         <|> changeEntityParameterParser
         <|> giveItemParser
         <|> putItemParser
+        <|> takeItemParser
+        <|> dropItemParser
+        <|> removeItemParser
         <|> callForRoomParser
         <|> quitParser
+        <|> saveParser
+        <|> restoreParser
+        <|> showInventoryParser
     )) 
     <?> "Command definition"
 
@@ -142,23 +172,27 @@ codeLineParser =
     )) 
     <?> "Command definition"
 
--- |Match the code block where single line is matched by 'Parser (Action ())'.
---baseCodeParser :: Parser (Action ()) -> Parser (Action ())
---baseCodeParser parser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' parser) <* skipSpaces <* closeCurlyBrace
-
 -- |Match a code block with common instructions.
 codeParser :: Parser (Action ())
 codeParser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' codeLineParser) <* skipSpaces <* closeCurlyBrace
+
+hasConditionalParser :: Parser (ItemName -> Action ()) ->  Parser (ItemName -> Action ())
+hasConditionalParser parser = stringWithSpaces "if has then" *> (((\f g h -> (\n -> f n g h n)) $ (conditionallyEvaluateAction . checkIfItemIsInInventory)) <$> parser <*> ((stringWithSpaces "else" *> parser) <|> pure (const noAction))) <?> "'has' conditional"
+
+presentConditionalParser :: Parser (ItemName -> Action ()) -> Parser (ItemName -> Action ())
+presentConditionalParser parser = stringWithSpaces "if present then" *> (((\f g h -> (\n -> f n g h n)) $ (conditionallyEvaluateAction . checkIfInteractablePresent)) <$> parser <*> ((stringWithSpaces "else" *> parser) <|> pure (const noAction))) <?> "'present' conditional"
 
 -- |Match single code line with instructions specific to item.
 itemCodeLineParser :: Parser (ItemName -> Action ())
 itemCodeLineParser = 
     (skipSpaces *> (
         (pure const <*> commonCodeLineParser)
-        <|> takeItemParser
-        <|> dropItemParser
+        <|> takeSelfParser
+        <|> dropSelfParser
         <|> discardItemParser
-        <|>  (conditionalParserF itemCodeParser))
+        <|> (conditionalParserF itemCodeParser)
+        <|> (hasConditionalParser itemCodeParser) 
+        <|> (presentConditionalParser itemCodeParser))
     )
     <?> "Item command definition"
 

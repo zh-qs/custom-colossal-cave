@@ -1,0 +1,39 @@
+CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+
+plant:
+{
+  if player.param24 <= 0 then
+  {
+    println THE PLANT HAS EXCEPTIONALLY DEEP ROOTS AND CANNOT BE PULLED FREE.
+  }
+  else
+  {
+    println DON'T BE RIDICULOUS!
+  }
+}
+
+bear:
+{
+  if player.param35 == 1 then
+  {
+    println THE BEAR IS STILL CHAINED TO THE WALL.
+  }
+  else
+  {
+    println DON'T BE RIDICULOUS!
+  }
+}
+
+chain:
+{
+  if player.param64 != 0 then
+  {
+    println THE CHAIN IS STILL LOCKED.
+  }
+  else
+  {
+    take 
+	# nie tak szybko!!! por. global item CARRY
+	println OK
+  }
+}

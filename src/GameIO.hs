@@ -8,7 +8,6 @@ import System.Environment
 import System.IO.Error
 import System.IO
 import Data.List
-import Commands
 import Text.Read
 import qualified Data.Map.Merge.Strict as M
 import qualified Data.Map.Strict as M

@@ -1,19 +1,5 @@
 player:
   parameters:
-    - foobar:
-        value: 0
-    - closed:
-        value: 0
-    - closing:
-        value: 0
-    - panic:
-        value: 0
-    - clock2:
-        value: 0
-    - treasuresUnableToFind:
-        value: 0
-    - treasuresNotFound:
-        value: 0
     - score:
         value: 0
     - param1:
@@ -185,14 +171,6 @@ items:
         - player.param4 == 0:
             THERE IS A SMALL WICKER CAGE DISCARDED NEARBY.
       commands:
-        - DROP,RELEASE,FREE,DISCARD,DUMP,THROW,TOSS:
-            {
-              if player.param8 == 1 then
-              {
-                drop BIRD
-              }
-              drop
-            }
   - ROD:
       longName: BLACK ROD
       description:
@@ -225,63 +203,6 @@ items:
         - player.param8 == 1:
             THERE IS A LITTLE BIRD IN THE CAGE.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
-            {
-              if player.param8 != 0 then
-              {
-                take CAGE
-                take BIRD
-                println OK
-              }
-              else
-              {
-                if !has ROD && has CAGE then
-                {
-                  if has CAGE then
-                  {
-                    player.param8 = 1
-                    take CAGE
-                    take BIRD
-                    println OK
-                  }
-                  else
-                  {
-                    println YOU CAN CATCH THE BIRD, BUT YOU CANNOT CARRY IT.
-                  }
-                }
-                else
-                {
-                  println THE BIRD WAS UNAFRAID WHEN YOU ENTERED, BUT AS YOU APPROACH IT BECOMES
-                  println DISTURBED AND YOU CANNOT CATCH IT.
-                }
-              }
-            }
-        - RELEASE,FREE,THROW:
-            {
-              if present SNAKE then
-              {
-                if player.closed == 1 then
-                {
-                  println THE RESULTING RUCKUS HAS AWAKENED THE DWARVES.	THERE ARE NOW SEVERAL
-                  println THREATENING LITTLE DWARVES IN THE ROOM WITH YOU!  MOST OF THEM THROW
-                  println KNIVES AT YOU!	ALL OF THEM GET YOU!
-                  quit
-                }
-                else
-                {
-                  println DRIVES THE SNAKE AWAY.
-                  remove SNAKE
-                  player.param11 = 1
-                  player.param8 = 0
-                  drop
-                }
-              }
-              else
-              {
-                player.param8 = 0
-                drop
-              }
-            }
   - DOOR:
       longName: *RUSTY DOOR
       description:
@@ -390,48 +311,10 @@ items:
       longName: WATER IN THE BOTTLE
       description:
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
-            {
-              if has BOTTLE then
-              {
-                if player.param20 == 1 then
-                {
-                  player.param20 = 0
-                  println YOUR BOTTLE IS NOW FULL OF WATER.
-                }
-                else
-                {
-                  println YOUR BOTTLE IS ALREADY FULL.
-                }
-              }
-              else
-              {
-                println YOU HAVE NOTHING IN WHICH TO CARRY IT.
-              }
-            }
   - OIL:
       longName: OIL IN THE BOTTLE
       description:
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
-            {
-              if has BOTTLE then
-              {
-                if player.param20 == 1 then
-                {
-                  player.param20 = 2
-                  println YOUR BOTTLE IS NOW FULL OF OIL.
-                }
-                else
-                {
-                  println YOUR BOTTLE IS ALREADY FULL.
-                }
-              }
-              else
-              {
-                println YOU HAVE NOTHING IN WHICH TO CARRY IT.
-              }
-            }
   - MIRROR:
       longName: *MIRROR
       description:
@@ -461,14 +344,7 @@ items:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
-              if player.param24 <= 0 then
-              {
-                println THE PLANT HAS EXCEPTIONALLY DEEP ROOTS AND CANNOT BE PULLED FREE.
-              }
-              else
-              {
-                println DON'T BE RIDICULOUS!
-              }
+              println DON'T BE RIDICULOUS!
             }
   - PLANT2:
       longName: *PHONY PLANT (SEEN IN TWOPIT ROOM ONLY WHEN TALL ENOUGH)
@@ -482,14 +358,7 @@ items:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
-              if player.param24 <= 0 then
-              {
-                println HUH...
-              }
-              else
-              {
-                println DON'T BE RIDICULOUS!
-              }
+              println DON'T BE RIDICULOUS!
             }
   - STALACTITE:
       longName: *STALACTITE
@@ -607,14 +476,7 @@ items:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
-              if player.param35 == 1 then
-              {
-                println THE BEAR IS STILL CHAINED TO THE WALL.
-              }
-              else
-              {
-                println DON'T BE RIDICULOUS!
-              }
+              println DON'T BE RIDICULOUS!
             }
   - MESSAGE:
       longName: *MESSAGE IN SECOND MAZE
@@ -778,81 +640,45 @@ items:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
-              if player.param64 != 0 then
-              {
-                println THE CHAIN IS STILL LOCKED.
-              }
-              else
-              {
-                take 
-                # nie tak szybko!!! por. global item CARRY
-	              println OK
-              }
+              println DON'T BE RIDICULOUS!
             }
 global:
   room:
     - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
         {
-          println WHAT?
+          println $globalcode(1)
         }
     - DROP,RELEASE,FREE,DISCARD,DUMP:
         {
-          println WHAT?
+          println $globalcode(2)
         }
     - SAY,CHANT,SING,UTTER,MUMBLE:
         {
-          println SAY WHAT?
+          println $globalcode(3)
         }
     - UNLOCK,OPEN:
         {
-          println WHAT?
+          println $globalcode(4)
         }
     - NOTHING:
         {
-          print.
+          println $globalcode(5)
         }
     - LOCK,CLOSE:
         {
-          println WHAT?
+          println $globalcode(6)
         }
     - LIGHT,ON:
         {
-          if has LAMP then
-          {
-            player.param2 = 1
-            println OK
-          }
-          else
-          {
-            println I DON'T HAVE ANYTHING TO TURN ON.
-          }
+          println $globalcode(7)
         }
     - EXTINGUISH,OFF:
         {
-          if has LAMP then
-          {
-            player.param2 = 0
-            println OK
-          }
-          else
-          {
-            println I DON'T HAVE ANYTHING TO TURN OFF.
-          }
+          println $globalcode(8)
         }
     - WAVE,SHAKE,SWING:
         {
-          if has ROD && present FISSURE then
-          {
-            player.param12 = 1 - player.param12
-            if player.param12 == 1 then
-            {
-              println A CRYSTAL BRIDGE NOW SPANS THE FISSURE.
-            }
-            else
-            {
-              println THE CRYSTAL BRIDGE HAS VANISHED!
-            }
-          }
+          println $globalcode(9)
         }
     - CALM,PLACATE,TAME:
         {
@@ -864,160 +690,208 @@ global:
         }
     - ATTACK,KILL,FIGHT,HIT,STRIKE:
         {
-          println WHAT?
+          println $globalcode(12)
+        }
+    - POUR:
+        {
+          println $globalcode(13)
         }
     - EAT,DEVOUR:
         {
-          println WHAT?
+          println $globalcode(14)
         }
     - DRINK:
         {
-          # poszukaj butelki z wodą albo strumyka
+          println $globalcode(15)
         }
     - RUB:
         {
-          println WHAT?
+          println $globalcode(16)
         }
     - THROW,TOSS:
         {
-          println WHAT?
+          println $globalcode(17)
         }
     - QUIT:
         {
-          println DO YOU REALLY WANT TO QUIT NOW?
-          if askYesNo then
-          {
-            quit
-          }
+          println $globalcode(18)
         }
     - FIND,WHERE:
         {
-          println WHAT?
+          println $globalcode(19)
         }
     - INVENTORY:
         {
-          showInventory
+          println $globalcode(20)
+        }
+    - FEED:
+        {
+          println $globalcode(21)
+        }
+    - FILL:
+        {
+          println $globalcode(22)
         }
     - BLAST,DETONATE,IGNITE,BLOWUP:
         {
-          if player.param6 >= 0 && player.closed == 1 then
-          {
-            if present ROD2 then
-            {
-              println THERE IS A LOUD EXPLOSION, AND YOU ARE SUDDENLY SPLASHED ACROSS THE
-              println WALLS OF THE ROOM.
-            }
-            else
-            {
-              println THERE IS A LOUD EXPLOSION, AND A TWENTY-FOOT HOLE APPEARS IN THE FAR
-              println WALL, BURYING THE DWARVES IN THE RUBBLE.  YOU MARCH THROUGH THE HOLE
-              println FRIENDLY ELVES CARRY THE CONQUERING ADVENTURER OFF INTO THE SUNSET.
-            }
-            quit
-          }
+          println $globalcode(23)
         }
     - SCORE:
         {
-          print If you were to quit now, you would score
-          printval player.score
-          println out of a possible 350.
+          println $globalcode(24)
         }
     - FEE,FIE,FOE,FOO,FUM:
         {
-          println TODO!!!
+          println $globalcode(25)
+        }
+    - BRIEF:
+        {
+          println $globalcode(26)
         }
     - READ,PERUSE:
         {
-          println WHAT?
+          println $globalcode(27)
         }
     - BREAK,SHATTER,SMASH:
         {
-          println WHAT?
+          println $globalcode(28)
         }
     - WAKE,DISTURB:
         {
-          println WHO?
+          println $globalcode(29)
         }
-    - SAVE:
+    - SUSPEND,PAUSE,SAVE:
         {
-          print ENTER FILE NAME: 
-          save
-          println OK
+          println $globalcode(30)
         }
-    - RESTORE:
+    - HOURS:
         {
-          print ENTER FILE NAME: 
-          restore
-          println OK
+          println $globalcode(31)
         }
   item:
     - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
         {
-          if has then
-          {
-            println YOU ARE ALREADY CARRYING IT!
-          }
-          else
-		      {
-		        if invcount < 7 then
-			      {
-		          take
-		          println OK
-			      }
-			      else
-			      {
-			        println YOU CAN'T CARRY ANYTHING MORE.	YOU'LL HAVE TO DROP SOMETHING FIRST.
-			      }
-		      }
+          println $globalcode(1)
         }
-    - DROP,RELEASE,FREE,DISCARD,DUMP,THROW,TOSS:
+    - DROP,RELEASE,FREE,DISCARD,DUMP:
         {
-          if has then
-          {
-            drop
-            println OK
-          }
-          else
-          {
-            println YOU CAN'T THROW AN ITEM YOU DON'T POSSESS!
-          }
+          println $globalcode(2)
+        }
+    - SAY,CHANT,SING,UTTER,MUMBLE:
+        {
+          println $globalcode(3)
+        }
+    - UNLOCK,OPEN:
+        {
+          println $globalcode(4)
+        }
+    - NOTHING:
+        {
+          println $globalcode(5)
+        }
+    - LOCK,CLOSE:
+        {
+          println $globalcode(6)
+        }
+    - LIGHT,ON:
+        {
+          println $globalcode(7)
+        }
+    - EXTINGUISH,OFF:
+        {
+          println $globalcode(8)
+        }
+    - WAVE,SHAKE,SWING:
+        {
+          println $globalcode(9)
+        }
+    - CALM,PLACATE,TAME:
+        {
+          println $globalcode(10)
+        }
+    - WALK,RUN,TRAVEL,GO,PROCEED,CONTINUE,EXPLORE,GOTO,FOLLOW,TURN:
+        {
+          println $globalcode(11)
+        }
+    - ATTACK,KILL,FIGHT,HIT,STRIKE:
+        {
+          println $globalcode(12)
+        }
+    - POUR:
+        {
+          println $globalcode(13)
         }
     - EAT,DEVOUR:
         {
-          println DON'T BE RIDICULOUS!
+          println $globalcode(14)
+        }
+    - DRINK:
+        {
+          println $globalcode(15)
         }
     - RUB:
         {
-          println PECULIAR.  NOTHING UNEXPECTED HAPPENS.
+          println $globalcode(16)
         }
-    - FIND,WHERE,INVENTORY:
+    - THROW,TOSS:
         {
-          if has then
-          {
-            println YOU ARE ALREADY CARRYING IT!
-          }
-          else
-          {
-            if present then
-            {
-              if player.closed == 1 then
-              {
-                println I DARESAY WHATEVER YOU WANT IS AROUND HERE SOMEWHERE.
-              }
-              else
-              {
-                println I BELIEVE WHAT YOU WANT IS RIGHT HERE WITH YOU.
-              }
-            }
-          }
+          println $globalcode(17)
         }
-    - BLAST,DETONATE,IGNITE,BLOWUP:
+    - QUIT:
         {
-          print.
+          println $globalcode(18)
+        }
+    - FIND,WHERE:
+        {
+          println $globalcode(19)
+        }
+    - INVENTORY:
+        {
+          println $globalcode(20)
+        }
+    - FEED:
+        {
+          println $globalcode(21)
         }
     - FILL:
         {
-          println YOU CAN'T FILL THAT.
+          println $globalcode(22)
+        }
+    - BLAST,DETONATE,IGNITE,BLOWUP:
+        {
+          println $globalcode(23)
+        }
+    - SCORE:
+        {
+          println $globalcode(24)
+        }
+    - FEE,FIE,FOE,FOO,FUM:
+        {
+          println $globalcode(25)
+        }
+    - BRIEF:
+        {
+          println $globalcode(26)
+        }
+    - READ,PERUSE:
+        {
+          println $globalcode(27)
+        }
+    - BREAK,SHATTER,SMASH:
+        {
+          println $globalcode(28)
+        }
+    - WAKE,DISTURB:
+        {
+          println $globalcode(29)
+        }
+    - SUSPEND,PAUSE,SAVE:
+        {
+          println $globalcode(30)
+        }
+    - HOURS:
+        {
+          println $globalcode(31)
         }
 rooms:
   - room1:
@@ -3662,16 +3536,6 @@ rooms:
         - SW:
             {
               goto room116
-            }
-        - BLAST,DETONATE,IGNITE,BLOWUP:
-            {
-              if player.param6 >= 0 && player.closed == 1 then
-              {
-                println THERE IS A LOUD EXPLOSION, AND A TWENTY-FOOT HOLE APPEARS IN THE FAR
-                println WALL, BURYING THE SNAKES IN THE RUBBLE.  A RIVER OF MOLTEN LAVA POURS
-                println IN THROUGH THE HOLE, DESTROYING EVERYTHING IN ITS PATH, INCLUDING YOU!
-                quit
-              }
             }
   - room116:
       description:

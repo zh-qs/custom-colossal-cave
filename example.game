@@ -41,9 +41,40 @@ global:
        {
          player.life = 0
        }
+    - inv:
+       {
+         println Your inventory::
+         showInventory
+       }
+    - quit:
+       {
+         print Do you REALLY want to quit? 
+         if askYesNo then
+         {
+           quit
+         }
+       }
+    - savegame:
+       {
+         print Plik: 
+         save
+         println OK
+       }
+    - restoregame:
+       {
+         print Plik: 
+         restore
+         println OK
+       }
   item:
     - take:
         {
+          if has then
+          {
+            println NIE!
+          }
+          else
+          {
           if player.life > 0 then
           {
             take
@@ -56,6 +87,7 @@ global:
             quit
             println To nie powinno zostać wypisane
           }
+          }
         }
 
 rooms:
@@ -65,8 +97,11 @@ rooms:
             You are in your kitchen, looking at the table.
       onEntry:
         {
-          printval invcount
-          print.
+          if present dragon then
+          {
+            printval invcount
+            print.
+          }
         }
       items:
         - food

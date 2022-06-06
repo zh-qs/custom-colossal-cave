@@ -92,14 +92,20 @@ commonInstructions:
   entity.<name>.<parameter> =|+=|-=|*= <expr>
   give <item>
   put <item>
-  if <boolExpr> then { ... } else { ... } !!!! JEST BUG W KODZIE !!!! (wewnątrz if-a nie można itemCommand)
+  if <boolExpr> then { ... } else { ... }
   call <command>
   quit
+  save
+  restore
+  showInventory
+  #<comment>
 
 itemInstructions:
   take
   drop
   discard
+  if has then { ... } else { ... }
+  if present then { ... } else { ... }  (nie są to normalne ify!!!)
 
 EXPRESSION GRAMMAR:
   expr -> term (`+`|`-`) expr | term
@@ -109,4 +115,4 @@ EXPRESSION GRAMMAR:
 
 BOOLEAN EXPRESSION GRAMMAR:
   exprB -> termB (`&&`|`||`) exprB | termB
-  termB -> `present` <item|entity> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 
+  termB -> `askYesNo` | `present` <item|entity> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 

@@ -1,3 +1,12 @@
+dodać to TAKE BEAR:
+if !player.param35 == 3 then take ...
+
+dodać parametry:
+treasuresNotFound = ?
+treasuresUnableToFind = 0
+closing = 0
+panic = 0
+
 code1:
   if invcount == 0 || (invcount == 1 && has EMERA) then
   {
@@ -24,8 +33,37 @@ code2:
   drop EMERA
   goback
 code3:
+  # troll -> param33
+  # chasm -> param32
+  # bear -> param35
+  # spice -> param63
   if player.param33 != 1
   {
+	if player.param33 == 0 then
+	{
+	  player.param33 = 1
+	}
+	if !has BEAR
+	{
+	  goto room116 (lub 122)
+	}
+	else
+	{
+	  println JUST AS YOU REACH THE OTHER SIDE, THE BRIDGE BUCKLES BENEATH THE
+      println WEIGHT OF THE BEAR, WHICH WAS STILL FOLLOWING YOU AROUND.  YOU
+      println SCRABBLE DESPERATELY FOR SUPPORT, BUT AS THE BRIDGE COLLAPSES YOU
+      println STUMBLE BACK AND FALL INTO THE CHASM.
+	  player.param32 = 1
+	  player.param33 = 2
+	  drop BEAR
+	  move BEAR to room116 (lub 122)
+	  player.param35 = 3
+	  if player.param63 < 0 then
+	  {
+	    player.treasuresUnableToFind += 1
+	  }
+	  #call die -> trzeba zrobić coś z reinkarnacją
+	}
   }
   else
   {
@@ -33,8 +71,19 @@ code3:
 	player.param33 = 0
 	remove TROLL2
 	put TROLL
-	#goto room116 (lub 122)
 	remove TROLL2 from room116
 	put TROLL to room116
 	goto (here)
   }
+  
+  
+die:
+{
+  if player.closing == 1 then
+  {
+    println IT LOOKS AS THOUGH YOU'RE DEAD.  WELL, SEEING AS HOW IT'S SO CLOSE TO
+    println CLOSING TIME ANYWAY, I THINK WE'LL JUST CALL IT A DAY.
+	# points
+	# quit
+  }
+}
