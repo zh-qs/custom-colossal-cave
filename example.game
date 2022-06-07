@@ -157,5 +157,16 @@ rooms:
             {
               println Nothing happens.
             }
+        - check:
+            {
+              if in kitchen then
+              {
+                println tak
+              }
+              if in nowhere then
+              {
+                println nie
+              }
+            }
 
 start: kitchen

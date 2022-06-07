@@ -1,5 +1,7 @@
 player:
   parameters:
+    - lamplimit:
+        value: 0
     - turns:
         value: 0
     - dflag:
@@ -127,11 +129,11 @@ player:
     - param61:
         value: 0
     - param62:
-        value: 0
+        value: 1
     - param63:
         value: 0
     - param64:
-        value: 0
+        value: 1
   inventory:
   leftHand:
     empty
@@ -280,9 +282,9 @@ items:
   - STEPS:
       longName: *STEPS
       description:
-        - player.param7 == 0:
+        - in room14:
             ROUGH STONE STEPS LEAD DOWN THE PIT.
-        - player.param7 == 1:
+        - in room15:
             ROUGH STONE STEPS LEAD UP THE DOME.
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
@@ -610,7 +612,7 @@ items:
               {
                 println YOU PROD THE NEAREST DWARF, WHO WAKES UP GRUMPILY, TAKES ONE LOOK AT
                 println YOU, CURSES, AND GRABS FOR HIS AXE.
-                # die
+                goto death
               }
             }
         - FEED:
@@ -808,7 +810,7 @@ items:
               {
                 println YOU STRIKE THE MIRROR A RESOUNDING BLOW, WHEREUPON IT SHATTERS INTO A
                 println MYRIAD TINY FRAGMENTS.
-                # die
+                goto death
               }
             }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
@@ -1407,7 +1409,7 @@ global:
           }
           else
           {
-            println I DON'T HAVE ANYTHING TO TURN ON.
+            println YOU HAVE NO SOURCE OF LIGHT.
           }
         }
     - EXTINGUISH,OFF:
@@ -1419,7 +1421,7 @@ global:
           }
           else
           {
-            println I DON'T HAVE ANYTHING TO TURN OFF.
+            println YOU HAVE NO SOURCE OF LIGHT.
           }
         }
     - WAVE,SHAKE,SWING:
@@ -1438,16 +1440,17 @@ global:
           }
           else
           {
-            println HELLO!
+            println NOTHING HAPPENS.
           }
         }
     - CALM,PLACATE,TAME:
         {
-          #println $globalcode(10)
+          println I'M GAME.  WOULD YOU CARE TO EXPLAIN HOW?
         }
     - WALK,RUN,TRAVEL,GO,PROCEED,CONTINUE,EXPLORE,GOTO,FOLLOW,TURN:
         {
-          #println $globalcode(11)
+          println WHERE?
+          # może tu też dodać jakiś drugi argument (jak do SAY)
         }
     - ATTACK,KILL,FIGHT,HIT,STRIKE,FEED:
         {
@@ -1493,6 +1496,10 @@ global:
         {
           println WHAT?
         }
+    - CALM,PLACATE,TAME:
+        {
+          println I'M GAME.  WOULD YOU CARE TO EXPLAIN HOW?
+        }
     - QUIT:
         {
           print DO YOU REALLY WANT TO QUIT NOW? 
@@ -1536,7 +1543,7 @@ global:
         }
     - FEE,FIE,FOE,FOO,FUM:
         {
-          println TODO!!!
+          println I DON'T KNOW HOW.
         }
     - READ,PERUSE:
         {
@@ -1610,6 +1617,14 @@ global:
         {
           println I DON'T KNOW HOW TO LOCK OR UNLOCK IT.
         }
+    - ATTACK,KILL,FIGHT,HIT,STRIKE,FEED:
+        {
+          println DON'T BE RIDICULOUS!
+        }
+    - LIGHT,ON,EXTINGUISH,OFF:
+        {
+          println YOU HAVE NO SOURCE OF LIGHT.
+        }
     - FIND,WHERE,INVENTORY:
         {
           if has then
@@ -1647,7 +1662,42 @@ global:
         {
           println I'M GAME.  WOULD YOU CARE TO EXPLAIN HOW?
         }
+    - BREAK,SHATTER,SMASH:
+        {
+          println IT'S BEYOND YOUR POWER TO DO THAT.
+        }
 rooms:
+  - welcome:
+      description:
+      onEntry:
+        {
+          print WELCOME TO ADVENTURE!!	WOULD YOU LIKE INSTRUCTIONS? 
+          if askYesNo then
+          {
+            println SOMEWHERE NEARBY IS COLOSSAL CAVE, WHERE OTHERS HAVE FOUND FORTUNES IN
+            println TREASURE AND GOLD, THOUGH IT IS RUMORED THAT SOME WHO ENTER ARE NEVER
+            println SEEN AGAIN.  MAGIC IS SAID TO WORK IN THE CAVE.  I WILL BE YOUR EYES
+            println AND HANDS.  DIRECT ME WITH COMMANDS OF 1 OR 2 WORDS.  I SHOULD WARN
+            println YOU THAT I LOOK AT ONLY THE FIRST FIVE LETTERS OF EACH WORD, SO YOU'LL
+            println HAVE TO ENTER "NORTHEAST" AS "NE" TO DISTINGUISH IT FROM "NORTH".
+            println (SHOULD YOU GET STUCK, TYPE "HELP" FOR SOME GENERAL HINTS.  FOR INFOR-
+            println MATION ON HOW TO END YOUR ADVENTURE, ETC., TYPE "INFO".)
+            println 			      - - -
+            println THIS PROGRAM WAS ORIGINALLY DEVELOPED BY WILLIE CROWTHER.  MOST OF THE
+            println FEATURES OF THE CURRENT PROGRAM WERE ADDED BY DON WOODS (DON @ SU-AI).
+            println CONTACT DON IF YOU HAVE ANY QUESTIONS, COMMENTS, ETC.
+            player.lamplimit = 1000
+          }
+          else
+          {
+            player.lamplimit = 330
+          }
+          print.
+          goto room1
+        }
+      items:
+      entities:
+      commands:
   - room1:
       description:
         - true:
@@ -1655,6 +1705,7 @@ rooms:
             AROUND YOU IS A FOREST.  A SMALL STREAM FLOWS OUT OF THE BUILDING AND
             DOWN A GULLY.
       items:
+        - WATER
       entities:
       commands:
         - ROAD,HILL,WEST,W,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND:
@@ -1702,6 +1753,7 @@ rooms:
         - LAMP
         - FOOD
         - BOTTLE
+        - WATER
       entities:
       commands:
         - ENTER,OUT,OUTSIDE,EXIT,LEAVE,OUTDOORS,WEST,W:
@@ -1726,6 +1778,7 @@ rooms:
             YOU ARE IN A VALLEY IN THE FOREST BESIDE A STREAM TUMBLING ALONG A
             ROCKY BED.
       items:
+        - WATER
       entities:
       commands:
         - UPSTREAM,BUILDING,HOUSE,NORTH,N:
@@ -1799,6 +1852,7 @@ rooms:
             AT YOUR FEET ALL THE WATER OF THE STREAM SPLASHES INTO A 2-INCH SLIT
             IN THE ROCK.  DOWNSTREAM THE STREAMBED IS BARE ROCK.
       items:
+        - WATER
       entities:
       commands:
         - BUILDING,HOUSE:
@@ -2336,6 +2390,7 @@ rooms:
             YOU ARE AT THE BOTTOM OF THE EASTERN PIT IN THE TWOPIT ROOM.  THERE IS
             A SMALL POOL OF OIL IN ONE CORNER OF THE PIT.
       items:
+        - OIL
       entities:
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
@@ -2513,6 +2568,16 @@ rooms:
             YOU ARE IN A LARGE ROOM, WITH A PASSAGE TO THE SOUTH, A PASSAGE TO THE
             WEST, AND A WALL OF BROKEN ROCK TO THE EAST.  THERE IS A LARGE "Y2" ON
             A ROCK IN THE ROOM'S CENTER.
+      onEntry:
+        {
+          # global
+          player.turns += 1
+          # endglobal
+          if rnd % 100 < 25 && player.closing == 0 then
+          {
+            println A HOLLOW VOICE SAYS "PLUGH".
+          }
+        }
       items:
       entities:
       commands:
@@ -2630,6 +2695,7 @@ rooms:
             YOU ARE IN THE BOTTOM OF A SMALL PIT WITH A LITTLE STREAM, WHICH
             ENTERS AND EXITS THROUGH TINY SLITS.
       items:
+        - WATER
       entities:
       commands:
         - CLIMB,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
@@ -3789,6 +3855,7 @@ rooms:
             THROUGH A HOLE IN THE FLOOR.  PASSAGES EXIT TO THE SOUTH AND WEST.
       items:
         - TRIDENT
+        - WATER
       entities:
       commands:
         - SOUTH,S,OUT,OUTSIDE,EXIT,LEAVE:
@@ -4253,6 +4320,7 @@ rooms:
             OVERHEAD AND SPLASHES NOISILY INTO THE WATER SOMEWHERE WITHIN THE
             MIST.  THE ONLY PASSAGE GOES BACK TOWARD THE SOUTH.
       items:
+        - WATER
       entities:
       commands:
         - SOUTH,S,OUT,OUTSIDE,EXIT,LEAVE:
@@ -5194,4 +5262,4 @@ rooms:
       items:
       entities:
       commands:
-start: room1
+start: welcome

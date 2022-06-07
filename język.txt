@@ -98,6 +98,7 @@ commonInstructions:
   put <item>
   remove <item>
   take <item>
+  in <room>
   put <item> in <room>
   remove <item> from <room>
   move <item> to <room>

@@ -6,9 +6,19 @@ TODO:           co się dzieje po wyjściu -> zamienić finalMessage na finalAct
         command overriding i domyślnych wiadomości
 
 TODO z GAMLem: SAY <STH>
+               GOTO <WHERE>
                ciemność
                ATTACK
                DRINK WATER kiedy nie ma wody -> butelka
                THROW
                CAVE, FIND CAVE
                FOO, ...
+               HELP
+               INFO
+               NORTHEAST
+
+               jeśli jest i było ciemno, to z 35%:
+                  YOU FELL INTO A PIT AND BROKE EVERY BONE IN YOUR BODY!
+                  +śmierć
+
+               DWARVES : linia 503 w fortranie

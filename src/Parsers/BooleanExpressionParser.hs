@@ -22,15 +22,19 @@ askYesNoParser = stringWithSpaces "askYesNo" *> pure (perform $ lift getLine >>=
 
 -- |Match a @has <item>@ test.
 hasItemParser :: Parser (Action Bool)
-hasItemParser = stringWithSpaces "has" *> (checkIfItemIsInInventory . T.unpack <$> takeTill isSpace)
+hasItemParser = stringWithSpaces "has " *> (checkIfItemIsInInventory . T.unpack <$> takeWhile1 isAlphaNum)
 
 -- |Match a @present <item|entity>@ test.
 presentParser :: Parser (Action Bool)
-presentParser = stringWithSpaces "present" *> (checkIfInteractablePresent . T.unpack <$> takeTill isSpace)
+presentParser = stringWithSpaces "present " *> (checkIfInteractablePresent . T.unpack <$> takeWhile1 isAlphaNum)
 
 -- |Match a @present <item|entity> in <room>@ test.
 presentInRoomParser :: Parser (Action Bool)
-presentInRoomParser = stringWithSpaces "present" *> (checkIfInteractablePresentInRoom <$> (T.unpack <$> takeTill isSpace) <*> (stringWithSpaces "in" *> (T.unpack <$> takeTill isSpace)))
+presentInRoomParser = stringWithSpaces "present " *> (checkIfInteractablePresentInRoom <$> (T.unpack <$> takeWhile1 isAlphaNum) <*> (stringWithSpaces "in " *> (T.unpack <$> takeWhile1 isAlphaNum)))
+
+-- |Match an @in <room>@ test.
+inRoomParser :: Parser (Action Bool)
+inRoomParser = stringWithSpaces "in " *> (checkIfRoomIsCurrent . T.unpack <$> takeWhile1 isAlphaNum)
 
 -- |Match a comparison operator.
 comparisonOpParser :: Parser (Action Int -> Action Int -> Action Bool)
@@ -59,6 +63,7 @@ boolTermParser :: Parser (Action Bool)
 boolTermParser = 
     hasItemParser
     <|> presentInRoomParser
+    <|> inRoomParser
     <|> presentParser 
     <|> trueParser 
     <|> falseParser 

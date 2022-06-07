@@ -200,6 +200,9 @@ checkIfItemIsInInventory name = perform $ gets (\g -> name `elem` (playerInvento
 checkIfInteractablePresent :: Name -> Action Bool
 checkIfInteractablePresent name = perform $ gets (\g -> name `elem` (playerInventory . player) g || name `elem` interactables (rooms g M.! currentRoomName g))
 
+checkIfRoomIsCurrent :: Name -> Action Bool
+checkIfRoomIsCurrent name = perform $ gets ((==name) . currentRoomName)
+
 checkIfInteractablePresentInRoom :: Name -> Name -> Action Bool
 checkIfInteractablePresentInRoom name room = perform (gets (\g -> rooms g M.!? room)) 
     >>= assertNotNothing ("ERROR: Room name not found: " ++ room) 
