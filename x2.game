@@ -1,5 +1,7 @@
 player:
   parameters:
+    - turns:
+        value: 0
     - dflag:
         value: 0
     - foobar:
@@ -17,6 +19,8 @@ player:
     - treasuresNotFound:
         value: 0
     - score:
+        value: 0
+    - toNextRank:
         value: 0
     - param1:
         value: 0
@@ -136,24 +140,6 @@ player:
 initialMessage:
 
 finalMessage:
-  - player.score <= 35:
-      YOU ARE OBVIOUSLY A RANK AMATEUR.  BETTER LUCK NEXT TIME.
-  - player.score <= 100:
-      YOUR SCORE QUALIFIES YOU AS A NOVICE CLASS ADVENTURER.
-  - player.score <= 130:
-      YOU HAVE ACHIEVED THE RATING: "EXPERIENCED ADVENTURER".
-  - player.score <= 200:
-      YOU MAY NOW CONSIDER YOURSELF A "SEASONED ADVENTURER".
-  - player.score <= 250:
-      YOU HAVE REACHED "JUNIOR MASTER" STATUS.
-  - player.score <= 300:
-      YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS C.
-  - player.score <= 330:
-      YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS B.
-  - player.score <= 349:
-      YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS A.
-  - player.score <= 9999:
-      ALL OF ADVENTUREDOM GIVES TRIBUTE TO YOU, ADVENTURER GRANDMASTER!
 items:
   - KEYS:
       longName: SET OF KEYS
@@ -192,7 +178,7 @@ items:
         - player.param3 == 1:
             THE GRATE IS OPEN.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -299,7 +285,7 @@ items:
         - player.param7 == 1:
             ROUGH STONE STEPS LEAD UP THE DOME.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -320,7 +306,7 @@ items:
             {
               println I THINK I JUST LOST MY APPETITE.
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if has then
               {
@@ -373,7 +359,7 @@ items:
                   println THE RESULTING RUCKUS HAS AWAKENED THE DWARVES.	THERE ARE NOW SEVERAL
                   println THREATENING LITTLE DWARVES IN THE ROOM WITH YOU!  MOST OF THEM THROW
                   println KNIVES AT YOU!	ALL OF THEM GET YOU!
-                  quit
+                  goto death
                 }
                 else
                 {
@@ -412,7 +398,7 @@ items:
         - player.param9 == 1:
             THE WAY NORTH LEADS THROUGH A MASSIVE, RUSTY, IRON DOOR.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -470,7 +456,7 @@ items:
             {
               println I THINK I JUST LOST MY APPETITE.
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -484,7 +470,7 @@ items:
         - player.param12 == 2:
             THE CRYSTAL BRIDGE HAS VANISHED!
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -499,7 +485,7 @@ items:
             {
               println "CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!"
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -643,7 +629,7 @@ items:
             {
               println I THINK I JUST LOST MY APPETITE.
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -675,7 +661,7 @@ items:
               }
               else
               {
-                if present WATER
+                if present WATER then
                 {
                   println YOUR BOTTLE IS NOW FULL OF WATER.
                   player.param20 = 0
@@ -755,7 +741,7 @@ items:
             {
               if present BOTTLE && player.param20 == 0 then
               {
-                player.param20 == 1
+                player.param20 = 1
                 println THE BOTTLE OF WATER IS NOW EMPTY.
               }
               else
@@ -764,7 +750,7 @@ items:
                 println MINERALS, BUT IS NOT UNPLEASANT.  IT IS EXTREMELY COLD.
               }
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if has BOTTLE then
               {
@@ -787,7 +773,7 @@ items:
       longName: OIL IN THE BOTTLE
       description:
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if has BOTTLE then
               {
@@ -825,7 +811,7 @@ items:
                 # die
               }
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -846,7 +832,7 @@ items:
         - player.param24 == 5:
             YOU'VE OVER-WATERED THE PLANT!
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param24 <= 0 then
               {
@@ -867,7 +853,7 @@ items:
         - player.param25 == 2:
             THERE IS A HUGE BEANSTALK GROWING OUT OF THE WEST PIT UP TO THE HOLE.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param24 <= 0 then
               {
@@ -884,7 +870,7 @@ items:
         - player.param26 == 0:
             
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -894,7 +880,7 @@ items:
         - player.param27 == 0:
             THE SHADOWY FIGURE SEEMS TO BE TRYING TO ATTRACT YOUR ATTENTION.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -906,7 +892,7 @@ items:
         - player.param28 == 1:
             THERE IS A LITTLE AXE LYING BESIDE THE BEAR.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param28 == 0 then
               {
@@ -916,14 +902,14 @@ items:
               {
                 println DON'T BE RIDICULOUS!
               }
-            } 
+            }
   - DRAWING:
       longName: *CAVE DRAWINGS
       description:
         - player.param29 == 0:
             
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -933,7 +919,7 @@ items:
         - player.param30 == 0:
             
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -963,7 +949,7 @@ items:
             {
               println I THINK I JUST LOST MY APPETITE.
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -977,7 +963,7 @@ items:
             THE WRECKAGE OF A BRIDGE (AND A DEAD BEAR) CAN BE SEEN AT THE BOTTOM
             OF THE CHASM.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -1000,7 +986,7 @@ items:
             {
               println I THINK I JUST LOST MY APPETITE.
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -1010,7 +996,7 @@ items:
         - player.param34 == 0:
             THE TROLL IS NOWHERE TO BE SEEN.
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println THE TROLL IS NOWHERE TO BE SEEN.
             }
@@ -1052,7 +1038,7 @@ items:
             {
               println I THINK I JUST LOST MY APPETITE.
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if has then
               {
@@ -1106,7 +1092,7 @@ items:
             {
               println "THIS IS NOT THE MAZE WHERE THE PIRATE LEAVES HIS TREASURE CHEST."
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -1116,7 +1102,7 @@ items:
         - player.param37 == 0:
             
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -1127,7 +1113,7 @@ items:
             THERE IS A MASSIVE VENDING MACHINE HERE.  THE INSTRUCTIONS ON IT READ:
             "DROP COINS HERE TO RECEIVE FRESH BATTERIES."
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -1145,7 +1131,7 @@ items:
         - player.param40 == 0:
             
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -1274,7 +1260,7 @@ items:
                 println YOU CAN'T THROW AN ITEM YOU DON'T POSSESS!
               }
             }
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param58 == 2 then
               {
@@ -1311,7 +1297,7 @@ items:
         - player.param62 == 1:
             THE DRAGON IS SPRAWLED OUT ON A PERSIAN RUG!!
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
             }
@@ -1331,7 +1317,7 @@ items:
         - player.param64 == 2:
             THERE IS A GOLDEN CHAIN LOCKED TO THE WALL!
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param64 != 0 then
               {
@@ -1350,7 +1336,7 @@ items:
               }
               else
               {
-                if player.param35 == 0
+                if player.param35 == 0 then
                 {
                   println THERE IS NO WAY TO GET PAST THE BEAR TO UNLOCK THE CHAIN, WHICH IS
                   println PROBABLY JUST AS WELL.
@@ -1486,7 +1472,7 @@ global:
           {
             if present BOTTLE && player.param20 == 0 then
             {
-              player.param20 == 1
+              player.param20 = 1
               println THE BOTTLE OF WATER IS NOW EMPTY.
             }
             else
@@ -1505,10 +1491,10 @@ global:
         }
     - QUIT:
         {
-          println DO YOU REALLY WANT TO QUIT NOW?
+          print DO YOU REALLY WANT TO QUIT NOW? 
           if askYesNo then
           {
-            quit
+            goto death
           }
         }
     - FIND,WHERE:
@@ -1517,6 +1503,7 @@ global:
         }
     - INVENTORY:
         {
+          println YOU ARE CURRENTLY HOLDING THE FOLLOWING:
           showInventory
         }
     - BLAST,DETONATE,IGNITE,BLOWUP:
@@ -1534,14 +1521,14 @@ global:
               println WALL, BURYING THE DWARVES IN THE RUBBLE.  YOU MARCH THROUGH THE HOLE
               println FRIENDLY ELVES CARRY THE CONQUERING ADVENTURER OFF INTO THE SUNSET.
             }
-            quit
+            goto death
           }
         }
     - SCORE:
         {
-          print If you were to quit now, you would score
+          print IF YOU WERE TO QUIT NOW, YOU WOULD SCORE
           printval player.score
-          println out of a possible 350.
+          println  OUT OF A POSSIBLE 350.
         }
     - FEE,FIE,FOE,FOO,FUM:
         {
@@ -1571,7 +1558,7 @@ global:
           restore
           println OK
         }
-    - POUR
+    - POUR:
         {
           println WHAT?
         }
@@ -2226,7 +2213,7 @@ rooms:
               }
               else
               {
-              call SOUTH,S
+              call SOUTH
               }
             }
         - SOUTH,S,RIGHT:
@@ -2237,7 +2224,7 @@ rooms:
               }
               else
               {
-              call WEST,W
+              call WEST
               }
             }
         - WEST,W,FORWARD,CONTINUE,ONWARD,ONWARDS:
@@ -2287,7 +2274,7 @@ rooms:
             YOU ARE AT THE BOTTOM OF THE PIT WITH A BROKEN NECK.
       onEntry:
         {
-          quit
+          goto death
         }
       items:
       entities:
@@ -2298,7 +2285,7 @@ rooms:
             YOU DIDN'T MAKE IT.
       onEntry:
         {
-          quit
+          goto death
         }
       items:
       entities:
@@ -3797,7 +3784,7 @@ rooms:
             OVER A SPARKLING WATERFALL INTO A ROARING WHIRLPOOL WHICH DISAPPEARS
             THROUGH A HOLE IN THE FLOOR.  PASSAGES EXIT TO THE SOUTH AND WEST.
       items:
-        - TRIDE
+        - TRIDENT
       entities:
       commands:
         - SOUTH,S,OUT,OUTSIDE,EXIT,LEAVE:
@@ -3929,7 +3916,7 @@ rooms:
         - true:
             YOU'RE IN THE DARK-ROOM.  A CORRIDOR LEADING SOUTH IS THE ONLY EXIT.
       items:
-        - TABLE
+        - TABLET
         - PLATINUM
       entities:
       commands:
@@ -4307,7 +4294,7 @@ rooms:
                 println THERE IS A LOUD EXPLOSION, AND A TWENTY-FOOT HOLE APPEARS IN THE FAR
                 println WALL, BURYING THE SNAKES IN THE RUBBLE.  A RIVER OF MOLTEN LAVA POURS
                 println IN THROUGH THE HOLE, DESTROYING EVERYTHING IN ITS PATH, INCLUDING YOU!
-                quit
+                goto death
               }
             }
   - room116:
@@ -5135,4 +5122,72 @@ rooms:
             {
               goto room112
             }
+  - death:
+      description:
+      onEntry:
+        {
+          print YOU HAVE SCORED A TOTAL OF 
+          printval player.score
+          println  POINTS, OUT OF A POSSIBLE MAXIMUM OF
+          println 350 POINTS. DURING THIS GAME OF ADVENTURE, YOU HAVE TAKEN A TOTAL OF
+          printval player.turns
+          println  TURNS.
+          print.
+          if player.score <= 35 then
+          {
+            println YOU ARE OBVIOUSLY A RANK AMATEUR.  BETTER LUCK NEXT TIME.
+            player.toNextRank = 36 - player.score
+          }
+          else if player.score <= 100 then
+          {
+            println YOUR SCORE QUALIFIES YOU AS A NOVICE CLASS ADVENTURER.
+            player.toNextRank = 101 - player.score
+          }
+          else if player.score <= 130 then
+          {
+            println YOU HAVE ACHIEVED THE RATING: "EXPERIENCED ADVENTURER".
+            player.toNextRank = 131 - player.score
+          }
+          else if player.score <= 200 then
+          {
+            println YOU MAY NOW CONSIDER YOURSELF A "SEASONED ADVENTURER".
+            player.toNextRank = 201 - player.score
+          }
+          else if player.score <= 250 then
+          {
+            println YOU HAVE REACHED "JUNIOR MASTER" STATUS.
+            player.toNextRank = 251 - player.score
+          }
+          else if player.score <= 300 then
+          {
+            println YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS C.
+            player.toNextRank = 301 - player.score
+          }
+          else if player.score <= 330 then
+          {
+            println YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS B.
+            player.toNextRank = 331 - player.score
+          }
+          else if player.score <= 349 then
+          {
+            println YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS A.
+            player.toNextRank = 350 - player.score
+          }
+          else
+          {
+            println ALL OF ADVENTUREDOM GIVES TRIBUTE TO YOU, ADVENTURER GRANDMASTER!
+          }    
+          if player.score < 350 then
+          {
+            print.
+            print TO REACH THE NEXT QUALIFICATION LEVEL YOU NEED 
+            printval player.toNextRank
+            print  MORE POINTS.
+          }
+          print.
+          quit
+        }
+      items:
+      entities:
+      commands:
 start: room1

@@ -92,7 +92,12 @@ commonInstructions:
   entity.<name>.<parameter> =|+=|-=|*= <expr>
   give <item>
   put <item>
-  if <boolExpr> then { ... } else { ... }
+  remove <item>
+  take <item>
+  put <item> in <room>
+  remove <item> from <room>
+  move <item> to <room>
+  if <boolExpr> then { ... } else if <boolExpr> then { ... } ... else { ... }
   call <command>
   quit
   save
@@ -117,4 +122,4 @@ EXPRESSION GRAMMAR:
 
 BOOLEAN EXPRESSION GRAMMAR:
   exprB -> termB (`&&`|`||`) exprB | termB
-  termB -> `askYesNo` | `present` <item|entity> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 
+  termB -> `askYesNo` | `present` <item|entity> | `present` <item|entity> `in` <room> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 

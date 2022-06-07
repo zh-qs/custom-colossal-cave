@@ -74,7 +74,7 @@ changeEntityParameterParser = (flip (>>=) <$> (uncurry changeEntityParameter <$>
 conditionalParserF :: Parser (a -> Action ()) -> Parser (a -> Action ())
 conditionalParserF parser = 
     (
-        baseCodeLineParser "if " (conditionallyEvaluateAction <$> booleanExpressionParser <*> (stringWithSpaces "then" *> parser) <*> ((stringWithSpaces "else" *> parser) <|> (pure $ const noAction))) "conditional"
+        baseCodeLineParser "if " (conditionallyEvaluateAction <$> booleanExpressionParser <*> (stringWithSpaces "then" *> parser) <*> ((stringWithSpaces "else" *> (parser <|> conditionalParserF parser)) <|> (pure $ const noAction))) "conditional"
     )
     <?> "Conditional definition"
 
@@ -114,6 +114,15 @@ putItemParser = baseCodeLineParser "put " (putItem . unpack <$> takeTill isSpace
 removeItemParser :: Parser (Action ())
 removeItemParser = baseCodeLineParser "remove " (discardItem . unpack <$> takeTill isSpace) "remove"
 
+removeItemFromRoomParser :: Parser (Action ())
+removeItemFromRoomParser = baseCodeLineParser "remove " (removeItemFromRoom <$> (unpack <$> takeTill isSpace) <*> (string " from " *> (unpack <$> takeTill isSpace))) "remove from"
+
+putItemInRoomParser :: Parser (Action ())
+putItemInRoomParser = baseCodeLineParser "put " (putItemInRoom <$> (unpack <$> takeTill isSpace) <*> (string " in " *> (unpack <$> takeTill isSpace))) "put in"
+
+moveItemToRoomParser :: Parser (Action ())
+moveItemToRoomParser = baseCodeLineParser "move " (moveItemToRoom <$> (unpack <$> takeTill isSpace) <*> (string " to " *> (unpack <$> takeTill isSpace))) "move to"
+
 -- |Match a @call <command>@ instruction for a room.
 callForRoomParser :: Parser (Action ())
 callForRoomParser = baseCodeLineParser "call " (callCommandForCurrentRoom . unpack <$> takeTill isSpace) "call"
@@ -150,6 +159,9 @@ commonCodeLineParser =
         <|> printValueParser
         <|> changePlayerParameterParser
         <|> changeEntityParameterParser
+        <|> removeItemFromRoomParser
+        <|> putItemInRoomParser
+        <|> moveItemToRoomParser
         <|> giveItemParser
         <|> putItemParser
         <|> takeItemParser

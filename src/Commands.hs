@@ -75,6 +75,18 @@ giveItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n i
         n 
         itMap)
 
+putItemInRoom :: ItemName -> Name -> Action ()
+putItemInRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+    Game 
+        p
+        im fm 
+        gr gi
+        (M.adjust 
+            (\(Room d e its cmds) -> Room d e (item:its) cmds)
+            room rs) 
+        n 
+        itMap)
+
 putItem :: ItemName -> Action ()
 putItem item = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
     Game 
@@ -96,6 +108,33 @@ dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n i
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (item:its) cmds)
             n rs) 
+        n 
+        itMap)
+
+moveItemToRoom :: ItemName -> Name -> Action ()
+moveItemToRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+    Game 
+        p
+        im fm 
+        gr gi
+        (M.adjust 
+            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
+            n 
+            (M.adjust 
+            (\(Room d e its cmds) -> Room d e (item:its) cmds)
+            room rs)) 
+        n 
+        itMap)
+
+removeItemFromRoom :: ItemName -> Name -> Action ()
+removeItemFromRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+    Game 
+        p
+        im fm 
+        gr gi
+        (M.adjust 
+            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
+            room rs) 
         n 
         itMap)
 
@@ -160,6 +199,11 @@ checkIfItemIsInInventory name = perform $ gets (\g -> name `elem` (playerInvento
 
 checkIfInteractablePresent :: Name -> Action Bool
 checkIfInteractablePresent name = perform $ gets (\g -> name `elem` (playerInventory . player) g || name `elem` interactables (rooms g M.! currentRoomName g))
+
+checkIfInteractablePresentInRoom :: Name -> Name -> Action Bool
+checkIfInteractablePresentInRoom name room = perform (gets (\g -> rooms g M.!? room)) 
+    >>= assertNotNothing ("ERROR: Room name not found: " ++ room) 
+    >>= (\r -> pure (name `elem` interactables r))
 
 saveGame :: Action ()
 saveGame = perform $ do

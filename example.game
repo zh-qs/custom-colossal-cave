@@ -102,6 +102,7 @@ rooms:
             printval invcount
             print.
           }
+          global room.inv
         }
       items:
         - food

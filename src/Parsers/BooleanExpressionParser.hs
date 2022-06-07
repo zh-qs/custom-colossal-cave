@@ -28,6 +28,10 @@ hasItemParser = stringWithSpaces "has" *> (checkIfItemIsInInventory . T.unpack <
 presentParser :: Parser (Action Bool)
 presentParser = stringWithSpaces "present" *> (checkIfInteractablePresent . T.unpack <$> takeTill isSpace)
 
+-- |Match a @present <item|entity> in <room>@ test.
+presentInRoomParser :: Parser (Action Bool)
+presentInRoomParser = stringWithSpaces "present" *> (checkIfInteractablePresentInRoom <$> (T.unpack <$> takeTill isSpace) <*> (stringWithSpaces "in" *> (T.unpack <$> takeTill isSpace)))
+
 -- |Match a comparison operator.
 comparisonOpParser :: Parser (Action Int -> Action Int -> Action Bool)
 comparisonOpParser = 
@@ -54,6 +58,7 @@ falseParser = (stringWithSpaces "false" <|> stringWithSpaces "False" <|> stringW
 boolTermParser :: Parser (Action Bool)
 boolTermParser = 
     hasItemParser
+    <|> presentInRoomParser
     <|> presentParser 
     <|> trueParser 
     <|> falseParser 
