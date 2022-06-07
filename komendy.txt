@@ -3,8 +3,16 @@ carry: jeśli 1 w pokoju, podnieś, jeśli więcej, to trzeba wskazać, który
 TODO:   co się dzieje po wyjściu -> zamienić finalMessage na finalAction
         dodać goback
         dodać switch do kodu
-        dodać move sth to where
-        put sth to where, remove sth from where
+        !dodać move sth to where
+        !put sth to where, remove sth from where
+                dodać global
+        !dodać present <item> in <room>
         command overriding i domyślnych wiadomości
 
 TODO z GAMLem: SAY <STH>
+               ciemność
+               ATTACK
+               DRINK WATER kiedy nie ma wody -> butelka
+               THROW
+               CAVE, FIND CAVE
+               FOO, ...

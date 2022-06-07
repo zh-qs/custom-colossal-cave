@@ -98,6 +98,7 @@ commonInstructions:
   save
   restore
   showInventory
+  global room.<globalRoomCommand>
   #<comment>
 
 itemInstructions:
@@ -106,6 +107,7 @@ itemInstructions:
   discard
   if has then { ... } else { ... }
   if present then { ... } else { ... }  (nie są to normalne ify!!!)
+  global item.<globalItemCommand>
 
 EXPRESSION GRAMMAR:
   expr -> term (`+`|`-`) expr | term

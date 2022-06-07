@@ -45,6 +45,14 @@ callCommandForCurrentRoom :: Name -> Action ()
 callCommandForCurrentRoom name = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ roomCommands $ rooms g M.! currentRoomName g)) 
     >>= assertNotNothing ("ERROR: Command name not found: " ++ name) >>= id
 
+callGlobalRoomCommand :: Name -> Action ()
+callGlobalRoomCommand name = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ globalRoomCommands g)) 
+    >>= assertNotNothing ("ERROR: Global command name not found: " ++ name) >>= id
+
+callGlobalItemCommand :: Name -> ItemName -> Action ()
+callGlobalItemCommand name itemName = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ globalItemCommands g itemName)) 
+    >>= assertNotNothing ("ERROR: Global command name not found: " ++ name ++ " " ++ itemName) >>= id
+
 takeItem :: ItemName -> Action ()
 takeItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itMap) -> 
     Game 

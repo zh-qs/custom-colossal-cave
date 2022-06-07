@@ -112,7 +112,7 @@ putItemParser = baseCodeLineParser "put " (putItem . unpack <$> takeTill isSpace
 
 -- |Match a @remove <item name>@ instruction.
 removeItemParser :: Parser (Action ())
-removeItemParser = baseCodeLineParser "remove " (removeItem . unpack <$> takeTill isSpace) "remove"
+removeItemParser = baseCodeLineParser "remove " (discardItem . unpack <$> takeTill isSpace) "remove"
 
 -- |Match a @call <command>@ instruction for a room.
 callForRoomParser :: Parser (Action ())
@@ -160,6 +160,8 @@ commonCodeLineParser =
         <|> saveParser
         <|> restoreParser
         <|> showInventoryParser
+        <|> globalRoomParser
+        <|> globalExplicitItemParser
     )) 
     <?> "Command definition"
 
@@ -190,6 +192,7 @@ itemCodeLineParser =
         <|> takeSelfParser
         <|> dropSelfParser
         <|> discardItemParser
+        <|> globalItemParser
         <|> (conditionalParserF itemCodeParser)
         <|> (hasConditionalParser itemCodeParser) 
         <|> (presentConditionalParser itemCodeParser))
@@ -199,3 +202,15 @@ itemCodeLineParser =
 -- |Match a code block with instructions specific to item.
 itemCodeParser :: Parser (ItemName -> Action ())
 itemCodeParser = openCurlyBrace *> (Prelude.foldr <$> pure (\f g -> (\n -> f n >> g n)) <*> pure (const noAction) <*> many' itemCodeLineParser) <* skipSpaces <* closeCurlyBrace
+
+-- |Match a @global room.<command>@ instruction.
+globalRoomParser :: Parser (Action ())
+globalRoomParser = baseCodeLineParser "global room." (callGlobalRoomCommand . unpack <$> takeTill isSpace) "global room command call"
+
+-- |Match a @global item.<command>@ instruction.
+globalItemParser :: Parser (ItemName -> Action ())
+globalItemParser = baseCodeLineParser "global item." (callGlobalItemCommand . unpack <$> takeTill isSpace) "global item command call"
+
+-- |Match a @global item.<command> <argument>@ instruction.
+globalExplicitItemParser :: Parser (Action ())
+globalExplicitItemParser = globalItemParser <*> (char ' ' *> (unpack <$> takeTill isSpace))

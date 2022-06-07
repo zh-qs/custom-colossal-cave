@@ -1,5 +1,7 @@
 player:
   parameters:
+    - dflag:
+        value: 0
     - foobar:
         value: 0
     - closed:
@@ -71,7 +73,7 @@ player:
     - param27:
         value: 0
     - param28:
-        value: 0
+        value: 1
     - param29:
         value: 0
     - param30:
@@ -159,6 +161,10 @@ items:
         - player.param1 == 0:
             THERE ARE SOME KEYS ON THE GROUND HERE.
       commands:
+        - UNLOCK,OPEN,LOCK,CLOSE:
+            {
+              println YOU CAN'T LOCK NOR UNLOCK THE KEYS.
+            }
   - LAMP:
       longName: BRASS LANTERN
       description:
@@ -167,6 +173,17 @@ items:
         - player.param2 == 1:
             THERE IS A LAMP SHINING NEARBY.
       commands:
+        - LIGHT,ON:
+            {
+              player.param2 = 1
+              println OK
+              # co z ciemnością????????
+            }
+        - EXTINGUISH,OFF:
+            {
+              player.param2 = 0
+              println OK
+            }
   - GRATE:
       longName: *GRATE
       description:
@@ -178,6 +195,44 @@ items:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
+            }
+        - UNLOCK,OPEN:
+            {
+              if player.param3 == 1 then
+              {
+                println IT WAS ALREADY UNLOCKED.
+              }
+              else
+              {
+                if !has KEYS then
+                {
+                  println YOU HAVE NO KEYS!
+                }
+                else
+                {
+                  player.param3 = 1
+                  println THE GRATE IS NOW UNLOCKED.
+                }
+              }
+            }
+        - LOCK,CLOSE:
+            {
+              if player.param3 == 0 then
+              {
+                println IT WAS ALREADY LOCKED.
+              }
+              else
+              {
+                if !has KEYS then
+                {
+                  println YOU HAVE NO KEYS!
+                }
+                else
+                {
+                  player.param3 = 0
+                  println THE GRATE IS NOW LOCKED.
+                }
+              }
             }
   - CAGE:
       longName: WICKER CAGE
@@ -191,7 +246,34 @@ items:
               {
                 drop BIRD
               }
-              drop
+              global item.DROP
+            }
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
+            {
+              if has then
+              {
+                println YOU ARE ALREADY CARRYING IT!
+              }
+              else
+		          {
+    		        if invcount < 7 then
+		    	      {
+		              take
+                  if player.param8 == 1 then
+                  {
+                    take BIRD
+                  }
+		              println OK
+    			      }
+		    	      else
+			          {
+			            println YOU CAN'T CARRY ANYTHING MORE.	YOU'LL HAVE TO DROP SOMETHING FIRST.
+    			      }
+		          }
+            }
+        - UNLOCK,OPEN,LOCK,CLOSE:
+            {
+              println IT HAS NO LOCK.
             }
   - ROD:
       longName: BLACK ROD
@@ -199,6 +281,10 @@ items:
         - player.param5 == 0:
             A THREE FOOT BLACK ROD WITH A RUSTY STAR ON AN END LIES NEARBY.
       commands:
+        - WAVE,SHAKE,SWING:
+            {
+              global room.WAVE
+            }
   - ROD2:
       longName: BLACK ROD
       description:
@@ -225,34 +311,56 @@ items:
         - player.param8 == 1:
             THERE IS A LITTLE BIRD IN THE CAGE.
       commands:
+        - FEED:
+            {
+              println IT'S NOT HUNGRY (IT'S MERELY PININ' FOR THE FJORDS).  BESIDES, YOU
+              println HAVE NO BIRD SEED.
+            }
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
-              if player.param8 != 0 then
+              if has then
               {
-                take CAGE
-                take BIRD
-                println OK
+                println YOU ARE ALREADY CARRYING IT!
               }
               else
               {
-                if !has ROD && has CAGE then
+                if player.param8 != 0 then
                 {
-                  if has CAGE then
+                  if invcount < 7 then
                   {
-                    player.param8 = 1
                     take CAGE
                     take BIRD
                     println OK
                   }
                   else
                   {
-                    println YOU CAN CATCH THE BIRD, BUT YOU CANNOT CARRY IT.
+                    println YOU CAN'T CARRY ANYTHING MORE.	YOU'LL HAVE TO DROP SOMETHING FIRST.
                   }
                 }
                 else
                 {
-                  println THE BIRD WAS UNAFRAID WHEN YOU ENTERED, BUT AS YOU APPROACH IT BECOMES
-                  println DISTURBED AND YOU CANNOT CATCH IT.
+                  if !has ROD && has CAGE then
+                  {
+                    if has CAGE then
+                    {
+                      player.param8 = 1
+                      take BIRD
+                      println OK
+                    }
+                    else
+                    {
+                      println YOU CAN CATCH THE BIRD, BUT YOU CANNOT CARRY IT.
+                    }
+                  }
+                  else
+                  {
+                    println THE BIRD WAS UNAFRAID WHEN YOU ENTERED, BUT AS YOU APPROACH IT BECOMES
+                    println DISTURBED AND YOU CANNOT CATCH IT.
+                  }
                 }
               }
             }
@@ -278,8 +386,22 @@ items:
               }
               else
               {
+                if present DRAGON && player.param31 == 0 then
+                {
+                  println THE LITTLE BIRD ATTACKS THE GREEN DRAGON, AND IN AN ASTOUNDING FLURRY
+                  println GETS BURNT TO A CINDER.  THE ASHES BLOW AWAY.
+                  discard
+                  if present SNAKE in room19 then
+                  {
+                    player.treasuresUnableToFind += 1
+                  }
+                }
+                else
+                {
+                  drop
+                  println OK
+                }
                 player.param8 = 0
-                drop
               }
             }
   - DOOR:
@@ -293,6 +415,28 @@ items:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
+            }
+        - UNLOCK,OPEN:
+            {
+              if player.param9 == 0 then
+              {
+                println THE DOOR IS EXTREMELY RUSTY AND REFUSES TO OPEN.
+              }
+              else
+              {
+                println THE DOOR IS ALREADY OPEN.
+              }
+            }
+        - LOCK,CLOSE:
+            {
+              if player.param9 == 1 then
+              {
+                println THE DOOR IS EXTREMELY RUSTY AND REFUSES TO MOVE.
+              }
+              else
+              {
+                println THE DOOR IS ALREADY OPEN.
+              }
             }
   - PILLOW:
       longName: VELVET PILLOW
@@ -308,6 +452,24 @@ items:
         - player.param11 == 1:
             
       commands:
+        - FEED:
+            {
+              if present BIRD && player.closed == 0 then
+              {
+                remove BIRD
+                player.param8 = 0
+                player.treasuresUnableToFind += 1
+                println THE SNAKE HAS NOW DEVOURED YOUR BIRD.
+              }
+              else
+              {
+                println THERE'S NOTHING HERE IT WANTS TO EAT (EXCEPT PERHAPS YOU).
+              }
+            }
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
@@ -326,13 +488,17 @@ items:
             {
               println DON'T BE RIDICULOUS!
             }
-  - TABLE:
+  - TABLET:
       longName: *STONE TABLET
       description:
         - player.param13 == 0:
             A MASSIVE STONE TABLET IMBEDDED IN THE WALL READS:
             "CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!"
       commands:
+        - READ:
+            {
+              println "CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!"
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
@@ -343,6 +509,34 @@ items:
         - player.param14 == 0:
             THERE IS AN ENORMOUS CLAM HERE WITH ITS SHELL TIGHTLY CLOSED.
       commands:
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
+        - UNLOCK,OPEN:
+            {
+              if has then
+              {
+                println I ADVISE YOU TO PUT DOWN THE CLAM BEFORE OPENING IT.  >STRAIN!<
+              }
+              else
+              {
+                if !has TRIDENT then
+                {
+                  println YOU DON'T HAVE ANYTHING STRONG ENOUGH TO OPEN THE CLAM.
+                }
+                else
+                {
+                  println A GLISTENING PEARL FALLS OUT OF THE CLAM AND ROLLS AWAY.  GOODNESS,
+                  println THIS MUST REALLY BE AN OYSTER.	(I NEVER WAS VERY GOOD AT IDENTIFYING
+                  println BIVALVES.)  WHATEVER IT IS, IT HAS NOW SNAPPED SHUT AGAIN.
+                  discard
+                  put OYSTER
+                  put PEARL in room105
+                }
+              }
+              
+            }
   - OYSTER:
       longName: GIANT OYSTER  >GROAN!<
       description:
@@ -352,16 +546,103 @@ items:
             INTERESTING.  THERE SEEMS TO BE SOMETHING WRITTEN ON THE UNDERSIDE OF
             THE OYSTER.
       commands:
+        - READ,PERUSE:
+            {
+              if has then
+              {
+                if player.closed == 0 then
+                {
+                  println IT SAYS THE SAME THING IT DID BEFORE.
+                }
+                else
+                {
+                  println HMMM, THIS LOOKS LIKE A CLUE, WHICH MEANS IT'LL COST YOU 10 POINTS TO
+                  println READ IT.  SHOULD I GO AHEAD AND READ IT ANYWAY?
+                  if askYesNo then
+                  {
+                    player.score -= 10
+                    println IT SAYS, "THERE IS SOMETHING STRANGE ABOUT THIS PLACE, SUCH THAT ONE
+                    println OF THE WORDS I'VE ALWAYS KNOWN NOW HAS A NEW EFFECT."
+                  }
+                  else
+                  {
+                    println OK
+                  }
+                }
+              }
+              else
+              {
+                println HUH...
+              }
+              
+            }
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
+        - UNLOCK,OPEN:
+            {
+              if has then
+              {
+                println I ADVISE YOU TO PUT DOWN THE OYSTER BEFORE OPENING IT.  >WRENCH!<
+              }
+              else
+              {
+                if !has TRIDENT then
+                {
+                  println YOU DON'T HAVE ANYTHING STRONG ENOUGH TO OPEN THE OYSTER.
+                }
+                else
+                {
+                  println THE OYSTER CREAKS OPEN, REVEALING NOTHING BUT OYSTER INSIDE.  IT
+                  println PROMPTLY SNAPS SHUT AGAIN.
+                }
+              }
+              
+            }
   - MAGAZINE:
       longName: "SPELUNKER TODAY"
       description:
         - player.param16 == 0:
             THERE ARE A FEW RECENT ISSUES OF "SPELUNKER TODAY" MAGAZINE HERE.
       commands:
+        - READ,PERUSE:
+            {
+              println I'M AFRAID THE MAGAZINE IS WRITTEN IN DWARVISH.
+            }
   - DWARF:
       longName: 
       description:
       commands:
+        - WAKE,DISTURB:
+            {
+              if player.closing == 0 then
+              {
+                println SHHHH!
+              }
+              else
+              {
+                println YOU PROD THE NEAREST DWARF, WHO WAKES UP GRUMPILY, TAKES ONE LOOK AT
+                println YOU, CURSES, AND GRABS FOR HIS AXE.
+                # die
+              }
+            }
+        - FEED:
+            {
+              if present FOOD then
+              {
+                println YOU FOOL, DWARVES EAT ONLY COAL!  NOW YOU'VE MADE HIM *REALLY* MAD!!
+                player.dflag += 1
+              }
+              else
+              {
+                println YOU HAVE NOTHING TO FEED THE DWARF!
+              }
+            }
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
@@ -386,10 +667,103 @@ items:
         - player.param20 == 2:
             THERE IS A BOTTLE OF OIL HERE.
       commands:
+        - FILL:
+            {
+              if player.param20 != 1 then
+              {
+                println YOUR BOTTLE IS ALREADY FULL.
+              }
+              else
+              {
+                if present WATER
+                {
+                  println YOUR BOTTLE IS NOW FULL OF WATER.
+                  player.param20 = 0
+                }
+                else
+                {
+                  if present OIL then
+                  {
+                    println YOUR BOTTLE IS NOW FULL OF OIL.
+                    player.param20 = 2
+                  }
+                  else
+                  {
+                    println THERE IS NOTHING HERE WITH WHICH TO FILL THE BOTTLE.
+                  }
+                }
+              }
+            }
+        - POUR:
+            {
+              if player.param20 == 1 then
+              {
+                println YOUR BOTTLE IS EMPTY.
+              }
+              else
+              {
+                if present PLANT then
+                {
+                  if player.param20 == 2 then
+                  {
+                    println THE PLANT INDIGNANTLY SHAKES THE OIL OFF ITS LEAVES AND ASKS, "WATER?"
+                  }
+                  else
+                  {
+                    if player.param24 == 0 then
+                    {
+                      println THE PLANT SPURTS INTO FURIOUS GROWTH FOR A FEW SECONDS.
+                      player.param24 = 2
+                    }
+                    else
+                    {
+                    if player.param24 == 2 then
+                    {
+                      println THE PLANT GROWS EXPLOSIVELY, ALMOST FILLING THE BOTTOM OF THE PIT.
+                      player.param24 = 4
+                    }
+                    else
+                    {
+                      println YOU'VE OVER-WATERED THE PLANT!
+                      player.param24 = 0
+                    }
+                    }
+                    player.param25 = player.param24 / 2
+                  }
+                }
+                if present DOOR then
+                {
+                  if player.param20 == 2 then
+                  {
+                    player.param9 = 1
+                    println THE OIL HAS FREED UP THE HINGES SO THAT THE DOOR WILL NOW MOVE,
+                    println ALTHOUGH IT REQUIRES SOME EFFORT.
+                  }
+                  else
+                  {
+                    println THE HINGES ARE QUITE THOROUGHLY RUSTED NOW AND WON'T BUDGE.
+                  }
+                }
+                player.param20 = 1
+              }
+            }
   - WATER:
       longName: WATER IN THE BOTTLE
       description:
       commands:
+        - DRINK:
+            {
+              if present BOTTLE && player.param20 == 0 then
+              {
+                player.param20 == 1
+                println THE BOTTLE OF WATER IS NOW EMPTY.
+              }
+              else
+              {
+                println YOU HAVE TAKEN A DRINK FROM THE STREAM.  THE WATER TASTES STRONGLY OF
+                println MINERALS, BUT IS NOT UNPLEASANT.  IT IS EXTREMELY COLD.
+              }
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               if has BOTTLE then
@@ -438,6 +812,19 @@ items:
         - player.param23 == 0:
             
       commands:
+        - BREAK,SHATTER,SMASH:
+            {
+              if player.closed == 0 then
+              {
+                println IT IS TOO FAR UP FOR YOU TO REACH.
+              }
+              else
+              {
+                println YOU STRIKE THE MIRROR A RESOUNDING BLOW, WHEREUPON IT SHATTERS INTO A
+                println MYRIAD TINY FRAGMENTS.
+                # die
+              }
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
@@ -519,6 +906,17 @@ items:
         - player.param28 == 1:
             THERE IS A LITTLE AXE LYING BESIDE THE BEAR.
       commands:
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              if player.param28 == 0 then
+              {
+                global item.TAKE
+              }
+              else
+              {
+                println DON'T BE RIDICULOUS!
+              }
+            } 
   - DRAWING:
       longName: *CAVE DRAWINGS
       description:
@@ -550,6 +948,21 @@ items:
         - player.param31 == 2:
             THE BODY OF A HUGE GREEN DEAD DRAGON IS LYING OFF TO ONE SIDE.
       commands:
+        - FEED:
+            {
+              if player.param31 != 0 then
+              {
+                println THERE'S NOTHING HERE IT WANTS TO EAT (EXCEPT PERHAPS YOU).
+              }
+              else
+              {
+                println DON'T BE RIDICULOUS!
+              }
+            }
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
@@ -579,6 +992,14 @@ items:
         - player.param33 == 2:
             
       commands:
+        - FEED:
+            {
+              println GLUTTONY IS NOT ONE OF THE TROLL'S VICES.  AVARICE, HOWEVER, IS.
+            }
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
@@ -591,7 +1012,7 @@ items:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
-              println DON'T BE RIDICULOUS!
+              println THE TROLL IS NOWHERE TO BE SEEN.
             }
   - BEAR:
       longName: 
@@ -605,15 +1026,73 @@ items:
         - player.param35 == 3:
             
       commands:
-        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+        - FEED:
             {
-              if player.param35 == 1 then
+              if present FOOD then
               {
-                println THE BEAR IS STILL CHAINED TO THE WALL.
+                remove FOOD
+                player.param35 = 1
+                player.param28 = 0
+                println THE BEAR EAGERLY WOLFS DOWN YOUR FOOD, AFTER WHICH HE SEEMS TO CALM
+                println DOWN CONSIDERABLY AND EVEN BECOMES RATHER FRIENDLY.
               }
               else
               {
-                println DON'T BE RIDICULOUS!
+                if player.param35 == 0 then
+                {
+                  println THERE'S NOTHING HERE IT WANTS TO EAT (EXCEPT PERHAPS YOU).
+                }
+                else
+                {
+                  println DON'T BE RIDICULOUS!
+                }
+              }
+            }
+        - EAT,DEVOUR:
+            {
+              println I THINK I JUST LOST MY APPETITE.
+            }
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              if has then
+              {
+                println YOU ARE ALREADY CARRYING IT!
+              }
+              else
+              {
+                if player.param35 == 1 then
+                {
+                  println THE BEAR IS STILL CHAINED TO THE WALL.
+                }
+                else
+                {
+                  println DON'T BE RIDICULOUS!
+                }               
+              }
+            }
+        - DROP,RELEASE,FREE,DISCARD,DUMP,THROW,TOSS:
+            {
+              if has then
+              {
+                if present TROLL then
+                {
+                  remove TROLL from room116
+                  put TROLL2 in room122
+                  remove TROLL from room116
+                  put TROLL2 in room122
+                  player.param33 = 2
+                  println THE BEAR LUMBERS TOWARD THE TROLL, WHO LETS OUT A STARTLED SHRIEK AND
+                  println SCURRIES AWAY.	THE BEAR SOON GIVES UP THE PURSUIT AND WANDERS BACK.
+                }
+                else
+                {
+                  drop
+                  println OK
+                }
+              }  
+              else
+              {
+                println YOU CAN'T THROW AN ITEM YOU DON'T POSSESS!
               }
             }
   - MESSAGE:
@@ -623,6 +1102,10 @@ items:
             THERE IS A MESSAGE SCRAWLED IN THE DUST IN A FLOWERY SCRIPT, READING:
             "THIS IS NOT THE MAZE WHERE THE PIRATE LEAVES HIS TREASURE CHEST."
       commands:
+        - READ:
+            {
+              println "THIS IS NOT THE MAZE WHERE THE PIRATE LEAVES HIS TREASURE CHEST."
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
             {
               println DON'T BE RIDICULOUS!
@@ -648,7 +1131,7 @@ items:
             {
               println DON'T BE RIDICULOUS!
             }
-  - BATTERY:
+  - BATTERIES:
       longName: BATTERIES
       description:
         - player.param39 == 0:
@@ -696,6 +1179,27 @@ items:
         - player.param54 == 0:
             THERE ARE MANY COINS HERE!
       commands:
+        - DROP,RELEASE,DUMP,THROW,TOSS:
+            {
+              if has then
+              {
+                if present MACHINE then
+                {
+                  discard
+                  put BATTERIES
+                  println THERE ARE FRESH BATTERIES HERE.
+                }
+                else
+                {
+                  drop
+                  println OK
+                }
+              }
+              else
+              {
+                println YOU CAN'T THROW AN ITEM YOU DON'T POSSESS!
+              }
+            }
   - CHEST:
       longName: TREASURE CHEST
       description:
@@ -712,7 +1216,7 @@ items:
         - player.param56 == 2:
             DONE!
       commands:
-  - TRIDE:
+  - TRIDENT:
       longName: JEWELED TRIDENT
       description:
         - player.param57 == 0:
@@ -730,6 +1234,57 @@ items:
         - player.param58 == 3:
             THE MING VASE DROPS WITH A DELICATE CRASH.
       commands:
+        - FILL:
+            {
+              if has then
+              {
+                if present WATER || present OIL then
+                {
+                  println THE SUDDEN CHANGE IN TEMPERATURE HAS DELICATELY SHATTERED THE VASE.
+                  drop
+                  player.param58 = 2
+                }
+                else
+                {
+                  println THERE IS NOTHING HERE WITH WHICH TO FILL THE VASE.
+                }
+              }
+              else
+              {
+                println YOU AREN'T CARRYING IT!
+              }
+            }
+        - DROP,RELEASE,FREE,DISCARD,DUMP,THROW,TOSS:
+            {
+              if has then
+              {
+                drop
+                if present PILLOW then
+                {
+                  println THE VASE IS NOW RESTING, DELICATELY, ON A VELVET PILLOW.
+                }
+                else
+                {
+                  println THE MING VASE DROPS WITH A DELICATE CRASH.
+                  player.param58 = 2
+                }
+              }
+              else
+              {
+                println YOU CAN'T THROW AN ITEM YOU DON'T POSSESS!
+              }
+            }
+        - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTU,GET,TOTE:
+            {
+              if player.param58 == 2 then
+              {
+                println DON'T BE RIDICULOUS!
+              }
+              else
+              {
+                global item.TAKE
+              }
+            }
   - EMERALD:
       longName: EGG-SIZED EMERALD
       description:
@@ -784,9 +1339,47 @@ items:
               }
               else
               {
-                take 
-                # nie tak szybko!!! por. global item CARRY
-	              println OK
+                global item.TAKE
+              }
+            }
+        - UNLOCK,OPEN:
+            {
+              if player.param64 == 0 then
+              {
+                println THE CHAIN IS ALREADY UNLOCKED.
+              }
+              else
+              {
+                if player.param35 == 0
+                {
+                  println THERE IS NO WAY TO GET PAST THE BEAR TO UNLOCK THE CHAIN, WHICH IS
+                  println PROBABLY JUST AS WELL.
+                }
+                else
+                {
+                  println THE CHAIN IS NOW UNLOCKED.
+                  if has CHAIN then
+                  {
+                    drop CHAIN
+                  }
+                  player.param64 = 2
+                }
+              }
+            }
+        - LOCK,CLOSE:
+            {
+              if player.param64 != 0 then
+              {
+                println THE CHAIN IS ALREADY LOCKED.
+              }
+              else
+              {
+                println THE CHAIN IS NOW LOCKED.
+                if has CHAIN then
+                {
+                  drop CHAIN
+                }
+                player.param64 = 2
               }
             }
 global:
@@ -853,26 +1446,54 @@ global:
               println THE CRYSTAL BRIDGE HAS VANISHED!
             }
           }
+          else
+          {
+            println HELLO!
+          }
         }
     - CALM,PLACATE,TAME:
         {
-          println $globalcode(10)
+          #println $globalcode(10)
         }
     - WALK,RUN,TRAVEL,GO,PROCEED,CONTINUE,EXPLORE,GOTO,FOLLOW,TURN:
         {
-          println $globalcode(11)
+          #println $globalcode(11)
         }
-    - ATTACK,KILL,FIGHT,HIT,STRIKE:
+    - ATTACK,KILL,FIGHT,HIT,STRIKE,FEED:
         {
           println WHAT?
         }
     - EAT,DEVOUR:
         {
-          println WHAT?
+          if present FOOD then
+          {
+            remove FOOD
+            println THANK YOU, IT WAS DELICIOUS!
+          }
+          else
+          {
+            println WHAT?
+          }
         }
     - DRINK:
         {
-          # poszukaj butelki z wodą albo strumyka
+          if present WATER then
+          {
+            println YOU HAVE TAKEN A DRINK FROM THE STREAM.  THE WATER TASTES STRONGLY OF
+            println MINERALS, BUT IS NOT UNPLEASANT.  IT IS EXTREMELY COLD.
+          }
+          else
+          {
+            if present BOTTLE && player.param20 == 0 then
+            {
+              player.param20 == 1
+              println THE BOTTLE OF WATER IS NOW EMPTY.
+            }
+            else
+            {
+              println WHAT?
+            }
+          }
         }
     - RUB:
         {
@@ -950,6 +1571,10 @@ global:
           restore
           println OK
         }
+    - POUR
+        {
+          println WHAT?
+        }
   item:
     - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
         {
@@ -982,13 +1607,17 @@ global:
             println YOU CAN'T THROW AN ITEM YOU DON'T POSSESS!
           }
         }
-    - EAT,DEVOUR:
+    - EAT,DEVOUR,DRINK:
         {
           println DON'T BE RIDICULOUS!
         }
     - RUB:
         {
           println PECULIAR.  NOTHING UNEXPECTED HAPPENS.
+        }
+    - UNLOCK,OPEN,LOCK,CLOSE:
+        {
+          println I DON'T KNOW HOW TO LOCK OR UNLOCK IT.
         }
     - FIND,WHERE,INVENTORY:
         {
@@ -1013,11 +1642,19 @@ global:
         }
     - BLAST,DETONATE,IGNITE,BLOWUP:
         {
-          print.
+          global room.BLAST
         }
     - FILL:
         {
           println YOU CAN'T FILL THAT.
+        }
+    - POUR:
+        {
+          println YOU CAN'T POUR THAT.
+        }
+    - FEED:
+        {
+          println I'M GAME.  WOULD YOU CARE TO EXPLAIN HOW?
         }
 rooms:
   - room1:

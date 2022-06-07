@@ -72,7 +72,7 @@ code3:
 	remove TROLL2
 	put TROLL
 	remove TROLL2 from room116
-	put TROLL to room116
+	put TROLL in room116
 	goto (here)
   }
   
