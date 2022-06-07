@@ -23,14 +23,14 @@ longNameParser indentationLevel = (tabs indentationLevel *> string "longName: " 
 
 modifyItemMapIfNeeded :: Int -> ItemName -> StParser ItemName
 modifyItemMapIfNeeded indentationLevel name = 
-    gets (M.member name) 
+    gets ((M.member name) . fst) 
     >>= (\exists -> if exists
         then lift (pure name <* newLines)
         else lift (Item 
                 <$> (char ':' *> newLines *> longNameParser (indentationLevel + 2) <* newLines) 
                 <*> (tabs (indentationLevel + 2) *> switchParser "description" (indentationLevel + 2) "Item description")
                 <*> (tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser <*> pure name) <* newLines))
-            >>= (\item -> modify' (\m -> M.insert name item m))
+            >>= (\item -> modify' (\(m,a) -> (M.insert name item m,a)))
             >> (lift $ pure name))
 
 itemParser :: Int -> StParser ItemName
@@ -42,4 +42,4 @@ itemListParser :: Text -> Int -> String -> StParser [ItemName]
 itemListParser keyword indentationLevel msg = listParserSt keyword (itemParser indentationLevel) indentationLevel msg
 
 testItemParser :: Result ItemName
-testItemParser = feed (parse (evalStateT (itemParser 1) M.empty <* endOfInput) "axe:\n      commands:\n        - kill: { print Kill!\n }\n") ""
+testItemParser = feed (parse (evalStateT (itemParser 1) (M.empty,noAction) <* endOfInput) "axe:\n      commands:\n        - kill: { print Kill!\n }\n") ""

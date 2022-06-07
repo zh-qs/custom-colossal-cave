@@ -22,6 +22,10 @@ items:
   $list:item
 
 global:
+  onEntry?:
+    {
+    <commonInstructions>
+    }
   room:
     $list:command
   item:

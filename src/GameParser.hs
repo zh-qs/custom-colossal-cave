@@ -46,7 +46,7 @@ gameParserSt =
         roomMapParser = M.fromList <$> roomListParser -- PRZEROBIĆ TAK, ŻEBY DZIAŁAŁ PARITAMI!!!!!
 
 gameParser :: Parser Game
-gameParser = (\(a,s) -> a s) <$> runStateT gameParserSt M.empty 
+gameParser = (\(f,(s,_)) -> f s) <$> runStateT gameParserSt (M.empty, noAction) 
 
 checkGame :: Game -> Either String Game
 checkGame g = if M.member (currentRoomName g) (rooms g) 

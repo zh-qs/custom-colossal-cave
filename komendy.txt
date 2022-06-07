@@ -1,8 +1,8 @@
 carry: jeśli 1 w pokoju, podnieś, jeśli więcej, to trzeba wskazać, który
 
-TODO:   co się dzieje po wyjściu -> zamienić finalMessage na finalAction
+TODO:           co się dzieje po wyjściu -> zamienić finalMessage na finalAction -> można obejść
         dodać goback
-        dodać switch do kodu
+                dodać switch do kodu -> niby jest
         command overriding i domyślnych wiadomości
 
 TODO z GAMLem: SAY <STH>

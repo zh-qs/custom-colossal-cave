@@ -24,4 +24,6 @@ globalItemCommandsParser :: StParser (ItemName -> [Command])
 globalItemCommandsParser = lift $ tabs 1 *> baseItemCommandListParser "item" 2 itemCodeParser
 
 globalRoomCommandsParser :: StParser [Command]
-globalRoomCommandsParser = lift $ tabs 1 *> baseCommandListParser "room" 2 codeParser
+globalRoomCommandsParser = 
+    (lift (onEntryParser 1 noAction) >>= (\a -> modify' (\(m,_) -> (m,a))))
+    *> lift (tabs 1 *> baseCommandListParser "room" 2 codeParser)

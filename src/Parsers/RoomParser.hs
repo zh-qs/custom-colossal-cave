@@ -22,22 +22,22 @@ import Parsers.EntityParser
 import Parsers.SwitchParser
 
 descriptionParser :: Parser Desc
-descriptionParser = switchParser "description" 3 "Description definition"-- <|> ((lift . return) <$> multilineContentParser "description" 3 "Description definition")
+descriptionParser = switchParser "description" 3 "Description definition"
 
 roomParser :: StParser (Name,Room)
-roomParser = 
+roomParser = gets snd >>= (\action -> 
     ((,)
         <$> lift ((unpack <$> takeWhile1 isAlphaNum) <* char ':' <* newLines) 
         <*> (Room 
             <$> lift (((tabs 3) *> descriptionParser <* newLines) <?> "Description")
-            <*> lift ((tabs 3 *> string "onEntry:" *> newLines *> skipSpaces *> codeParser <* newLines) <|> pure noAction)
+            <*> lift (onEntryParser 3 action)
             <*> (
                 (++)
                 <$> ((lift (tabs 3) *> itemListParser "items" 4 "Item list definition" <* lift newLines) <??> "Item List")
                 <*> ((lift (tabs 3) *> entityListParser <* lift newLines) <??> "Entity List")
             )
             <*> lift (((tabs 3) *> commandListParser 4 codeParser <* newLines) <?> "Command List")))
-    <??> "Room definition"
+    <??> "Room definition")
 
 roomListParser :: StParser [(Name,Room)]
 roomListParser = listParserSt "rooms" roomParser 1 "Room list definition"
@@ -48,7 +48,7 @@ testDescriptionParser = feed (parse (descriptionParser <* endOfInput) "descripti
 
 testRoomParser :: Result (Name,Room)
 testRoomParser = feed 
-    (parse (evalStateT roomParser M.empty <* endOfInput)
+    (parse (evalStateT roomParser (M.empty,noAction) <* endOfInput)
         "kitchen:\n\
         \      description:\n\
         \        You are in your kitchen, looking at the table.\n\

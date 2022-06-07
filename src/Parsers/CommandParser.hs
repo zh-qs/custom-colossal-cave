@@ -48,6 +48,9 @@ baseCommandListParser keyword indentationLevel parser = concat <$> listParser ke
 commandListParser :: Int -> Parser (Action ()) -> Parser [Command]
 commandListParser = baseCommandListParser "commands"
 
+onEntryParser :: Int -> Action () -> Parser (Action ())
+onEntryParser indentationLevel defaultAction = (tabs indentationLevel *> string "onEntry:" *> newLines *> skipSpaces *> codeParser <* newLines) <|> pure defaultAction
+
 testCommandParser :: Result ()
 testCommandParser = void $ feed (parse (itemCommandParser itemCodeParser) "eat:\n\
     \            {\n\

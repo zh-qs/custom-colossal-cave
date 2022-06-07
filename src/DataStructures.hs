@@ -20,8 +20,8 @@ type Visibility = Bool
 type StIO a = StateT Game IO a
 type Desc = Action String
 
--- |Stateful 'Parser' with a map of interactables already read as a state.
-type StParser a = StateT (M.Map Name Interactable) Parser a
+-- |Stateful 'Parser' with a map of interactables and default room entry action already read as a state.
+type StParser a = StateT (M.Map Name Interactable, Action ()) Parser a
 
 -- |Name a stateful 'Parser'. The lifted equivalent of '<?>' from attoparsec.
 (<??>) :: StParser a -> String -> StParser a
@@ -42,9 +42,6 @@ data Room = Room { description :: Desc, onEntry :: Action (), interactables :: [
 
 instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
-
---showRoom :: Room -> Action ()
---showRoom r = description r >>= perform . lift . putStrLn . (++(foldl' (\str item -> str ++ "There is " ++ item ++ " nearby.\n") "" $ interactables r))
 
 -- |Structure that holds player parameters and items currently toting.
 data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)

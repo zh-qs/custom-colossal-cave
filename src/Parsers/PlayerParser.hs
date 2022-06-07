@@ -40,7 +40,7 @@ playerParser = (lift (string "player:\n")
 
 testPlayerParser :: Result Player
 testPlayerParser = feed 
-    (parse (evalStateT playerParser M.empty <* endOfInput) 
+    (parse (evalStateT playerParser (M.empty,noAction) <* endOfInput) 
         "player:\n\
         \  parameters:\n\
         \    - health:\n\
