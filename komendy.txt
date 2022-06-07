@@ -6,19 +6,40 @@ TODO:           co się dzieje po wyjściu -> zamienić finalMessage na finalAct
         command overriding i domyślnych wiadomości
 
 TODO z GAMLem: SAY <STH>
-               GOTO <WHERE>
-               ciemność
-               ATTACK
+               GOTO <WHERE> (komenda, nie instrukcja)
+               
+               !ATTACK
                DRINK WATER kiedy nie ma wody -> butelka
-               THROW
+               !THROW
                CAVE, FIND CAVE
-               FOO, ...
-               HELP
-               INFO
-               NORTHEAST
+               !FOO, ...
+               !?move sth from room to room
+               ?NORTHEAST
+                !global onEntry call
+                !!$code
 
-               jeśli jest i było ciemno, to z 35%:
+                C  EVERY INPUT, CHECK "FOOBAR" FLAG.  IF ZERO, NOTHING'S GOING ON.  IF POS,
+C  MAKE NEG.  IF NEG, HE SKIPPED A WORD, SO MAKE IT ZERO.
+
+IF(PROP(LAMP).EQ.1)LIMIT=LIMIT-1
+	IF(LIMIT.LE.30.AND.HERE(BATTER).AND.PROP(BATTER).EQ.0
+	1	.AND.HERE(LAMP))GOTO 12000
+	IF(LIMIT.EQ.0)GOTO 12400
+	IF(LIMIT.LT.0.AND.LOC.LE.8)GOTO 12600
+	IF(LIMIT.LE.30)GOTO 12200
+
+               !!jeśli jest i było ciemno, to z 35%:
                   YOU FELL INTO A PIT AND BROKE EVERY BONE IN YOUR BODY!
                   +śmierć
+
+                C  IF REMAINING TREASURES TOO ELUSIVE, ZAP HIS LAMP.
+	                IF(TALLY.EQ.TALLY2.AND.TALLY.NE.0)LIMIT=MIN0(35,LIMIT)
+                sposób na liczenie TALLY: ustawić prop skarby na -1 i przy pierwszym zobaczeniu ustawić na 0
+
+
+                2610	IF(WD1.NE.'WEST')GOTO 2630
+	IWEST=IWEST+1
+	IF(IWEST.EQ.10)CALL RSPEAK(17)
+
 
                DWARVES : linia 503 w fortranie

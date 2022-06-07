@@ -147,11 +147,16 @@ restoreParser = baseCodeLineParser "restore" (pure restoreGame) "restore"
 showInventoryParser :: Parser (Action ())
 showInventoryParser = baseCodeLineParser "showInventory" (pure showInventory) "show inventory"
 
+-- |Match a @look@ instruction.
+lookParser :: Parser (Action ())
+lookParser = baseCodeLineParser "look" (pure $ void showRoom) "look"
+
 -- |Match a single code line common for items and the rest.
 commonCodeLineParser :: Parser (Action ())
 commonCodeLineParser = 
     (skipSpaces *> (
         commentParser
+        <|> lookParser
         <|> gotoParser 
         <|> printEmptyLineParser
         <|> printParser

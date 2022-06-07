@@ -24,13 +24,16 @@ assertNotNothing message = maybe (terminate message) pure
 assertFound :: (String -> String) -> Either String a -> Action a
 assertFound f = either (terminate . f) pure
 
-showAndExecuteOnEntryCurrentRoom :: Action ()
-showAndExecuteOnEntryCurrentRoom = perform ((\g -> rooms g !?? currentRoomName g) <$> get)
+showRoom :: Action Room
+showRoom = perform ((\g -> rooms g !?? currentRoomName g) <$> get)
     >>= assertFound (\k -> "ERROR: Room name not found: " ++ k)
     >>= (\r -> 
         description r >>= perform . lift . putStrLn
         >> foldl' (\act name -> act >> perform (gets (\g -> globalNameMap g M.! name)) >>= getDescription >>= perform . lift . putStr) noAction (interactables r)
-        >> onEntry r)
+        >> pure r)
+
+showAndExecuteOnEntryCurrentRoom :: Action ()
+showAndExecuteOnEntryCurrentRoom = showRoom >>= onEntry
 
 noAction :: Action ()
 noAction = perform $ lift $ return ()

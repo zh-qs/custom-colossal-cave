@@ -33,6 +33,10 @@ items:
 
 global:
   room:
+    - look:
+        {
+          look
+        }
     - sth:
        {
          println Some global command
