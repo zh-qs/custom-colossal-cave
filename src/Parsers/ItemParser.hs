@@ -17,6 +17,7 @@ import Parsers.Utilities
 import Parsers.CommandParser
 import Parsers.CodeParser
 import Parsers.SwitchParser
+import Parsers.ParametersParser
 
 longNameParser :: Int -> Parser Name
 longNameParser indentationLevel = (tabs indentationLevel *> string "longName: " *> (unpack <$> takeTill isNewline) <* newLines) <?> "Start room name"
@@ -29,6 +30,7 @@ modifyItemMapIfNeeded indentationLevel name =
         else lift (Item 
                 <$> (char ':' *> newLines *> longNameParser (indentationLevel + 2) <* newLines) 
                 <*> (tabs (indentationLevel + 2) *> switchParser "description" (indentationLevel + 2) "Item description")
+                <*> (parametersParser (indentationLevel + 2)) 
                 <*> (tabs (indentationLevel + 2) *> commandListParser (indentationLevel + 3) (itemCodeParser <*> pure name) <* newLines))
             >>= (\item -> modify' (\(m,a) -> (M.insert name item m,a)))
             >> (lift $ pure name))

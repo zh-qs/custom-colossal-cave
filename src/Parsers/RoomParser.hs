@@ -18,7 +18,6 @@ import Parsers.Utilities
 import Parsers.ItemParser
 import Parsers.CommandParser
 import Parsers.CodeParser
-import Parsers.EntityParser
 import Parsers.SwitchParser
 
 descriptionParser :: Parser Desc
@@ -31,11 +30,7 @@ roomParser = gets snd >>= (\action ->
         <*> (Room 
             <$> lift (((tabs 3) *> descriptionParser <* newLines) <?> "Description")
             <*> lift (onEntryParser 3 action)
-            <*> (
-                (++)
-                <$> ((lift (tabs 3) *> itemListParser "items" 4 "Item list definition" <* lift newLines) <??> "Item List")
-                <*> ((lift (tabs 3) *> entityListParser <* lift newLines) <??> "Entity List")
-            )
+            <*> ((lift (tabs 3) *> itemListParser "items" 4 "Item list definition" <* lift newLines) <??> "Item List")
             <*> lift (((tabs 3) *> commandListParser 4 codeParser <* newLines) <?> "Command List")))
     <??> "Room definition")
 

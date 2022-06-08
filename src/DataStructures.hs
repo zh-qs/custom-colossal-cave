@@ -14,7 +14,6 @@ type ParamName = String
 type Id = Int
 type ItemName = Name
 type Inventory = [ItemName]
-type Hand = Maybe ItemName
 type Visibility = Bool
 
 type StIO a = StateT Game IO a
@@ -30,13 +29,10 @@ type StParser a = StateT (M.Map Name Interactable, Action ()) Parser a
 -- |Representation of a command entered in a console by user
 type Command = (Visibility, Name, Action ())
 
-data Interactable = Item { longName :: Name, getDescription :: Desc, getCommands :: [Command] }
-    | Entity { getDescription :: Desc, entityParameters :: M.Map Name Int, getCommands :: [Command] }
-    | Invalid
+data Interactable = Item { longName :: Name, getDescription :: Desc, itemParameters :: M.Map Name Int, getCommands :: [Command] }
 
 instance Show Interactable where
-    show item@(Item {}) = "Item(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands item) ++ ")"
-    show entity@(Entity {}) = "Entity(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands entity) ++ ")"
+    show item = "Item(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands item) ++ ")"
 
 data Room = Room { description :: Desc, onEntry :: Action (), interactables :: [Name], roomCommands :: [Command] }
 
@@ -44,7 +40,7 @@ instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
 
 -- |Structure that holds player parameters and items currently toting.
-data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
+data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory } deriving (Show, Read)
 
 -- |Structure that holds all information and state of the game.
 data Game = Game { 

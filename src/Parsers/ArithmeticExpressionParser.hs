@@ -2,7 +2,7 @@
 
 -- |Provides an 'expressionParser' parser for processing the arithmetic expressions.
 -- The possible operations are: @+@, @-@, @*@, @/@ and @%@ (mod) and are defined for 'Int'.
--- Moreover, the parser provides accessors to parameters (@player.\<parameter\>@ and @entity.\<name\>.\<parameter\>@)
+-- Moreover, the parser provides accessors to parameters (@player.\<parameter\>@ and @item.\<name\>.\<parameter\>@)
 -- and expressions: @invcount@ (count of the player inventory), @cmdcount@ (number of entered commands during the game)
 -- and @rnd@ (random number).
 module Parsers.ArithmeticExpressionParser where
@@ -32,7 +32,7 @@ import System.Random
 -- * expr' -> (@+@|@-@) term expr' | eps
 -- * term -> factor | term'
 -- * term' -> (@*@|@/@|@%@) factor term' | eps
--- * factor -> @invcount@ | @cmdcount@ | @rnd@ | number | @player.\<parameter\>@ | @entity.\<name\>.parameter@ | ( expr )
+-- * factor -> @invcount@ | @cmdcount@ | @rnd@ | number | @player.\<parameter\>@ | @item.\<name\>.parameter@ | ( expr )
 --
 -- All operators are left-associative. Operators @*,/,%@ have higher priority than @+@ and @-@.
 --
@@ -51,9 +51,9 @@ inventoryCountParser = stringWithSpaces "invcount" *> pure getInventoryCount
 randomNumberParser :: Parser (Action Int)
 randomNumberParser = stringWithSpaces "rnd" *> pure randomIO
 
--- |Match an expression of type @entity.<entity name>.<parameter name>@.
-entityParameterAccessorParser :: Parser (Name,Name)
-entityParameterAccessorParser = baseCodeLineParser "entity" ((char '.' *> ((,) <$> (unpack <$> takeWhile1 isAlphaNum) <*> (char '.' *> (unpack <$> takeWhile1 isAlphaNum)) <?> "parameter"))) "entity"
+-- |Match an expression of type @item.<item name>.<parameter name>@.
+itemParameterAccessorParser :: Parser (Name,Name)
+itemParameterAccessorParser = baseCodeLineParser "item" ((char '.' *> ((,) <$> (unpack <$> takeWhile1 isAlphaNum) <*> (char '.' *> (unpack <$> takeWhile1 isAlphaNum)) <?> "parameter"))) "item"
 
 -- |Match an expression of type @player.<parameter name>@.
 playerParameterAccessorParser :: Parser Name
@@ -65,7 +65,7 @@ constantParser = (perform . lift . return) <$> (signed decimal)
 
 -- |Match a parameter accessor expression.
 identificatorParser :: Parser (Action Int)
-identificatorParser = (getPlayerParameter <$> playerParameterAccessorParser) <|> ((uncurry getEntityParameter) <$> entityParameterAccessorParser)
+identificatorParser = (getPlayerParameter <$> playerParameterAccessorParser) <|> ((uncurry getItemParameter) <$> itemParameterAccessorParser)
 
 -- |Match multiplication or division operator.
 mulOpParser :: Parser (Action Int -> Action Int -> Action Int)

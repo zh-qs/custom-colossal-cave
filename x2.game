@@ -186,10 +186,6 @@ player:
     - param64:
         value: 1
   inventory:
-  leftHand:
-    empty
-  rightHand:
-    empty
 initialMessage:
 
 finalMessage:
@@ -199,6 +195,7 @@ items:
       description:
         - player.param1 == 0:
             THERE ARE SOME KEYS ON THE GROUND HERE.
+      parameters:
       commands:
         - UNLOCK,OPEN,LOCK,CLOSE:
             {
@@ -211,6 +208,7 @@ items:
             THERE IS A SHINY BRASS LAMP NEARBY.
         - player.param2 == 1:
             THERE IS A LAMP SHINING NEARBY.
+      parameters:
       commands:
         - LIGHT,ON:
             {
@@ -229,6 +227,7 @@ items:
             THE GRATE IS LOCKED.
         - player.param3 == 1:
             THE GRATE IS OPEN.
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -277,6 +276,7 @@ items:
       description:
         - player.param4 == 0:
             THERE IS A SMALL WICKER CAGE DISCARDED NEARBY.
+      parameters:
       commands:
         - DROP,RELEASE,FREE,DISCARD,DUMP,THROW,TOSS:
             {
@@ -318,6 +318,7 @@ items:
       description:
         - player.param5 == 0:
             A THREE FOOT BLACK ROD WITH A RUSTY STAR ON AN END LIES NEARBY.
+      parameters:
       commands:
         - WAVE,SHAKE,SWING:
             {
@@ -328,6 +329,7 @@ items:
       description:
         - player.param6 == 0:
             A THREE FOOT BLACK ROD WITH A RUSTY MARK ON AN END LIES NEARBY.
+      parameters:
       commands:
   - STEPS:
       longName: *STEPS
@@ -336,6 +338,7 @@ items:
             ROUGH STONE STEPS LEAD DOWN THE PIT.
         - in room15:
             ROUGH STONE STEPS LEAD UP THE DOME.
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -348,6 +351,7 @@ items:
             A CHEERFUL LITTLE BIRD IS SITTING HERE SINGING.
         - player.param8 == 1:
             THERE IS A LITTLE BIRD IN THE CAGE.
+      parameters:
       commands:
         - ATTACK:
             {
@@ -465,6 +469,7 @@ items:
             THE WAY NORTH IS BARRED BY A MASSIVE, RUSTY, IRON DOOR.
         - player.param9 == 1:
             THE WAY NORTH LEADS THROUGH A MASSIVE, RUSTY, IRON DOOR.
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -497,6 +502,7 @@ items:
       description:
         - player.param10 == 0:
             A SMALL VELVET PILLOW LIES ON THE FLOOR.
+      parameters:
       commands:
   - SNAKE:
       longName: *SNAKE
@@ -505,6 +511,7 @@ items:
             A HUGE GREEN FIERCE SNAKE BARS THE WAY!
         - player.param11 == 1:
             
+      parameters:
       commands:
         - ATTACK:
             {
@@ -541,6 +548,7 @@ items:
             A CRYSTAL BRIDGE NOW SPANS THE FISSURE.
         - player.param12 == 2:
             THE CRYSTAL BRIDGE HAS VANISHED!
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -552,6 +560,7 @@ items:
         - player.param13 == 0:
             A MASSIVE STONE TABLET IMBEDDED IN THE WALL READS:
             "CONGRATULATIONS ON BRINGING LIGHT INTO THE DARK-ROOM!"
+      parameters:
       commands:
         - READ:
             {
@@ -566,6 +575,7 @@ items:
       description:
         - player.param14 == 0:
             THERE IS AN ENORMOUS CLAM HERE WITH ITS SHELL TIGHTLY CLOSED.
+      parameters:
       commands:
         - ATTACK:
             {
@@ -607,6 +617,7 @@ items:
         - player.param15 == 1:
             INTERESTING.  THERE SEEMS TO BE SOMETHING WRITTEN ON THE UNDERSIDE OF
             THE OYSTER.
+      parameters:
       commands:
         - ATTACK:
             {
@@ -671,6 +682,7 @@ items:
       description:
         - player.param16 == 0:
             THERE ARE A FEW RECENT ISSUES OF "SPELUNKER TODAY" MAGAZINE HERE.
+      parameters:
       commands:
         - READ,PERUSE:
             {
@@ -679,6 +691,7 @@ items:
   - DWARF:
       longName: 
       description:
+      parameters:
       commands:
         - ATTACK:
             {
@@ -730,12 +743,14 @@ items:
   - KNIFE:
       longName: 
       description:
+      parameters:
       commands:
   - FOOD:
       longName: TASTY FOOD
       description:
         - player.param19 == 0:
             THERE IS FOOD HERE.
+      parameters:
       commands:
         - THROW,TOSS:
             {
@@ -767,6 +782,7 @@ items:
             THERE IS AN EMPTY BOTTLE HERE.
         - player.param20 == 2:
             THERE IS A BOTTLE OF OIL HERE.
+      parameters:
       commands:
         - FILL:
             {
@@ -851,6 +867,7 @@ items:
   - WATER:
       longName: WATER IN THE BOTTLE
       description:
+      parameters:
       commands:
         - DRINK:
             {
@@ -887,6 +904,7 @@ items:
   - OIL:
       longName: OIL IN THE BOTTLE
       description:
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -912,6 +930,7 @@ items:
       description:
         - player.param23 == 0:
             
+      parameters:
       commands:
         - BREAK,SHATTER,SMASH:
             {
@@ -946,6 +965,7 @@ items:
             THERE IS A GIGANTIC BEANSTALK STRETCHING ALL THE WAY UP TO THE HOLE.
         - player.param24 == 5:
             YOU'VE OVER-WATERED THE PLANT!
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -967,6 +987,7 @@ items:
             THE TOP OF A 12-FOOT-TALL BEANSTALK IS POKING OUT OF THE WEST PIT.
         - player.param25 == 2:
             THERE IS A HUGE BEANSTALK GROWING OUT OF THE WEST PIT UP TO THE HOLE.
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -984,6 +1005,7 @@ items:
       description:
         - player.param26 == 0:
             
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -994,6 +1016,7 @@ items:
       description:
         - player.param27 == 0:
             THE SHADOWY FIGURE SEEMS TO BE TRYING TO ATTRACT YOUR ATTENTION.
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1006,6 +1029,7 @@ items:
             THERE IS A LITTLE AXE HERE.
         - player.param28 == 1:
             THERE IS A LITTLE AXE LYING BESIDE THE BEAR.
+      parameters:
       commands:
         - THROW:
             {
@@ -1072,6 +1096,7 @@ items:
       description:
         - player.param29 == 0:
             
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1082,6 +1107,7 @@ items:
       description:
         - player.param30 == 0:
             
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1097,6 +1123,7 @@ items:
             HANDS!
         - player.param31 == 2:
             THE BODY OF A HUGE GREEN DEAD DRAGON IS LYING OFF TO ONE SIDE.
+      parameters:
       commands:
         - ATTACK:
             {
@@ -1156,6 +1183,7 @@ items:
         - player.param32 == 1:
             THE WRECKAGE OF A BRIDGE (AND A DEAD BEAR) CAN BE SEEN AT THE BOTTOM
             OF THE CHASM.
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1171,6 +1199,7 @@ items:
             THE TROLL STEPS OUT FROM BENEATH THE BRIDGE AND BLOCKS YOUR WAY.
         - player.param33 == 2:
             
+      parameters:
       commands:
         - ATTACK:
             {
@@ -1194,6 +1223,7 @@ items:
       description:
         - player.param34 == 0:
             THE TROLL IS NOWHERE TO BE SEEN.
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1210,6 +1240,7 @@ items:
             THERE IS A CONTENTED-LOOKING BEAR WANDERING ABOUT NEARBY.
         - player.param35 == 3:
             
+      parameters:
       commands:
         - ATTACK:
             {
@@ -1309,6 +1340,7 @@ items:
         - player.param36 == 0:
             THERE IS A MESSAGE SCRAWLED IN THE DUST IN A FLOWERY SCRIPT, READING:
             "THIS IS NOT THE MAZE WHERE THE PIRATE LEAVES HIS TREASURE CHEST."
+      parameters:
       commands:
         - READ:
             {
@@ -1323,6 +1355,7 @@ items:
       description:
         - player.param37 == 0:
             
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1334,6 +1367,7 @@ items:
         - player.param38 == 0:
             THERE IS A MASSIVE VENDING MACHINE HERE.  THE INSTRUCTIONS ON IT READ:
             "DROP COINS HERE TO RECEIVE FRESH BATTERIES."
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1346,12 +1380,14 @@ items:
             THERE ARE FRESH BATTERIES HERE.
         - player.param39 == 1:
             SOME WORN-OUT BATTERIES HAVE BEEN DISCARDED NEARBY.
+      parameters:
       commands:
   - CARPET:
       longName: *CARPET AND/OR MOSS
       description:
         - player.param40 == 0:
             
+      parameters:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
@@ -1362,6 +1398,7 @@ items:
       description:
         - player.param50 == 0:
             THERE IS A LARGE SPARKLING NUGGET OF GOLD HERE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1372,6 +1409,7 @@ items:
       description:
         - player.param51 == 0:
             THERE ARE DIAMONDS HERE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1382,6 +1420,7 @@ items:
       description:
         - player.param52 == 0:
             THERE ARE BARS OF SILVER HERE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1392,6 +1431,7 @@ items:
       description:
         - player.param53 == 0:
             THERE IS PRECIOUS JEWELRY HERE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1402,6 +1442,7 @@ items:
       description:
         - player.param54 == 0:
             THERE ARE MANY COINS HERE!
+      parameters:
       commands:
         - THROW,TOSS:
             {
@@ -1459,6 +1500,7 @@ items:
       description:
         - player.param55 == 0:
             THE PIRATE'S TREASURE CHEST IS HERE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1473,6 +1515,7 @@ items:
             THE NEST OF GOLDEN EGGS HAS VANISHED!
         - player.param56 == 2:
             DONE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1483,6 +1526,7 @@ items:
       description:
         - player.param57 == 0:
             THERE IS A JEWEL-ENCRUSTED TRIDENT HERE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1499,6 +1543,7 @@ items:
             THE FLOOR IS LITTERED WITH WORTHLESS SHARDS OF POTTERY.
         - player.param58 == 3:
             THE MING VASE DROPS WITH A DELICATE CRASH.
+      parameters:
       commands:
         - FILL:
             {
@@ -1556,6 +1601,7 @@ items:
       description:
         - player.param59 == 0:
             THERE IS AN EMERALD HERE THE SIZE OF A PLOVER'S EGG!
+      parameters:
       commands:
         - THROW:
             {
@@ -1566,6 +1612,7 @@ items:
       description:
         - player.param60 == 0:
             THERE IS A PLATINUM PYRAMID HERE, 8 INCHES ON A SIDE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1576,6 +1623,7 @@ items:
       description:
         - player.param61 == 0:
             OFF TO ONE SIDE LIES A GLISTENING PEARL!
+      parameters:
       commands:
         - THROW:
             {
@@ -1588,6 +1636,7 @@ items:
             THERE IS A PERSIAN RUG SPREAD OUT ON THE FLOOR!
         - player.param62 == 1:
             THE DRAGON IS SPRAWLED OUT ON A PERSIAN RUG!!
+      parameters:
       commands:
         - THROW:
             {
@@ -1616,6 +1665,7 @@ items:
       description:
         - player.param63 == 0:
             THERE ARE RARE SPICES HERE!
+      parameters:
       commands:
         - THROW:
             {
@@ -1630,6 +1680,7 @@ items:
             THE BEAR IS LOCKED TO THE WALL WITH A GOLDEN CHAIN!
         - player.param64 == 2:
             THERE IS A GOLDEN CHAIN LOCKED TO THE WALL!
+      parameters:
       commands:
         - THROW:
             {
@@ -2362,7 +2413,7 @@ rooms:
           goto room1
         }
       items:
-      entities:
+
       commands:
   - room1:
       description:
@@ -2372,7 +2423,7 @@ rooms:
             DOWN A GULLY.
       items:
         - WATER
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2404,7 +2455,7 @@ rooms:
             YOU HAVE WALKED UP A HILL, STILL IN THE FOREST.  THE ROAD SLOPES BACK
             DOWN THE OTHER SIDE OF THE HILL.  THERE IS A BUILDING IN THE DISTANCE.
       items:
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2428,7 +2479,7 @@ rooms:
         - FOOD
         - BOTTLE
         - WATER
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2465,7 +2516,7 @@ rooms:
             ROCKY BED.
       items:
         - WATER
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2492,7 +2543,7 @@ rooms:
         - true:
             YOU ARE IN OPEN FOREST, WITH A DEEP VALLEY TO ONE SIDE.
       items:
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2526,7 +2577,7 @@ rooms:
         - true:
             YOU ARE IN OPEN FOREST NEAR BOTH A VALLEY AND A ROAD.
       items:
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2551,7 +2602,7 @@ rooms:
             IN THE ROCK.  DOWNSTREAM THE STREAMBED IS BARE ROCK.
       items:
         - WATER
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2585,7 +2636,7 @@ rooms:
             LEADS INTO THE DEPRESSION.
       items:
         - GRATE
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2625,7 +2676,7 @@ rooms:
             A LOW CRAWL OVER COBBLES LEADS INWARD TO THE WEST.
       items:
         - GRATE
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2665,7 +2716,7 @@ rooms:
             AT THE EAST END OF THE PASSAGE.
       items:
         - CAGE
-      entities:
+
       commands:
         - *setdark:
             {
@@ -2692,7 +2743,7 @@ rooms:
             SAYS "MAGIC WORD XYZZY".
       items:
         - ROD
-      entities:
+
       commands:
         - DEPRESSION:
             {
@@ -2730,7 +2781,7 @@ rooms:
         - true:
             YOU ARE IN AN AWKWARD SLOPING EAST/WEST CANYON.
       items:
-      entities:
+
       commands:
         - DEPRESSION:
             {
@@ -2767,7 +2818,7 @@ rooms:
             FROM EAST AND WEST SIDES OF THE CHAMBER.
       items:
         - BIRD
-      entities:
+
       commands:
         - DEPRESSION:
             {
@@ -2803,7 +2854,7 @@ rooms:
             PASSAGE ENDS HERE EXCEPT FOR A SMALL CRACK LEADING ON.
       items:
         - STEPS
-      entities:
+
       commands:
         - DEPRESSION:
             {
@@ -2869,7 +2920,7 @@ rooms:
             STAIRCASE.  THERE IS A PASSAGE AT THE TOP OF A DOME BEHIND YOU.
       items:
         - STEPS
-      entities:
+
       commands:
         - LEFT,SOUTH,S:
             {
@@ -2911,7 +2962,7 @@ rooms:
           goto room14
         }
       items:
-      entities:
+
       commands:
   - room17:
       description:
@@ -2920,7 +2971,7 @@ rooms:
             THE MIST IS QUITE THICK HERE, AND THE FISSURE IS TOO WIDE TO JUMP.
       items:
         - FISSURE
-      entities:
+
       commands:
         - HALL,EAST,E:
             {
@@ -2975,7 +3026,7 @@ rooms:
         }
       items:
         - GOLD
-      entities:
+
       commands:
         - HALL,OUT,OUTSIDE,EXIT,LEAVE,NORTH,N:
             {
@@ -2988,7 +3039,7 @@ rooms:
             DIRECTIONS.
       items:
         - SNAKE
-      entities:
+
       commands:
         - STAIRS,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,EAST,E:
             {
@@ -3066,7 +3117,7 @@ rooms:
           goto death
         }
       items:
-      entities:
+
       commands:
   - room21:
       description:
@@ -3077,7 +3128,7 @@ rooms:
           goto death
         }
       items:
-      entities:
+
       commands:
   - room22:
       description:
@@ -3088,7 +3139,7 @@ rooms:
           goto room15
         }
       items:
-      entities:
+
       commands:
   - room23:
       description:
@@ -3097,7 +3148,7 @@ rooms:
             THE WALL ABOVE THE PIT AT THIS END OF THE ROOM.
       items:
         - PLANT2
-      entities:
+
       commands:
         - EAST,E,ACROSS:
             {
@@ -3122,7 +3173,7 @@ rooms:
             A SMALL POOL OF OIL IN ONE CORNER OF THE PIT.
       items:
         - OIL
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3135,7 +3186,7 @@ rooms:
             A LARGE HOLE IN THE WALL ABOUT 25 FEET ABOVE YOU.
       items:
         - PLANT
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3165,7 +3216,7 @@ rooms:
           goto room88
         }
       items:
-      entities:
+
       commands:
   - room27:
       description:
@@ -3179,7 +3230,7 @@ rooms:
       items:
         - FISSURE
         - DIAMOND
-      entities:
+
       commands:
         - JUMP:
             {
@@ -3238,7 +3289,7 @@ rooms:
         }
       items:
         - SILVER
-      entities:
+
       commands:
         - HALL,OUT,OUTSIDE,EXIT,LEAVE,SOUTH,S:
             {
@@ -3263,7 +3314,7 @@ rooms:
         }
       items:
         - JEWELRY
-      entities:
+
       commands:
         - HALL,OUT,OUTSIDE,EXIT,LEAVE,NORTH,N:
             {
@@ -3281,7 +3332,7 @@ rooms:
         }
       items:
         - COINS
-      entities:
+
       commands:
         - HALL,OUT,OUTSIDE,EXIT,LEAVE,EAST,E:
             {
@@ -3300,7 +3351,7 @@ rooms:
           goto room90
         }
       items:
-      entities:
+
       commands:
   - room32:
       description:
@@ -3311,7 +3362,7 @@ rooms:
           goto room19
         }
       items:
-      entities:
+
       commands:
   - room33:
       description:
@@ -3329,7 +3380,7 @@ rooms:
           }
         }
       items:
-      entities:
+
       commands:
         - PLUGH:
             {
@@ -3364,7 +3415,7 @@ rooms:
         - true:
             YOU ARE IN A JUMBLE OF ROCK, WITH CRACKS EVERYWHERE.
       items:
-      entities:
+
       commands:
         - D,DOWNWARD,DOWNWARDS,DOWN,DESCEND,Y2:
             {
@@ -3386,7 +3437,7 @@ rooms:
             SHADOWY FIGURE CAN BE SEEN THERE PEERING BACK AT YOU.
       items:
         - SHADOW
-      entities:
+
       commands:
         - EAST,E,Y2:
             {
@@ -3402,7 +3453,7 @@ rooms:
             YOU ARE IN A DIRTY BROKEN PASSAGE.  TO THE EAST IS A CRAWL.  TO THE
             WEST IS A LARGE PASSAGE.  ABOVE YOU IS A HOLE TO ANOTHER PASSAGE.
       items:
-      entities:
+
       commands:
         - EAST,E,CRAWL:
             {
@@ -3426,7 +3477,7 @@ rooms:
             YOU ARE ON THE BRINK OF A SMALL CLEAN CLIMBABLE PIT.  A CRAWL LEADS
             WEST.
       items:
-      entities:
+
       commands:
         - WEST,W,CRAWL:
             {
@@ -3443,7 +3494,7 @@ rooms:
             ENTERS AND EXITS THROUGH TINY SLITS.
       items:
         - WATER
-      entities:
+
       commands:
         - CLIMB,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3459,7 +3510,7 @@ rooms:
             YOU ARE IN A LARGE ROOM FULL OF DUSTY ROCKS.  THERE IS A BIG HOLE IN
             THE FLOOR.  THERE ARE CRACKS EVERYWHERE, AND A PASSAGE LEADING EAST.
       items:
-      entities:
+
       commands:
         - EAST,E,PASSAGE,TUNNEL:
             {
@@ -3483,7 +3534,7 @@ rooms:
           goto room41
         }
       items:
-      entities:
+
       commands:
   - room41:
       description:
@@ -3492,7 +3543,7 @@ rooms:
             WEST AND ANOTHER GOES NORTH.  TO THE SOUTH IS A LITTLE PASSAGE 6 FEET
             OFF THE FLOOR.
       items:
-      entities:
+
       commands:
         - SOUTH,S,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,PASSAGE,TUNNEL,CLIMB:
             {
@@ -3515,7 +3566,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND:
             {
@@ -3542,7 +3593,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -3561,7 +3612,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -3584,7 +3635,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -3611,7 +3662,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - WEST,W,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3622,7 +3673,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - EAST,E,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3633,7 +3684,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3644,7 +3695,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -3659,7 +3710,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -3682,7 +3733,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -3705,7 +3756,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -3736,7 +3787,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -3755,7 +3806,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - WEST,W,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3766,7 +3817,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -3789,7 +3840,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3802,7 +3853,7 @@ rooms:
             DOWN ONE WALL.
             UP.  THE MAZE CONTINUES AT THIS LEVEL.
       items:
-      entities:
+
       commands:
         - D,DOWNWARD,DOWNWARDS,DOWN,DESCEND,CLIMB:
             {
@@ -3829,7 +3880,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - EAST,E,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3845,7 +3896,7 @@ rooms:
           goto room27
         }
       items:
-      entities:
+
       commands:
   - room60:
       description:
@@ -3854,7 +3905,7 @@ rooms:
             CHAMBERS.  TO THE EAST A LOW WIDE CRAWL SLANTS UP.  TO THE NORTH A
             ROUND TWO FOOT HOLE SLANTS DOWN.
       items:
-      entities:
+
       commands:
         - EAST,E,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,CRAWL:
             {
@@ -3874,7 +3925,7 @@ rooms:
             YOU ARE AT THE WEST END OF A VERY LONG FEATURELESS HALL.  THE HALL
             JOINS UP WITH A NARROW NORTH/SOUTH PASSAGE.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -3893,7 +3944,7 @@ rooms:
         - true:
             YOU ARE AT A CROSSOVER OF A HIGH N/S PASSAGE AND A LOW E/W ONE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -3916,7 +3967,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - SOUTH,S,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -3929,7 +3980,7 @@ rooms:
             NORTH JOINS A HIGHER CRAWL FROM THE EAST TO MAKE A WALKING PASSAGE
             GOING WEST.  THERE IS ALSO A LARGE ROOM ABOVE.
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,CLIMB,ROOM:
             {
@@ -3953,7 +4004,7 @@ rooms:
             YOU ARE IN BEDQUILT, A LONG EAST/WEST PASSAGE WITH HOLES EVERYWHERE.
             TO EXPLORE AT RANDOM SELECT NORTH, SOUTH, UP, OR DOWN.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -4056,7 +4107,7 @@ rooms:
             GO WEST, EAST, NE, AND NW.  PART OF THE ROOM IS OCCUPIED BY A LARGE
             BEDROCK BLOCK.
       items:
-      entities:
+
       commands:
         - NE:
             {
@@ -4112,7 +4163,7 @@ rooms:
             WALL DIRECTLY OVER THE WEST PIT WHERE YOU CAN'T GET TO IT.
       items:
         - PLANT2
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -4135,7 +4186,7 @@ rooms:
             PASSAGES GO NORTH AND SOUTH, AND THE SOUTH ONE QUICKLY BENDS WEST
             AROUND THE BOULDERS.
       items:
-      entities:
+
       commands:
         - SOUTH,S:
             {
@@ -4154,7 +4205,7 @@ rooms:
         - true:
             YOU ARE IN A SECRET N/S CANYON ABOVE A LARGE ROOM.
       items:
-      entities:
+
       commands:
         - D,DOWNWARD,DOWNWARDS,DOWN,DESCEND,SLAB,SLABR:
             {
@@ -4188,7 +4239,7 @@ rooms:
         - true:
             YOU ARE IN A SECRET N/S CANYON ABOVE A SIZABLE PASSAGE.
       items:
-      entities:
+
       commands:
         - NORTH,N:
             {
@@ -4209,7 +4260,7 @@ rooms:
             NORTH, SOUTH, AND SE.  THE NORTH ONE IS AS TALL AS THE OTHER TWO
             COMBINED.
       items:
-      entities:
+
       commands:
         - SE:
             {
@@ -4228,7 +4279,7 @@ rooms:
         - true:
             YOU ARE IN A LARGE LOW ROOM.  CRAWLS LEAD NORTH, SE, AND SW.
       items:
-      entities:
+
       commands:
         - BEDQUILT:
             {
@@ -4251,7 +4302,7 @@ rooms:
         - true:
             DEAD END CRAWL.
       items:
-      entities:
+
       commands:
         - SOUTH,S,CRAWL,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4264,7 +4315,7 @@ rooms:
             VERY TIGHT CANYON 15 FEET BELOW.  IF YOU GO DOWN YOU MAY NOT BE ABLE
             TO GET BACK UP.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -4294,7 +4345,7 @@ rooms:
         - true:
             YOU ARE AT A WIDE PLACE IN A VERY TIGHT N/S CANYON.
       items:
-      entities:
+
       commands:
         - SOUTH,S:
             {
@@ -4309,7 +4360,7 @@ rooms:
         - true:
             THE CANYON HERE BECOMES TOO TIGHT TO GO FURTHER SOUTH.
       items:
-      entities:
+
       commands:
         - NORTH,N:
             {
@@ -4321,7 +4372,7 @@ rooms:
             YOU ARE IN A TALL E/W CANYON.  A LOW TIGHT CRAWL GOES 3 FEET NORTH AND
             SEEMS TO OPEN UP.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -4340,7 +4391,7 @@ rooms:
         - true:
             THE CANYON RUNS INTO A MASS OF BOULDERS -- DEAD END.
       items:
-      entities:
+
       commands:
         - SOUTH,S:
             {
@@ -4356,14 +4407,14 @@ rooms:
           goto room3
         }
       items:
-      entities:
+
       commands:
   - room80:
       description:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - NORTH,N:
             {
@@ -4386,7 +4437,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - WEST,W,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4397,7 +4448,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - SOUTH,S,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4408,7 +4459,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - SOUTH,S:
             {
@@ -4427,7 +4478,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - NORTH,N:
             {
@@ -4446,7 +4497,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - EAST,E,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4457,7 +4508,7 @@ rooms:
         - true:
             DEAD END
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4468,7 +4519,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL ALIKE.
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,D,DOWNWARD,DOWNWARDS,DOWN,DESCEND:
             {
@@ -4481,7 +4532,7 @@ rooms:
             WEST.  AT THE EASTERN END IS A HOLE THROUGH WHICH YOU CAN SEE A
             PROFUSION OF LEAVES.
       items:
-      entities:
+
       commands:
         - D,DOWNWARD,DOWNWARDS,DOWN,DESCEND,CLIMB,EAST,E:
             {
@@ -4504,7 +4555,7 @@ rooms:
           goto room25
         }
       items:
-      entities:
+
       commands:
   - room90:
       description:
@@ -4515,7 +4566,7 @@ rooms:
           goto room23
         }
       items:
-      entities:
+
       commands:
   - room91:
       description:
@@ -4524,7 +4575,7 @@ rooms:
             CLIMB DOWN HERE, BUT YOU WOULD NOT BE ABLE TO CLIMB UP.  THERE IS A
             PASSAGE LEADING BACK TO THE NORTH.
       items:
-      entities:
+
       commands:
         - NORTH,N,CAVERN,PASSAGE,TUNNEL:
             {
@@ -4547,7 +4598,7 @@ rooms:
         }
       items:
         - EGGS
-      entities:
+
       commands:
         - SOUTH,S:
             {
@@ -4566,7 +4617,7 @@ rooms:
         - true:
             THE PASSAGE HERE IS BLOCKED BY A RECENT CAVE-IN.
       items:
-      entities:
+
       commands:
         - SOUTH,S,GIANT,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4578,7 +4629,7 @@ rooms:
             YOU ARE AT ONE END OF AN IMMENSE NORTH/SOUTH PASSAGE.
       items:
         - DOOR
-      entities:
+
       commands:
         - SOUTH,S,GIANT,PASSAGE,TUNNEL:
             {
@@ -4613,7 +4664,7 @@ rooms:
       items:
         - TRIDENT
         - WATER
-      entities:
+
       commands:
         - SOUTH,S,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4635,7 +4686,7 @@ rooms:
       items:
         - PILLOW
         - CARPET
-      entities:
+
       commands:
         - WEST,W,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4655,7 +4706,7 @@ rooms:
       items:
         - DRAWING
         - VASE
-      entities:
+
       commands:
         - SE:
             {
@@ -4677,7 +4728,7 @@ rooms:
             HEARD.
             EXITS TO THE SOUTH AND WEST.
       items:
-      entities:
+
       commands:
         - SOUTH,S,ORIENTAL:
             {
@@ -4694,7 +4745,7 @@ rooms:
             DISTANCE.  AN EXTREMELY TIGHT TUNNEL LEADS EAST.  IT LOOKS LIKE A VERY
             TIGHT SQUEEZE.
       items:
-      entities:
+
       commands:
         - NW,CAVERN:
             {
@@ -4740,7 +4791,7 @@ rooms:
         }
       items:
         - EMERALD
-      entities:
+
       commands:
         - *setdark:
             {
@@ -4802,7 +4853,7 @@ rooms:
       items:
         - TABLET
         - PLATINUM
-      entities:
+
       commands:
         - SOUTH,S,PLOVER,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4814,7 +4865,7 @@ rooms:
             YOU ARE IN AN ARCHED HALL.  A CORAL PASSAGE ONCE CONTINUED UP AND EAST
             FROM HERE, BUT IS NOW BLOCKED BY DEBRIS.  THE AIR SMELLS OF SEA WATER.
       items:
-      entities:
+
       commands:
         - D,DOWNWARD,DOWNWARDS,DOWN,DESCEND,SHELL,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4829,7 +4880,7 @@ rooms:
             UP.  A LOW HANDS AND KNEES PASSAGE ENTERS FROM THE SOUTH.
       items:
         - CLAM
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,HALL:
             {
@@ -4870,7 +4921,7 @@ rooms:
         - true:
             YOU ARE IN A LONG SLOPING CORRIDOR WITH RAGGED SHARP WALLS.
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,SHELL:
             {
@@ -4893,7 +4944,7 @@ rooms:
           }
         }
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -4912,7 +4963,7 @@ rooms:
             PROCEED AT OWN RISK.  [WITT CONSTRUCTION COMPANY]"
       items:
         - MAGAZINE
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND:
             {
@@ -4931,7 +4982,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTY LITTLE PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - SOUTH,S:
             {
@@ -4978,7 +5029,7 @@ rooms:
         - true:
             YOU ARE AT WITT'S END.
       items:
-      entities:
+
       commands:
         - EAST,E,NORTH,N,SOUTH,S,NE,SE,SW,NW,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,D,DOWNWARD,DOWNWARDS,DOWN,DESCEND:
             {
@@ -5013,7 +5064,7 @@ rooms:
             SMALL WINDOW CAN BE SEEN IN EITHER WALL, SOME FIFTY FEET UP.
       items:
         - MIRROR
-      entities:
+
       commands:
         - SOUTH,S:
             {
@@ -5035,7 +5086,7 @@ rooms:
             SHADOWY FIGURE CAN BE SEEN THERE PEERING BACK AT YOU.
       items:
         - SHADOW
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -5053,7 +5104,7 @@ rooms:
             HAVING DONE SO YOU WOULD BE UNABLE TO REACH IT TO CLIMB BACK UP.
       items:
         - STALACTITE
-      entities:
+
       commands:
         - NORTH,N:
             {
@@ -5090,7 +5141,7 @@ rooms:
         - true:
             YOU ARE IN A LITTLE MAZE OF TWISTING PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - SW:
             {
@@ -5142,7 +5193,7 @@ rooms:
             MIST.  THE ONLY PASSAGE GOES BACK TOWARD THE SOUTH.
       items:
         - WATER
-      entities:
+
       commands:
         - SOUTH,S,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -5159,7 +5210,7 @@ rooms:
       }
       items:
         - CHEST
-      entities:
+
       commands:
         - SE:
             {
@@ -5180,7 +5231,7 @@ rooms:
             WALL, AND STRETCHES TO THE OTHER END OF THE ROOM, WHERE VARIOUS OTHER
             SUNDRY OBJECTS CAN BE GLIMPSED DIMLY IN THE DISTANCE.
       items:
-      entities:
+
       commands:
         - *setdark:
             {
@@ -5212,7 +5263,7 @@ rooms:
             STEEL GRATE, NEXT TO WHICH IS A SIGN WHICH READS, "TREASURE VAULT.
             KEYS IN MAIN OFFICE."
       items:
-      entities:
+
       commands:
         - *setdark:
             {
@@ -5235,7 +5286,7 @@ rooms:
       items:
         - CHASM
         - TROLL
-      entities:
+
       commands:
         - SW:
             {
@@ -5329,7 +5380,7 @@ rooms:
             YOU ARE IN A LONG WINDING CORRIDOR SLOPING OUT OF SIGHT IN BOTH
             DIRECTIONS.
       items:
-      entities:
+
       commands:
         - D,DOWNWARD,DOWNWARDS,DOWN,DESCEND:
             {
@@ -5351,7 +5402,7 @@ rooms:
       items:
         - DRAGON
         - RUG
-      entities:
+
       commands:
         - NORTH,N,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -5366,7 +5417,7 @@ rooms:
         - true:
             YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
       items:
-      entities:
+
       commands:
         - NORTH,N:
             {
@@ -5388,7 +5439,7 @@ rooms:
       items:
         - DRAGON
         - RUG
-      entities:
+
       commands:
         - EAST,E,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -5406,7 +5457,7 @@ rooms:
       items:
         - CHASM
         - TROLL
-      entities:
+
       commands:
         - NE:
             {
@@ -5490,7 +5541,7 @@ rooms:
             YOU'RE IN A LONG EAST/WEST CORRIDOR.  A FAINT RUMBLING NOISE CAN BE
             HEARD IN THE DISTANCE.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -5515,7 +5566,7 @@ rooms:
             SEEMS TO GET LOUDER IN THAT DIRECTION.
             DOWN A GENTLE SLOPE.  THE MAIN CORRIDOR ENTERS FROM THE WEST.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -5544,7 +5595,7 @@ rooms:
             ROAR, SO LOUD THAT THE ENTIRE CAVE SEEMS TO BE TREMBLING.  ANOTHER
             PASSAGE LEADS SOUTH, AND A LOW CRAWL GOES EAST.
       items:
-      entities:
+
       commands:
         - SOUTH,S,FORK:
             {
@@ -5582,7 +5633,7 @@ rooms:
             HELLISH SCENE.
       items:
         - VOLCANO
-      entities:
+
       commands:
         - *setdark:
             {
@@ -5614,7 +5665,7 @@ rooms:
         }
       items:
         - SPICE
-      entities:
+
       commands:
         - WEST,W,OUT,OUTSIDE,EXIT,LEAVE,CRAWL:
             {
@@ -5634,7 +5685,7 @@ rooms:
             YOU ARE WALKING ALONG A GENTLY SLOPING NORTH/SOUTH PASSAGE LINED WITH
             ODDLY SHAPED LIMESTONE FORMATIONS.
       items:
-      entities:
+
       commands:
         - NORTH,N,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND,FORK:
             {
@@ -5654,7 +5705,7 @@ rooms:
             YOU ARE STANDING AT THE ENTRANCE TO A LARGE, BARREN ROOM.  A SIGN
             POSTED ABOVE THE ENTRANCE READS:  "CAUTION!  BEAR IN ROOM!"
       items:
-      entities:
+
       commands:
         - WEST,W,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND:
             {
@@ -5686,7 +5737,7 @@ rooms:
       items:
         - BEAR
         - CHAIN
-      entities:
+
       commands:
         - WEST,W,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -5705,7 +5756,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF TWISTING LITTLE PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - WEST,W:
             {
@@ -5752,7 +5803,7 @@ rooms:
         - true:
             YOU ARE IN A LITTLE MAZE OF TWISTY PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - NW:
             {
@@ -5799,7 +5850,7 @@ rooms:
         - true:
             YOU ARE IN A TWISTING MAZE OF LITTLE PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - UPWARD,UPWARDS,UP,U,ABOVE,ASCEND:
             {
@@ -5846,7 +5897,7 @@ rooms:
         - true:
             YOU ARE IN A TWISTING LITTLE MAZE OF PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - NE:
             {
@@ -5893,7 +5944,7 @@ rooms:
         - true:
             YOU ARE IN A TWISTY LITTLE MAZE OF PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - NORTH,N:
             {
@@ -5940,7 +5991,7 @@ rooms:
         - true:
             YOU ARE IN A TWISTY MAZE OF LITTLE PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - EAST,E:
             {
@@ -5987,7 +6038,7 @@ rooms:
         - true:
             YOU ARE IN A LITTLE TWISTY MAZE OF PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - SE:
             {
@@ -6034,7 +6085,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF LITTLE TWISTING PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - D,DOWNWARD,DOWNWARDS,DOWN,DESCEND:
             {
@@ -6081,7 +6132,7 @@ rooms:
         - true:
             YOU ARE IN A MAZE OF LITTLE TWISTY PASSAGES, ALL DIFFERENT.
       items:
-      entities:
+
       commands:
         - SW:
             {
@@ -6129,7 +6180,7 @@ rooms:
             DEAD END
       items:
         - MACHINE
-      entities:
+
       commands:
         - NORTH,N,OUT,OUTSIDE,EXIT,LEAVE:
             {
@@ -6188,7 +6239,7 @@ rooms:
         }
       }
       items:
-      entities:
+
       commands:
   - summary:
       description:
@@ -6263,6 +6314,6 @@ rooms:
           quit
         }
       items:
-      entities:
+
       commands:
 start: welcome

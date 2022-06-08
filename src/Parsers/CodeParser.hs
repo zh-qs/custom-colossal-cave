@@ -66,9 +66,9 @@ parameterFunctionParser = assignmentParser <|> modificationParser
 changePlayerParameterParser :: Parser (Action ())
 changePlayerParameterParser = (flip (>>=) <$> (changePlayerParameter <$> playerParameterAccessorParser)) <*> parameterFunctionParser
 
--- |Match an instruction of type @entity.\<entity name\>.\<parameter\> =/+=/-=/*= \<expression\>@.
-changeEntityParameterParser :: Parser (Action ())
-changeEntityParameterParser = (flip (>>=) <$> (uncurry changeEntityParameter <$> entityParameterAccessorParser)) <*> parameterFunctionParser
+-- |Match an instruction of type @item.\<item name\>.\<parameter\> =/+=/-=/*= \<expression\>@.
+changeItemParameterParser :: Parser (Action ())
+changeItemParameterParser = (flip (>>=) <$> (uncurry changeItemParameter <$> itemParameterAccessorParser)) <*> parameterFunctionParser
 
 -- |Match a conditional function instruction.
 conditionalParserF :: Parser (a -> Action ()) -> Parser (a -> Action ())
@@ -175,7 +175,7 @@ commonCodeLineParser =
         <|> printValueParser
         <|> dropAllParser
         <|> changePlayerParameterParser
-        <|> changeEntityParameterParser
+        <|> changeItemParameterParser
         <|> removeItemFromRoomParser
         <|> putItemInRoomParser
         <|> moveItemToRoomParser
