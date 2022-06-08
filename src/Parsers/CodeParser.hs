@@ -17,8 +17,6 @@ import Parsers.Utilities
 import Parsers.ArithmeticExpressionParser
 import Parsers.BooleanExpressionParser
 
--- TUTAJ MOŻE OPISAĆ KOD!!!
-
 -- |Match an opening curly brace (@{@) of code block. 
 openCurlyBrace :: Parser Char
 openCurlyBrace = char '{' <?> "Expecting '{' at the beginning of code block"
@@ -151,6 +149,10 @@ showInventoryParser = baseCodeLineParser "showInventory" (pure showInventory) "s
 lookParser :: Parser (Action ())
 lookParser = baseCodeLineParser "look" (pure $ void showRoom) "look"
 
+-- |Match a @globalOnEntry@ instruction. 
+globalOnEntryCallParser :: Parser (Action ())
+globalOnEntryCallParser = baseCodeLineParser "globalOnEntry" (pure callGlobalOnEntry) "global onEntry"
+
 -- |Match a single code line common for items and the rest.
 commonCodeLineParser :: Parser (Action ())
 commonCodeLineParser = 
@@ -177,6 +179,7 @@ commonCodeLineParser =
         <|> saveParser
         <|> restoreParser
         <|> showInventoryParser
+        <|> globalOnEntryCallParser
         <|> globalRoomParser
         <|> globalExplicitItemParser
     )) 

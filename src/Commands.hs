@@ -44,24 +44,30 @@ showInventory = perform $ gets (\g -> (playerInventory $ player g, globalNameMap
 getFinalMessage :: Action String
 getFinalMessage = perform (gets finalMessage) >>= id
 
+callGlobalRoomCommandWithMessage :: String -> Name -> Action ()
+callGlobalRoomCommandWithMessage message name = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ globalRoomCommands g)) 
+    >>= assertNotNothing message >>= id
+
 callCommandForCurrentRoom :: Name -> Action ()
 callCommandForCurrentRoom name = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ roomCommands $ rooms g M.! currentRoomName g)) 
-    >>= assertNotNothing ("ERROR: Command name not found: " ++ name) >>= id
+    >>= maybe (callGlobalRoomCommandWithMessage ("ERROR: Command name not found: " ++ name) name) id 
 
 callGlobalRoomCommand :: Name -> Action ()
-callGlobalRoomCommand name = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ globalRoomCommands g)) 
-    >>= assertNotNothing ("ERROR: Global command name not found: " ++ name) >>= id
+callGlobalRoomCommand name = callGlobalRoomCommandWithMessage ("ERROR: Global command name not found: " ++ name) name
 
 callGlobalItemCommand :: Name -> ItemName -> Action ()
 callGlobalItemCommand name itemName = perform (gets (\g -> lookup name $ map (\(_,n,r) -> (n,r)) $ globalItemCommands g itemName)) 
     >>= assertNotNothing ("ERROR: Global command name not found: " ++ name ++ " " ++ itemName) >>= id
 
+callGlobalOnEntry :: Action ()
+callGlobalOnEntry = perform (gets globalOnEntry) >>= id
+
 takeItem :: ItemName -> Action ()
-takeItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itMap) -> 
+takeItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         (Player ps (item:i) lh rh) 
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
             n rs) 
@@ -69,21 +75,21 @@ takeItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n i
         itMap)
 
 giveItem :: ItemName -> Action ()
-giveItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itMap) -> 
+giveItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         (Player ps (item:i) lh rh) 
         im fm 
-        gr gi
+        goe gr gi ccnt
         rs 
         n 
         itMap)
 
 putItemInRoom :: ItemName -> Name -> Action ()
-putItemInRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+putItemInRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         p
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (item:its) cmds)
             room rs) 
@@ -91,11 +97,11 @@ putItemInRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMap) ->
         itMap)
 
 putItem :: ItemName -> Action ()
-putItem item = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+putItem item = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         p
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (item:its) cmds)
             n rs) 
@@ -103,11 +109,11 @@ putItem item = perform $ modify' (\(Game p im fm gr gi rs n itMap) ->
         itMap)
 
 dropItem :: ItemName -> Action ()
-dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itMap) -> 
+dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         (Player ps (filter (/= item) i) lh rh) 
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (item:its) cmds)
             n rs) 
@@ -115,26 +121,26 @@ dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n i
         itMap)
 
 moveItemToRoom :: ItemName -> Name -> Action ()
-moveItemToRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+moveItemToRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         p
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
-            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
-            n 
-            (M.adjust 
             (\(Room d e its cmds) -> Room d e (item:its) cmds)
-            room rs)) 
+            room
+            (M.adjust 
+            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
+            n rs)) 
         n 
         itMap)
 
 removeItemFromRoom :: ItemName -> Name -> Action ()
-removeItemFromRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+removeItemFromRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         p
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
             room rs) 
@@ -142,11 +148,11 @@ removeItemFromRoom item room = perform $ modify' (\(Game p im fm gr gi rs n itMa
         itMap)
 
 removeItem :: ItemName -> Action ()
-removeItem item = perform $ modify' (\(Game p im fm gr gi rs n itMap) -> 
+removeItem item = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         p
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
             n rs) 
@@ -154,16 +160,19 @@ removeItem item = perform $ modify' (\(Game p im fm gr gi rs n itMap) ->
         itMap)
 
 discardItem :: ItemName -> Action ()
-discardItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itMap) -> 
+discardItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
     Game 
         (Player ps (filter (/= item) i) lh rh) 
         im fm 
-        gr gi
+        goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
             n rs) 
         n 
         itMap)
+
+getCommandCount :: Action Int
+getCommandCount = perform $ gets commandCount
 
 printMessage :: String -> Action ()
 printMessage s = perform $ lift $ putStr s >> hFlush stdout
@@ -175,16 +184,16 @@ printInt :: Int -> Action ()
 printInt x = perform $ lift $ (putStr $ show x) >> hFlush stdout
 
 goToRoom :: Name -> Action ()
-goToRoom newName = perform (modify' (\(Game p im fm gr gi rs n itmap) -> Game p im fm gr gi rs newName itmap)) >> showAndExecuteOnEntryCurrentRoom
+goToRoom newName = perform (modify' (\(Game p im fm goe gr gi ccnt rs n itmap) -> Game p im fm goe gr gi ccnt rs newName itmap)) >> showAndExecuteOnEntryCurrentRoom
 --gets (\(Game p im fm rs n itmap) -> rs M.! newName) >>= showRoom >> 
 changePlayerParameter :: Name -> (Int -> Int) -> Action ()
-changePlayerParameter name f = perform $ modify' (\(Game (Player ps i lh rh) im fm gr gi rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im fm gr gi rs n itmap)
+changePlayerParameter name f = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im fm goe gr gi ccnt rs n itmap)
 
 getPlayerParameter :: Name -> Action Int
-getPlayerParameter name = perform (gets (\(Game p im fm gr gi rs n itMap) -> playerParameters p M.!? name)) >>= assertNotNothing ("ERROR: Parameter not found: player." ++ name)
+getPlayerParameter name = perform (gets (\(Game p im fm goe gr gi ccnt rs n itMap) -> playerParameters p M.!? name)) >>= assertNotNothing ("ERROR: Parameter not found: player." ++ name)
 
 changeEntityParameter :: Name -> Name -> (Int -> Int) -> Action ()
-changeEntityParameter entityName name f = perform $ modify' (\(Game p im fm gr gi rs n imap) -> Game p im fm gr gi rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
+changeEntityParameter entityName name f = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n imap) -> Game p im fm goe gr gi ccnt rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
 
 getEntityParameter :: Name -> Name -> Action Int
 getEntityParameter entityName name = perform (gets (\g -> globalNameMap g M.!? entityName)) >>= assertNotNothing ("ERROR: Entity not found: " ++ entityName) 

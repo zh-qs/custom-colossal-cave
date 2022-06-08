@@ -1,5 +1,9 @@
 player:
   parameters:
+    - dark:
+        value: 0
+    - wasdark:
+        value: 0
     - lamplimit:
         value: 0
     - turns:
@@ -7,6 +11,8 @@ player:
     - dflag:
         value: 0
     - foobar:
+        value: 0
+    - foobarcmdcnt:
         value: 0
     - closed:
         value: 0
@@ -22,7 +28,45 @@ player:
         value: 0
     - score:
         value: 0
+    - notquit:
+        value: 1
+    - maxdie:
+        value: 3
+    - numdie:
+        value: 0
     - toNextRank:
+        value: 0
+    - endbonus:
+        value: 10
+    - find50:
+        value: 0
+    - find51:
+        value: 0
+    - find52:
+        value: 0
+    - find53:
+        value: 0
+    - find54:
+        value: 0
+    - find55:
+        value: 0
+    - find56:
+        value: 0
+    - find57:
+        value: 0
+    - find58:
+        value: 0
+    - find59:
+        value: 0
+    - find60:
+        value: 0
+    - find61:
+        value: 0
+    - find62:
+        value: 0
+    - find63:
+        value: 0
+    - find64:
         value: 0
     - param1:
         value: 0
@@ -165,7 +209,6 @@ items:
             {
               player.param2 = 1
               println OK
-              # co z ciemnością????????
             }
         - EXTINGUISH,OFF:
             {
@@ -1052,6 +1095,18 @@ items:
                 {
                   println THE BEAR IS STILL CHAINED TO THE WALL.
                 }
+                else if player.param35 == 2 then
+                {
+                  if invcount < 7 then
+			            {
+		                take
+		                println OK
+			            }
+			            else
+			            {
+			              println YOU CAN'T CARRY ANYTHING MORE.	YOU'LL HAVE TO DROP SOMETHING FIRST.
+			            }
+                }
                 else
                 {
                   println DON'T BE RIDICULOUS!
@@ -1301,7 +1356,23 @@ items:
       commands:
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
-              println DON'T BE RIDICULOUS!
+              if player.param62 == 1 then
+              {
+                println DON'T BE RIDICULOUS!
+              }
+              else
+              {
+                if has then
+                {
+                  println YOU ARE ALREADY CARRYING IT!
+                }
+                else
+                {
+                  remove RUG from room119
+                  remove RUG from room121
+                  give RUG
+                }
+              }
             }
   - SPICE:
       longName: RARE SPICES
@@ -1346,9 +1417,9 @@ items:
                 else
                 {
                   println THE CHAIN IS NOW UNLOCKED.
-                  if has CHAIN then
+                  if player.param35 != 3 then
                   {
-                    drop CHAIN
+                    player.param35 = 2
                   }
                   player.param64 = 2
                 }
@@ -1373,9 +1444,136 @@ items:
 global:
   onEntry:
     {
+      player.wasdark = player.dark
+      call setdark
+      if player.dark == 1 then
+      {
+        if player.wasdark == 1 && rnd % 100 < 35 then
+        {
+          println YOU FELL INTO A PIT AND BROKE EVERY BONE IN YOUR BODY!
+          goto death
+        }
+        else
+        {
+          # nie pokazuj przedmiotów
+          println IT IS NOW PITCH DARK.  IF YOU PROCEED YOU WILL LIKELY FALL INTO A PIT.
+        }
+      }
+      if has BEAR then
+      {
+        println YOU ARE BEING FOLLOWED BY A VERY LARGE, TAME BEAR.
+      }
       player.turns += 1
     }
   room:
+    - *setscore:
+        {
+          player.score = 2
+          if player.dflag > 0 then
+          {
+            player.score += 25
+          }
+          player.score += player.find50 * 2
+          player.score += player.find51 * 2
+          player.score += player.find52 * 2
+          player.score += player.find53 * 2
+          player.score += player.find54 * 2
+          player.score += player.find55 * 2
+          player.score += player.find56 * 2
+          player.score += player.find57 * 2
+          player.score += player.find58 * 2
+          player.score += player.find59 * 2
+          player.score += player.find60 * 2
+          player.score += player.find61 * 2
+          player.score += player.find62 * 2
+          player.score += player.find63 * 2
+          player.score += player.find64 * 2
+          if present GOLD in room3 && player.param50 == 0 then
+          {
+            player.score += 10
+          }
+                    if present DIAMOND in room3 && player.param51 == 0 then
+          {
+            player.score += 10
+          }
+          if present SILVER in room3 && player.param52 == 0 then
+          {
+            player.score += 10
+          }
+          if present JEWELRY in room3 && player.param53 == 0 then
+          {
+            player.score += 10
+          }
+          if present COINS in room3 && player.param54 == 0 then
+          {
+            player.score += 10
+          }
+          if present CHEST in room3 && player.param55 == 0 then
+          {
+            player.score += 12
+          }
+          if present EGGS in room3 && player.param56 == 0 then
+          {
+            player.score += 14
+          }
+          if present TRIDENT in room3 && player.param57 == 0 then
+          {
+            player.score += 14
+          }
+          if present VASE in room3 && player.param58 == 0 then
+          {
+            player.score += 14
+          }
+          if present EMERALD in room3 && player.param59 == 0 then
+          {
+            player.score += 14
+          }
+          if present PLATINUM in room3 && player.param60 == 0 then
+          {
+            player.score += 14
+          }
+          if present PEARL in room3 && player.param61 == 0 then
+          {
+            player.score += 14
+          }
+          if present RUG in room3 && player.param62 == 0 then
+          {
+            player.score += 14
+          }
+          if present SPICE in room3 && player.param63 == 0 then
+          {
+            player.score += 14
+          }
+          if present CHAIN in room3 && player.param64 == 0 then
+          {
+            player.score += 14
+          }
+          player.score += (player.maxdie - player.numdie) * 10
+          player.score += player.notquit * 4
+          if player.closing == 1 then
+          {
+            player.score += 25
+          }
+          if player.closed == 1 then
+          {
+            player.score += player.endbonus
+          }
+          if present MAGAZINE in room108 then
+          {
+            player.score += 1
+          }
+        }
+    - *setdark:
+        {
+          if present LAMP && player.param2 == 1 then
+          {
+            player.dark = 0
+          }
+          else
+          {
+            player.dark = 1
+          }
+        }
     - LOOK:
         {
           look
@@ -1551,7 +1749,9 @@ global:
           print DO YOU REALLY WANT TO QUIT NOW? 
           if askYesNo then
           {
-            goto death
+            player.notquit = 0
+            player.numdie = player.maxdie
+            goto summary
           }
         }
     - FIND,WHERE:
@@ -1571,23 +1771,133 @@ global:
             {
               println THERE IS A LOUD EXPLOSION, AND YOU ARE SUDDENLY SPLASHED ACROSS THE
               println WALLS OF THE ROOM.
+              player.endbonus = 25
+            }
+            else if in room115 then
+            {
+              println THERE IS A LOUD EXPLOSION, AND A TWENTY-FOOT HOLE APPEARS IN THE FAR
+              println WALL, BURYING THE SNAKES IN THE RUBBLE.  A RIVER OF MOLTEN LAVA POURS
+              println IN THROUGH THE HOLE, DESTROYING EVERYTHING IN ITS PATH, INCLUDING YOU!
+              player.endbonus = 30
             }
             else
             {
               println THERE IS A LOUD EXPLOSION, AND A TWENTY-FOOT HOLE APPEARS IN THE FAR
               println WALL, BURYING THE DWARVES IN THE RUBBLE.  YOU MARCH THROUGH THE HOLE
+              println AND FIND YOURSELF IN THE MAIN OFFICE, WHERE A CHEERING BAND OF
               println FRIENDLY ELVES CARRY THE CONQUERING ADVENTURER OFF INTO THE SUNSET.
+              player.endbonus = 45
             }
-            goto death
+            goto summary
           }
         }
     - SCORE:
         {
+          call setscore
           print IF YOU WERE TO QUIT NOW, YOU WOULD SCORE
           printval player.score
           println  OUT OF A POSSIBLE 350.
         }
-    - FEE,FIE,FOE,FOO,FUM:
+    - FEE:
+        {
+          if player.foobar == 0 then
+          {
+            println OK
+            player.foobarcmdcnt = cmdcount
+            player.foobar = 1
+          }
+          else
+          {
+            println WHAT'S THE MATTER, CAN'T YOU READ?  NOW YOU'D BEST START OVER.
+            player.foobar = 0
+          }
+        }
+    - FIE:
+        {
+          if player.foobar == 0 || player.foobarcmdcnd + 1 != cmdcount then
+          {
+            println NOTHING HAPPENS.
+            player.foobar = 0
+          }
+          else if player.foobar == 1 then
+          {
+            println OK
+            player.foobarcmdcnt = cmdcount
+            player.foobar = 2
+          }
+          else
+          {
+            println WHAT'S THE MATTER, CAN'T YOU READ?  NOW YOU'D BEST START OVER.
+            player.foobar = 0
+          }
+        }
+    - FOE:
+        {
+          if player.foobar == 0 || player.foobarcmdcnd + 1 != cmdcount then
+          {
+            println NOTHING HAPPENS.
+            player.foobar = 0
+          }
+          else if player.foobar == 2 then
+          {
+            println OK
+            player.foobarcmdcnt = cmdcount
+            player.foobar = 3
+          }
+          else
+          {
+            println WHAT'S THE MATTER, CAN'T YOU READ?  NOW YOU'D BEST START OVER.
+            player.foobar = 0
+          }
+        }
+    - FOO:
+        {
+          if player.foobar == 0 || player.foobarcmdcnd + 1 != cmdcount then
+          {
+            println NOTHING HAPPENS.
+            player.foobar = 0
+          }
+          else if player.foobar == 3 then
+          {
+            println OK
+            player.foobarcmdcnt = cmdcount
+            player.foobar = 0
+            if present EGGS in room92 || (has EGGS && in room92) then
+            {
+              println NOTHING HAPPENS.
+            }
+            else
+            {
+              if has EGGS && !present TROLL in room117 && player.param33 == 0 then
+              {
+                player.param33 = 1
+              }
+              if in room92 then
+              {
+                put EGGS
+                # tak naprawde trzeba jeszcze usunac jajka z poprzedniej lokalizacji
+                println THERE IS A LARGE NEST HERE, FULL OF GOLDEN EGGS!
+              }
+              else if present EGGS then
+              {
+                move EGGS to room92
+                println THE NEST OF GOLDEN EGGS HAS VANISHED!
+              }
+              else
+              {
+                put EGGS in room92
+                # tak naprawde trzeba jeszcze usunac jajka z poprzedniej lokalizacji
+                println DONE!
+              }
+            }
+          }
+          else
+          {
+            println WHAT'S THE MATTER, CAN'T YOU READ?  NOW YOU'D BEST START OVER.
+            player.foobar = 0
+          }
+        }
+    - FUM:
         {
           println I DON'T KNOW HOW.
         }
@@ -1754,6 +2064,10 @@ rooms:
         - WATER
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - ROAD,HILL,WEST,W,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND:
             {
               goto room2
@@ -1782,6 +2096,10 @@ rooms:
       items:
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - ROAD,HILL,BUILDING,HOUSE,FORWARD,CONTINUE,ONWARD,ONWARDS,EAST,E,NORTH,N,D,DOWNWARD,DOWNWARDS,DOWN,DESCEND:
             {
               goto room1
@@ -1802,6 +2120,10 @@ rooms:
         - WATER
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - ENTER,OUT,OUTSIDE,EXIT,LEAVE,OUTDOORS,WEST,W:
             {
               goto room1
@@ -1827,6 +2149,10 @@ rooms:
         - WATER
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - UPSTREAM,BUILDING,HOUSE,NORTH,N:
             {
               goto room1
@@ -1850,6 +2176,10 @@ rooms:
       items:
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - VALLEY,EAST,E,D,DOWNWARD,DOWNWARDS,DOWN,DESCEND:
             {
               goto room4
@@ -1880,6 +2210,10 @@ rooms:
       items:
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - ROAD,HILL,NORTH,N:
             {
               goto room1
@@ -1901,6 +2235,10 @@ rooms:
         - WATER
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - BUILDING,HOUSE:
             {
               goto room1
@@ -1931,6 +2269,10 @@ rooms:
         - GRATE
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - FOREST,EAST,E,WEST,W,SOUTH,S:
             {
               goto room5
@@ -1967,6 +2309,10 @@ rooms:
         - GRATE
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - OUT,OUTSIDE,EXIT,LEAVE,UPWARD,UPWARDS,UP,U,ABOVE,ASCEND:
             {
               if player.param3 != 0 then
@@ -2003,6 +2349,10 @@ rooms:
         - CAGE
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - OUT,OUTSIDE,EXIT,LEAVE,SURFACE,NULL,NOWHERE,EAST,E:
             {
               goto room9
@@ -2288,6 +2638,11 @@ rooms:
         - true:
             THIS IS A LOW ROOM WITH A CRUDE NOTE ON THE WALL.  THE NOTE SAYS,
             "YOU WON'T GET IT UP THE STEPS".
+      onEntry:
+        {
+          globalOnEntry
+          player.find50 = 1
+        }
       items:
         - GOLD
       entities:
@@ -2486,6 +2841,11 @@ rooms:
       description:
         - true:
             YOU ARE ON THE WEST SIDE OF THE FISSURE IN THE HALL OF MISTS.
+      onEntry:
+        {
+          globalOnEntry
+          player.find51 = 1
+        }
       items:
         - FISSURE
         - DIAMOND
@@ -2541,6 +2901,11 @@ rooms:
         - true:
             YOU ARE IN A LOW N/S PASSAGE AT A HOLE IN THE FLOOR.  THE HOLE GOES
             DOWN TO AN E/W PASSAGE.
+      onEntry:
+        {
+          globalOnEntry
+          player.find52 = 1
+        }
       items:
         - SILVER
       entities:
@@ -2561,6 +2926,11 @@ rooms:
       description:
         - true:
             YOU ARE IN THE SOUTH SIDE CHAMBER.
+      onEntry:
+        {
+          globalOnEntry
+          player.find53 = 1
+        }
       items:
         - JEWELRY
       entities:
@@ -2574,6 +2944,11 @@ rooms:
         - true:
             YOU ARE IN THE WEST SIDE CHAMBER OF THE HALL OF THE MOUNTAIN KING.
             A PASSAGE CONTINUES WEST AND UP HERE.
+      onEntry:
+        {
+          globalOnEntry
+          player.find54 = 1
+        }
       items:
         - COINS
       entities:
@@ -2616,9 +2991,8 @@ rooms:
             A ROCK IN THE ROOM'S CENTER.
       onEntry:
         {
-          # global
-          player.turns += 1
-          # endglobal
+          globalOnEntry
+
           if rnd % 100 < 25 && player.closing == 0 then
           {
             println A HOLLOW VOICE SAYS "PLUGH".
@@ -3839,6 +4213,11 @@ rooms:
             YOU ARE IN THE GIANT ROOM.  THE CEILING HERE IS TOO HIGH UP FOR YOUR
             LAMP TO SHOW IT.  CAVERNOUS PASSAGES LEAD EAST, NORTH, AND SOUTH.  ON
             THE WEST WALL IS SCRAWLED THE INSCRIPTION, "FEE FIE FOE FOO" [SIC].
+      onEntry:
+        {
+          globalOnEntry
+          player.find56 = 1
+        }
       items:
         - EGGS
       entities:
@@ -3899,6 +4278,11 @@ rooms:
             YOU ARE IN A MAGNIFICENT CAVERN WITH A RUSHING STREAM, WHICH CASCADES
             OVER A SPARKLING WATERFALL INTO A ROARING WHIRLPOOL WHICH DISAPPEARS
             THROUGH A HOLE IN THE FLOOR.  PASSAGES EXIT TO THE SOUTH AND WEST.
+      onEntry:
+        {
+          globalOnEntry
+          player.find57 = 1
+        }
       items:
         - TRIDENT
         - WATER
@@ -3936,6 +4320,11 @@ rooms:
             THIS IS THE ORIENTAL ROOM.  ANCIENT ORIENTAL CAVE DRAWINGS COVER THE
             WALLS.
             PASSAGE LEADS SE, AND A HANDS AND KNEES CRAWL LEADS WEST.
+      onEntry:
+        {
+          globalOnEntry
+          player.find58 = 1
+        }
       items:
         - DRAWING
         - VASE
@@ -3997,10 +4386,19 @@ rooms:
         - true:
             YOU'RE IN A SMALL CHAMBER LIT BY AN EERIE GREEN LIGHT.
             NARROW TUNNEL EXITS TO THE WEST.  A DARK CORRIDOR LEADS NE.
+      onEntry:
+        {
+          globalOnEntry
+          player.find59 = 1
+        }
       items:
         - EMERALD
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - WEST,W,PASSAGE,TUNNEL,OUT,OUTSIDE,EXIT,LEAVE:
             {
               println $code(1)
@@ -4032,6 +4430,11 @@ rooms:
       description:
         - true:
             YOU'RE IN THE DARK-ROOM.  A CORRIDOR LEADING SOUTH IS THE ONLY EXIT.
+      onEntry:
+        {
+          globalOnEntry
+          player.find60 = 1
+        }
       items:
         - TABLET
         - PLATINUM
@@ -4117,6 +4520,14 @@ rooms:
       description:
         - true:
             YOU ARE IN A CUL-DE-SAC ABOUT EIGHT FEET ACROSS.
+      onEntry:
+        {
+          globalOnEntry
+          if present PEARL then
+          {
+            player.find61 = 1
+          }
+        }
       items:
       entities:
       commands:
@@ -4377,7 +4788,13 @@ rooms:
       description:
         - true:
             DEAD END
+      onEntry:
+      {
+        globalOnEntry
+        player.find55 = 1
+      }
       items:
+        - CHEST
       entities:
       commands:
         - SE:
@@ -4401,6 +4818,10 @@ rooms:
       items:
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - SW:
             {
               goto room116
@@ -4429,6 +4850,10 @@ rooms:
       items:
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - NE:
             {
               goto room115
@@ -4513,6 +4938,11 @@ rooms:
       description:
         - true:
             YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
+      onEntry:
+        {
+          globalOnEntry
+          player.find62 = 1
+        }
       items:
         - DRAGON
         - RUG
@@ -4545,6 +4975,11 @@ rooms:
       description:
         - true:
             YOU ARE IN A SECRET CANYON WHICH EXITS TO THE NORTH AND EAST.
+      onEntry:
+        {
+          globalOnEntry
+          player.find62 = 1
+        }
       items:
         - DRAGON
         - RUG
@@ -4703,6 +5138,10 @@ rooms:
         - VOLCANO
       entities:
       commands:
+        - *setdark:
+            {
+              player.dark = 0
+            }
         - SOUTH,S,PASSAGE,TUNNEL,OUT,OUTSIDE,EXIT,LEAVE:
             {
               goto room125
@@ -4722,6 +5161,11 @@ rooms:
             VERY WARM, CAUSING THE AIR IN THE ROOM TO BE ALMOST STIFLING FROM THE
             HEAT.  THE ONLY EXIT IS A CRAWL HEADING WEST, THROUGH WHICH IS COMING
             A LOW RUMBLING.
+      onEntry:
+        {
+          globalOnEntry
+          player.find63 = 1
+        }
       items:
         - SPICE
       entities:
@@ -4788,6 +5232,11 @@ rooms:
             YOU ARE INSIDE A BARREN ROOM.  THE CENTER OF THE ROOM IS COMPLETELY
             EMPTY EXCEPT FOR SOME DUST.  MARKS IN THE DUST LEAD AWAY TOWARD THE
             FAR END OF THE ROOM.  THE ONLY EXIT IS THE WAY YOU CAME IN.
+      onEntry:
+        {
+          globalOnEntry
+          player.find64 = 1
+        }
       items:
         - BEAR
         - CHAIN
@@ -5242,8 +5691,64 @@ rooms:
             }
   - death:
       description:
+        - player.closing == 1:
+            IT LOOKS AS THOUGH YOU'RE DEAD.  WELL, SEEING AS HOW IT'S SO CLOSE TO
+            CLOSING TIME ANYWAY, I THINK WE'LL JUST CALL IT A DAY.
+        - player.numdie == 0:
+            OH DEAR, YOU SEEM TO HAVE GOTTEN YOURSELF KILLED.  I MIGHT BE ABLE TO
+            HELP YOU OUT, BUT I'VE NEVER REALLY DONE THIS BEFORE.  DO YOU WANT ME
+            TO TRY TO REINCARNATE YOU?
+        - player.numdie == 1:
+            YOU CLUMSY OAF, YOU'VE DONE IT AGAIN!  I DON'T KNOW HOW LONG I CAN
+            KEEP THIS UP.  DO YOU WANT ME TO TRY REINCARNATING YOU AGAIN?
+        - player.numdie == 2:
+            NOW YOU'VE REALLY DONE IT!  I'M OUT OF ORANGE SMOKE!  YOU DON'T EXPECT
+            ME TO DO A DECENT REINCARNATION WITHOUT ANY ORANGE SMOKE, DO YOU?
+      onEntry:
+      {
+        player.numdie += 1
+        if player.closing == 1 then
+        {
+          goto summary
+        }
+        if askYesNo then
+        {
+          if player.numdie < 3 then
+          {
+            if player.numdie == 1 then
+            {
+              println ALL RIGHT.  BUT DON'T BLAME ME IF SOMETHING GOES WR......
+              println 		    --- POOF!! ---
+              println YOU ARE ENGULFED IN A CLOUD OF ORANGE SMOKE.  COUGHING AND GASPING,
+              println YOU EMERGE FROM THE SMOKE AND FIND....
+            }
+            else if player.numdie == 2 then
+            {
+              println OKAY, NOW WHERE DID I PUT MY ORANGE SMOKE?....	>POOF!<
+              println EVERYTHING DISAPPEARS IN A DENSE CLOUD OF ORANGE SMOKE.
+            }
+            # reincarnate
+          }
+          else
+          {
+            println OKAY, IF YOU'RE SO SMART, DO IT YOURSELF!  I'M LEAVING!
+            goto summary
+          }
+        }
+        else
+        {
+          println OK
+          goto summary
+        }
+      }
+      items:
+      entities:
+      commands:
+  - summary:
+      description:
       onEntry:
         {
+          call setscore
           print YOU HAVE SCORED A TOTAL OF 
           printval player.score
           println  POINTS, OUT OF A POSSIBLE MAXIMUM OF
@@ -5291,10 +5796,16 @@ rooms:
             println YOUR SCORE PUTS YOU IN MASTER ADVENTURER CLASS A.
             player.toNextRank = 350 - player.score
           }
-          else
+          else if player.score == 350 then
           {
             println ALL OF ADVENTUREDOM GIVES TRIBUTE TO YOU, ADVENTURER GRANDMASTER!
-          }    
+            print.
+            println TO ACHIEVE THE NEXT HIGHER RATING WOULD BE A NEAT TRICK! CONGRATULATIONS!!
+          }
+          else
+          {
+            println YOU JUST WENT OFF MY SCALE!!
+          }
           if player.score < 350 then
           {
             print.

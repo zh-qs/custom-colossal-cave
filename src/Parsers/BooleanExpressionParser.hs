@@ -20,6 +20,10 @@ import Parsers.ArithmeticExpressionParser
 askYesNoParser :: Parser (Action Bool)
 askYesNoParser = stringWithSpaces "askYesNo" *> pure (perform $ lift getLine >>= (\s -> if (toLower <$> s) `elem` ["y", "yes"] then return True else return False))
 
+-- |Match a @prompt <word>@ prompt.
+promptParser :: Parser (Action Bool)
+promptParser = stringWithSpaces "prompt " *> (pure (\s -> perform $ lift $ (==s) <$> getLine) <*> (T.unpack <$> takeWhile1 isAlphaNum))
+
 -- |Match a @has <item>@ test.
 hasItemParser :: Parser (Action Bool)
 hasItemParser = stringWithSpaces "has " *> (checkIfItemIsInInventory . T.unpack <$> takeWhile1 isAlphaNum)
@@ -71,6 +75,7 @@ boolTermParser =
     <|> (charWithSpaces '(' *> booleanExpressionParser <* charWithSpaces ')')
     <|> (charWithSpaces '!' *> ((pure not <*>) <$> boolTermParser))
     <|> askYesNoParser
+    <|> promptParser
 
 -- |Match a boolean expression. 
 booleanExpressionParser :: Parser (Action Bool)

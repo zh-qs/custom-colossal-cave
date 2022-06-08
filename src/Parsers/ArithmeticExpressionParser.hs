@@ -16,7 +16,11 @@ import Data.Maybe
 import Parsers.Utilities
 import System.Random
 
--- |Match an @invcount@ expression
+-- |Match a @cmdcount@ expression.
+commandCountParser :: Parser (Action Int)
+commandCountParser = stringWithSpaces "cmdcount" *> pure getCommandCount
+
+-- |Match an @invcount@ expression.
 inventoryCountParser :: Parser (Action Int)
 inventoryCountParser = stringWithSpaces "invcount" *> pure getInventoryCount
 

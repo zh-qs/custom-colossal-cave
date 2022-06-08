@@ -37,8 +37,10 @@ gameParserSt =
         <$> playerParser
         <*> initialMessageParser
         <*> (finalMessageParser <* itemListParser "items" 1 "Initial item list")
-        <*> (globalHeaderParser *> globalRoomCommandsParser)
+        <*> (globalHeaderParser *> globalOnEntryParser)
+        <*> globalRoomCommandsParser
         <*> globalItemCommandsParser
+        <*> (pure 0)
         <*> roomMapParser
         <*> startRoomParser)
     <??> "Game definition"

@@ -3,18 +3,22 @@ carry: jeśli 1 w pokoju, podnieś, jeśli więcej, to trzeba wskazać, który
 TODO:           co się dzieje po wyjściu -> zamienić finalMessage na finalAction -> można obejść
         dodać goback
                 dodać switch do kodu -> niby jest
-        command overriding i domyślnych wiadomości
+        !command overriding i domyślnych wiadomości
+        !? połączyć entity z itemem
+        call command for item
 
 TODO z GAMLem: SAY <STH>
                GOTO <WHERE> (komenda, nie instrukcja)
                
+
                !ATTACK
                DRINK WATER kiedy nie ma wody -> butelka
                !THROW
-               CAVE, FIND CAVE
+               CAVE, FIND CAVE, WHERE CAVE
                !FOO, ...
                !?move sth from room to room
                ?NORTHEAST
+               DFLAG
                 !global onEntry call
                 !!$code
 
@@ -28,18 +32,11 @@ IF(PROP(LAMP).EQ.1)LIMIT=LIMIT-1
 	IF(LIMIT.LT.0.AND.LOC.LE.8)GOTO 12600
 	IF(LIMIT.LE.30)GOTO 12200
 
-               !!jeśli jest i było ciemno, to z 35%:
-                  YOU FELL INTO A PIT AND BROKE EVERY BONE IN YOUR BODY!
-                  +śmierć
 
-                C  IF REMAINING TREASURES TOO ELUSIVE, ZAP HIS LAMP.
-	                IF(TALLY.EQ.TALLY2.AND.TALLY.NE.0)LIMIT=MIN0(35,LIMIT)
-                sposób na liczenie TALLY: ustawić prop skarby na -1 i przy pierwszym zobaczeniu ustawić na 0
-
-
-                2610	IF(WD1.NE.'WEST')GOTO 2630
-	IWEST=IWEST+1
-	IF(IWEST.EQ.10)CALL RSPEAK(17)
+C	DKILL	NUMBER OF DWARVES KILLED (UNUSED IN SCORING, NEEDED FOR MSG)
+C	FOOBAR	CURRENT PROGRESS IN SAYING "FEE FIE FOE FOO".
+C	BONUS	USED TO DETERMINE AMOUNT OF BONUS IF HE REACHES CLOSING
+C	CLOCK1	NUMBER OF TURNS FROM FINDING LAST TREASURE TILL CLOSING
+C	CLOCK2	NUMBER OF TURNS FROM FIRST WARNING TILL BLINDING FLASH
 
 
-               DWARVES : linia 503 w fortranie

@@ -51,8 +51,10 @@ data Game = Game {
     player :: Player, 
     initialMessage :: String, 
     finalMessage :: Desc,
+    globalOnEntry :: Action (), 
     globalRoomCommands :: [Command], 
-    globalItemCommands :: (ItemName -> [Command]), 
+    globalItemCommands :: (ItemName -> [Command]),
+    commandCount :: Int,
     rooms :: M.Map Name Room, 
     currentRoomName :: Name, 
     globalNameMap :: M.Map Name Interactable 
