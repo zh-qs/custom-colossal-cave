@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |Provides 'commandListParser', which parses YAML-like list of commands.
 module Parsers.CommandParser where
 
 import DataStructures
@@ -37,6 +38,7 @@ itemCommandParser parser =
             <*> (char ':' *> skipSpaces *> parser <* newLines)) 
     <?> "Command definition"
 
+-- |Match an item command list with custom keyword.
 baseItemCommandListParser :: T.Text -> Int -> Parser (a -> Action ()) -> Parser (a -> [Command])
 baseItemCommandListParser keyword indentationLevel parser = foldl' <$> pure (\f g -> (\n -> f n ++ g n)) <*> pure (const []) <*> listParser keyword (itemCommandParser parser) indentationLevel "Command list"
 
@@ -44,10 +46,11 @@ baseItemCommandListParser keyword indentationLevel parser = foldl' <$> pure (\f 
 baseCommandListParser :: T.Text -> Int -> Parser (Action ()) -> Parser [Command]
 baseCommandListParser keyword indentationLevel parser = concat <$> listParser keyword (commandParser parser) indentationLevel "Command list"
 
--- |Match a command list.
+-- |Match a command list. Takes indentation level and either 'commandParser' or 'itemCommandParser' as an argument.
 commandListParser :: Int -> Parser (Action ()) -> Parser [Command]
 commandListParser = baseCommandListParser "commands"
 
+-- |Match an 'onEntry' command.
 onEntryParser :: Int -> Action () -> Parser (Action ())
 onEntryParser indentationLevel defaultAction = (tabs indentationLevel *> string "onEntry:" *> newLines *> skipSpaces *> codeParser <* newLines) <|> pure defaultAction
 

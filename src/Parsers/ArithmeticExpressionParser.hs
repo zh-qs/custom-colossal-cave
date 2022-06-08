@@ -1,5 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |Provides an 'expressionParser' parser for processing the arithmetic expressions.
+-- The possible operations are: @+@, @-@, @*@, @/@ and @%@ (mod) and are defined for 'Int'.
+-- Moreover, the parser provides accessors to parameters (@player.\<parameter\>@ and @entity.\<name\>.\<parameter\>@)
+-- and expressions: @invcount@ (count of the player inventory), @cmdcount@ (number of entered commands during the game)
+-- and @rnd@ (random number).
 module Parsers.ArithmeticExpressionParser where
 
 import DataStructures
@@ -15,6 +20,24 @@ import Control.Applicative
 import Data.Maybe
 import Parsers.Utilities
 import System.Random
+
+
+-- * Grammar
+--
+-- $grammar
+--
+-- The arithmetic expression grammar in this module is defined as follows:
+--
+-- * expr -> term expr'
+-- * expr' -> (@+@|@-@) term expr' | eps
+-- * term -> factor | term'
+-- * term' -> (@*@|@/@|@%@) factor term' | eps
+-- * factor -> @invcount@ | @cmdcount@ | @rnd@ | number | @player.\<parameter\>@ | @entity.\<name\>.parameter@ | ( expr )
+--
+-- All operators are left-associative. Operators @*,/,%@ have higher priority than @+@ and @-@.
+--
+
+-- * Parsing arithmetic expressions
 
 -- |Match a @cmdcount@ expression.
 commandCountParser :: Parser (Action Int)
@@ -56,6 +79,7 @@ addOpParser = (charWithSpaces '+' *> liftPAction (+)) <|> (charWithSpaces '-' *>
 termParser :: Parser (Action Int)
 termParser = factorParser <**> termParser'
 
+-- |Match a @term'@ non-terminal from a grammar, preserving left-associativity of the operators.
 termParser' :: Parser (Action Int -> Action Int)
 termParser' = ((flip (.) <$> (mulOpParser <*> factorParser)) <*> termParser') <|> pure id
 
@@ -63,6 +87,7 @@ termParser' = ((flip (.) <$> (mulOpParser <*> factorParser)) <*> termParser') <|
 expressionParser :: Parser (Action Int)
 expressionParser = termParser <**> expressionParser'
 
+-- |Match a @expr'@ non-terminal from a grammar, preserving left-associativity of the operators.
 expressionParser' :: Parser (Action Int -> Action Int)
 expressionParser' = ((flip (.) <$> (addOpParser <*> termParser)) <*> expressionParser') <|> pure id
 

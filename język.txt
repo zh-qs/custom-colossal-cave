@@ -129,4 +129,4 @@ EXPRESSION GRAMMAR:
 
 BOOLEAN EXPRESSION GRAMMAR:
   exprB -> termB (`&&`|`||`) exprB | termB
-  termB -> `askYesNo` | `present` <item|entity> | `present` <item|entity> `in` <room> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 
+  termB -> `askYesNo` | `present` <item|entity> | `present` <item|entity> `in` <room> | `in` <room> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 

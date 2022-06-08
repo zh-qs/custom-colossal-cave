@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |Provides 'codeParser' and 'itemCode' parsers, which parse single block of command code,
+-- respectively, specific to 'Room' and to 'Item'.
 module Parsers.CodeParser where
 
 import DataStructures
@@ -29,19 +31,19 @@ closeCurlyBrace = char '}' <?> "Expecting '}' at the end of code block"
 printEmptyLineParser :: Parser (Action ())
 printEmptyLineParser = baseCodeLineParser "print." (pure $ printMessage "\n") "print empty line"
 
--- |Match a @print <text>@ instruction.
+-- |Match a @print \<text\>@ instruction.
 printParser :: Parser (Action ())
 printParser = baseCodeLineParser "print " (printMessage . unpack <$> takeTill isNewline) "print"
 
--- |Match a @println <text>@ instruction.
+-- |Match a @println \<text\>@ instruction.
 printLineParser :: Parser (Action ())
 printLineParser = baseCodeLineParser "println " (printMessageLine . unpack <$> takeTill isNewline) "println"
 
--- |Match a @printval <expression>@ instruction.
+-- |Match a @printval \<expression\>@ instruction.
 printValueParser :: Parser (Action ())
 printValueParser = baseCodeLineParser "printval " ((>>= printInt) <$> expressionParser) "printval"
 
--- |Match a @goto <room>@ instruction.
+-- |Match a @goto \<room\>@ instruction.
 gotoParser :: Parser (Action ())
 gotoParser = baseCodeLineParser "goto " (goToRoom . unpack <$> takeTill isSpace) "goto"
 
@@ -60,11 +62,11 @@ modificationParser =
 parameterFunctionParser :: Parser (Action (Int -> Int))
 parameterFunctionParser = assignmentParser <|> modificationParser
 
--- |Match an instruction of type @player.<parameter> =/+=/-=/*= <expression>@.
+-- |Match an instruction of type @player.\<parameter\> =/+=/-=/*= \<expression\>@.
 changePlayerParameterParser :: Parser (Action ())
 changePlayerParameterParser = (flip (>>=) <$> (changePlayerParameter <$> playerParameterAccessorParser)) <*> parameterFunctionParser
 
--- |Match an instruction of type @entity.<entity name>.<parameter> =/+=/-=/*= <expression>@.
+-- |Match an instruction of type @entity.\<entity name\>.\<parameter\> =/+=/-=/*= \<expression\>@.
 changeEntityParameterParser :: Parser (Action ())
 changeEntityParameterParser = (flip (>>=) <$> (uncurry changeEntityParameter <$> entityParameterAccessorParser)) <*> parameterFunctionParser
 
@@ -88,11 +90,11 @@ takeSelfParser = baseCodeLineParser "take" (pure takeItem) "take"
 dropSelfParser :: Parser (ItemName -> Action ())
 dropSelfParser = baseCodeLineParser "drop" (pure dropItem) "drop"
 
--- |Match a @take <item name>@ instruction.
+-- |Match a @take \<item name\>@ instruction.
 takeItemParser :: Parser (Action ())
 takeItemParser = baseCodeLineParser "take " (takeItem . unpack <$> takeTill isSpace) "take"
 
--- |Match a @drop <item name>@ instruction.
+-- |Match a @drop \<item name\>@ instruction.
 dropItemParser :: Parser (Action ())
 dropItemParser = baseCodeLineParser "drop " (dropItem . unpack <$> takeTill isSpace) "drop"
 
@@ -104,24 +106,27 @@ dropAllParser = baseCodeLineParser "dropall" (pure dropAllItemsInCurrentRoom) "d
 discardItemParser :: Parser (ItemName -> Action ())
 discardItemParser = baseCodeLineParser "discard" (pure discardItem) "discard"
 
--- |Match a @give <item name>@ instruction.
+-- |Match a @give \<item name\>@ instruction.
 giveItemParser :: Parser (Action ())
 giveItemParser = baseCodeLineParser "give " (giveItem . unpack <$> takeTill isSpace) "give"
 
--- |Match a @put <item name>@ instruction.
+-- |Match a @put \<item name\>@ instruction.
 putItemParser :: Parser (Action ())
 putItemParser = baseCodeLineParser "put " (putItem . unpack <$> takeTill isSpace) "put"
 
--- |Match a @remove <item name>@ instruction.
+-- |Match a @remove \<item name\>@ instruction.
 removeItemParser :: Parser (Action ())
 removeItemParser = baseCodeLineParser "remove " (discardItem . unpack <$> takeTill isSpace) "remove"
 
+-- |Match a @remove \<item\> from \<room\>@ instruction.
 removeItemFromRoomParser :: Parser (Action ())
 removeItemFromRoomParser = baseCodeLineParser "remove " (removeItemFromRoom <$> (unpack <$> takeTill isSpace) <*> (string " from " *> (unpack <$> takeTill isSpace))) "remove from"
 
+-- |Match a @put \<item\> in \<room\>@ instruction.
 putItemInRoomParser :: Parser (Action ())
 putItemInRoomParser = baseCodeLineParser "put " (putItemInRoom <$> (unpack <$> takeTill isSpace) <*> (string " in " *> (unpack <$> takeTill isSpace))) "put in"
 
+-- |Match a @move \<item\> to \<room\>@ instruction.
 moveItemToRoomParser :: Parser (Action ())
 moveItemToRoomParser = baseCodeLineParser "move " (moveItemToRoom <$> (unpack <$> takeTill isSpace) <*> (string " to " *> (unpack <$> takeTill isSpace))) "move to"
 
@@ -203,9 +208,11 @@ codeLineParser =
 codeParser :: Parser (Action ())
 codeParser = openCurlyBrace *> (Prelude.foldr <$> pure (>>) <*> pure noAction <*> many' codeLineParser) <* skipSpaces <* closeCurlyBrace
 
+-- |Match a special conditional instruction @if has then ...@
 hasConditionalParser :: Parser (ItemName -> Action ()) ->  Parser (ItemName -> Action ())
 hasConditionalParser parser = stringWithSpaces "if has then" *> (((\f g h -> (\n -> f n g h n)) $ (conditionallyEvaluateAction . checkIfItemIsInInventory)) <$> parser <*> ((stringWithSpaces "else" *> parser) <|> pure (const noAction))) <?> "'has' conditional"
 
+-- |Match a special conditional instruction @if present then ...@
 presentConditionalParser :: Parser (ItemName -> Action ()) -> Parser (ItemName -> Action ())
 presentConditionalParser parser = stringWithSpaces "if present then" *> (((\f g h -> (\n -> f n g h n)) $ (conditionallyEvaluateAction . checkIfInteractablePresent)) <$> parser <*> ((stringWithSpaces "else" *> parser) <|> pure (const noAction))) <?> "'present' conditional"
 
@@ -228,14 +235,14 @@ itemCodeLineParser =
 itemCodeParser :: Parser (ItemName -> Action ())
 itemCodeParser = openCurlyBrace *> (Prelude.foldr <$> pure (\f g -> (\n -> f n >> g n)) <*> pure (const noAction) <*> many' itemCodeLineParser) <* skipSpaces <* closeCurlyBrace
 
--- |Match a @global room.<command>@ instruction.
+-- |Match a @global room.\<command\>@ instruction.
 globalRoomParser :: Parser (Action ())
 globalRoomParser = baseCodeLineParser "global room." (callGlobalRoomCommand . unpack <$> takeTill isSpace) "global room command call"
 
--- |Match a @global item.<command>@ instruction.
+-- |Match a @global item.\<command\>@ instruction.
 globalItemParser :: Parser (ItemName -> Action ())
 globalItemParser = baseCodeLineParser "global item." (callGlobalItemCommand . unpack <$> takeTill isSpace) "global item command call"
 
--- |Match a @global item.<command> <argument>@ instruction.
+-- |Match a @global item.\<command\> \<argument\>@ instruction.
 globalExplicitItemParser :: Parser (Action ())
 globalExplicitItemParser = globalItemParser <*> (char ' ' *> (unpack <$> takeTill isSpace))

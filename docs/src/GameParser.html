@@ -1,0 +1,436 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">GameParser</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="DataStructures.html"><span class="hs-identifier">DataStructures</span></a></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map.Strict</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Attoparsec.Text</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Class</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.State.Strict</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text.IO</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Commands.html"><span class="hs-identifier">Commands</span></a></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.CodeParser.html"><span class="hs-identifier">Parsers.CodeParser</span></a></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.PlayerParser.html"><span class="hs-identifier">Parsers.PlayerParser</span></a></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.Utilities.html"><span class="hs-identifier">Parsers.Utilities</span></a></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.RoomParser.html"><span class="hs-identifier">Parsers.RoomParser</span></a></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.ItemParser.html"><span class="hs-identifier">Parsers.ItemParser</span></a></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.GlobalCommandsParser.html"><span class="hs-identifier">Parsers.GlobalCommandsParser</span></a></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.SwitchParser.html"><span class="hs-identifier">Parsers.SwitchParser</span></a></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="annot"><a href="GameParser.html#startRoomParser"><span class="hs-identifier hs-type">startRoomParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="DataStructures.html#StParser"><span class="hs-identifier hs-type">StParser</span></a></span><span> </span><span class="annot"><a href="DataStructures.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span>
+</span><span id="line-26"></span><span id="startRoomParser"><span class="annot"><span class="annottext">startRoomParser :: StParser Name
+</span><a href="GameParser.html#startRoomParser"><span class="hs-identifier hs-var hs-var">startRoomParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Text Name -&gt; StParser Name
+forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
+(MonadTrans t, Monad m) =&gt;
+m a -&gt; t m a
+</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><span class="hs-identifier hs-var">string</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;start: &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser Text Name -&gt; Parser Text Name
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Name
+</span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Name) -&gt; Parser Text -&gt; Parser Text Name
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text Name -&gt; Parser Text () -&gt; Parser Text Name
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text Name -&gt; Name -&gt; Parser Text Name
+forall i a. Parser i a -&gt; Name -&gt; Parser i a
+</span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Start room name&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>
+</span><span id="line-28"></span><span class="annot"><a href="GameParser.html#initialMessageParser"><span class="hs-identifier hs-type">initialMessageParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="DataStructures.html#StParser"><span class="hs-identifier hs-type">StParser</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span>
+</span><span id="line-29"></span><span id="initialMessageParser"><span class="annot"><span class="annottext">initialMessageParser :: StParser Name
+</span><a href="GameParser.html#initialMessageParser"><span class="hs-identifier hs-var hs-var">initialMessageParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Text Name -&gt; StParser Name
+forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
+(MonadTrans t, Monad m) =&gt;
+m a -&gt; t m a
+</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(Parser Text Name -&gt; StParser Name)
+-&gt; Parser Text Name -&gt; StParser Name
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int -&gt; Name -&gt; Parser Text Name
+</span><a href="Parsers.Utilities.html#multilineContentParser"><span class="hs-identifier hs-var">multilineContentParser</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;initialMessage&quot;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Initial message definition&quot;</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="annot"><a href="GameParser.html#finalMessageParser"><span class="hs-identifier hs-type">finalMessageParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="DataStructures.html#StParser"><span class="hs-identifier hs-type">StParser</span></a></span><span> </span><span class="annot"><a href="DataStructures.html#Desc"><span class="hs-identifier hs-type">Desc</span></a></span><span>
+</span><span id="line-32"></span><span id="finalMessageParser"><span class="annot"><span class="annottext">finalMessageParser :: StParser Desc
+</span><a href="GameParser.html#finalMessageParser"><span class="hs-identifier hs-var hs-var">finalMessageParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Parser Text Desc -&gt; StParser Desc
+forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
+(MonadTrans t, Monad m) =&gt;
+m a -&gt; t m a
+</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(Parser Text Desc -&gt; StParser Desc)
+-&gt; Parser Text Desc -&gt; StParser Desc
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int -&gt; Name -&gt; Parser Text Desc
+</span><a href="Parsers.SwitchParser.html#switchParser"><span class="hs-identifier hs-var">switchParser</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;finalMessage&quot;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Final message definition&quot;</span></span><span>
+</span><span id="line-33"></span><span>
+</span><span id="line-34"></span><span class="annot"><a href="GameParser.html#gameParserSt"><span class="hs-identifier hs-type">gameParserSt</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="DataStructures.html#StParser"><span class="hs-identifier hs-type">StParser</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">M.Map</span></span><span> </span><span class="annot"><a href="DataStructures.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><a href="DataStructures.html#Interactable"><span class="hs-identifier hs-type">Interactable</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Game"><span class="hs-identifier hs-type">Game</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span id="gameParserSt"><span class="annot"><span class="annottext">gameParserSt :: StParser (Map Name Interactable -&gt; Game)
+</span><a href="GameParser.html#gameParserSt"><span class="hs-identifier hs-var hs-var">gameParserSt</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Player
+-&gt; Name
+-&gt; Desc
+-&gt; Action ()
+-&gt; [Command]
+-&gt; (Name -&gt; [Command])
+-&gt; Int
+-&gt; Map Name Room
+-&gt; Name
+-&gt; Map Name Interactable
+-&gt; Game
+</span><a href="DataStructures.html#Game"><span class="hs-identifier hs-var">Game</span></a></span><span>
+</span><span id="line-37"></span><span>        </span><span class="annot"><span class="annottext">(Player
+ -&gt; Name
+ -&gt; Desc
+ -&gt; Action ()
+ -&gt; [Command]
+ -&gt; (Name -&gt; [Command])
+ -&gt; Int
+ -&gt; Map Name Room
+ -&gt; Name
+ -&gt; Map Name Interactable
+ -&gt; Game)
+-&gt; StateT (Map Name Interactable, Action ()) (Parser Text) Player
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     (Name
+      -&gt; Desc
+      -&gt; Action ()
+      -&gt; [Command]
+      -&gt; (Name -&gt; [Command])
+      -&gt; Int
+      -&gt; Map Name Room
+      -&gt; Name
+      -&gt; Map Name Interactable
+      -&gt; Game)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">StateT (Map Name Interactable, Action ()) (Parser Text) Player
+</span><a href="Parsers.PlayerParser.html#playerParser"><span class="hs-identifier hs-var">playerParser</span></a></span><span>
+</span><span id="line-38"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  (Name
+   -&gt; Desc
+   -&gt; Action ()
+   -&gt; [Command]
+   -&gt; (Name -&gt; [Command])
+   -&gt; Int
+   -&gt; Map Name Room
+   -&gt; Name
+   -&gt; Map Name Interactable
+   -&gt; Game)
+-&gt; StParser Name
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     (Desc
+      -&gt; Action ()
+      -&gt; [Command]
+      -&gt; (Name -&gt; [Command])
+      -&gt; Int
+      -&gt; Map Name Room
+      -&gt; Name
+      -&gt; Map Name Interactable
+      -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">StParser Name
+</span><a href="GameParser.html#initialMessageParser"><span class="hs-identifier hs-var">initialMessageParser</span></a></span><span>
+</span><span id="line-39"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  (Desc
+   -&gt; Action ()
+   -&gt; [Command]
+   -&gt; (Name -&gt; [Command])
+   -&gt; Int
+   -&gt; Map Name Room
+   -&gt; Name
+   -&gt; Map Name Interactable
+   -&gt; Game)
+-&gt; StParser Desc
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     (Action ()
+      -&gt; [Command]
+      -&gt; (Name -&gt; [Command])
+      -&gt; Int
+      -&gt; Map Name Room
+      -&gt; Name
+      -&gt; Map Name Interactable
+      -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">StParser Desc
+</span><a href="GameParser.html#finalMessageParser"><span class="hs-identifier hs-var">finalMessageParser</span></a></span><span> </span><span class="annot"><span class="annottext">StParser Desc
+-&gt; StateT (Map Name Interactable, Action ()) (Parser Text) [Name]
+-&gt; StParser Desc
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; Int
+-&gt; Name
+-&gt; StateT (Map Name Interactable, Action ()) (Parser Text) [Name]
+</span><a href="Parsers.ItemParser.html#itemListParser"><span class="hs-identifier hs-var">itemListParser</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;items&quot;</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Initial item list&quot;</span></span><span class="hs-special">)</span><span>
+</span><span id="line-40"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  (Action ()
+   -&gt; [Command]
+   -&gt; (Name -&gt; [Command])
+   -&gt; Int
+   -&gt; Map Name Room
+   -&gt; Name
+   -&gt; Map Name Interactable
+   -&gt; Game)
+-&gt; StateT
+     (Map Name Interactable, Action ()) (Parser Text) (Action ())
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     ([Command]
+      -&gt; (Name -&gt; [Command])
+      -&gt; Int
+      -&gt; Map Name Room
+      -&gt; Name
+      -&gt; Map Name Interactable
+      -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">StParser ()
+</span><a href="Parsers.GlobalCommandsParser.html#globalHeaderParser"><span class="hs-identifier hs-var">globalHeaderParser</span></a></span><span> </span><span class="annot"><span class="annottext">StParser ()
+-&gt; StateT
+     (Map Name Interactable, Action ()) (Parser Text) (Action ())
+-&gt; StateT
+     (Map Name Interactable, Action ()) (Parser Text) (Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">StateT (Map Name Interactable, Action ()) (Parser Text) (Action ())
+</span><a href="Parsers.GlobalCommandsParser.html#globalOnEntryParser"><span class="hs-identifier hs-var">globalOnEntryParser</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  ([Command]
+   -&gt; (Name -&gt; [Command])
+   -&gt; Int
+   -&gt; Map Name Room
+   -&gt; Name
+   -&gt; Map Name Interactable
+   -&gt; Game)
+-&gt; StateT
+     (Map Name Interactable, Action ()) (Parser Text) [Command]
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     ((Name -&gt; [Command])
+      -&gt; Int -&gt; Map Name Room -&gt; Name -&gt; Map Name Interactable -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">StateT (Map Name Interactable, Action ()) (Parser Text) [Command]
+</span><a href="Parsers.GlobalCommandsParser.html#globalRoomCommandsParser"><span class="hs-identifier hs-var">globalRoomCommandsParser</span></a></span><span>
+</span><span id="line-42"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  ((Name -&gt; [Command])
+   -&gt; Int -&gt; Map Name Room -&gt; Name -&gt; Map Name Interactable -&gt; Game)
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     (Name -&gt; [Command])
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     (Int -&gt; Map Name Room -&gt; Name -&gt; Map Name Interactable -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  (Name -&gt; [Command])
+</span><a href="Parsers.GlobalCommandsParser.html#globalItemCommandsParser"><span class="hs-identifier hs-var">globalItemCommandsParser</span></a></span><span>
+</span><span id="line-43"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  (Int -&gt; Map Name Room -&gt; Name -&gt; Map Name Interactable -&gt; Game)
+-&gt; StateT (Map Name Interactable, Action ()) (Parser Text) Int
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     (Map Name Room -&gt; Name -&gt; Map Name Interactable -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; StateT (Map Name Interactable, Action ()) (Parser Text) Int
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">0</span></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  (Map Name Room -&gt; Name -&gt; Map Name Interactable -&gt; Game)
+-&gt; StateT
+     (Map Name Interactable, Action ()) (Parser Text) (Map Name Room)
+-&gt; StateT
+     (Map Name Interactable, Action ())
+     (Parser Text)
+     (Name -&gt; Map Name Interactable -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ()) (Parser Text) (Map Name Room)
+</span><a href="#local-6989586621679063981"><span class="hs-identifier hs-var">roomMapParser</span></a></span><span>
+</span><span id="line-45"></span><span>        </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ())
+  (Parser Text)
+  (Name -&gt; Map Name Interactable -&gt; Game)
+-&gt; StParser Name -&gt; StParser (Map Name Interactable -&gt; Game)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">StParser Name
+</span><a href="GameParser.html#startRoomParser"><span class="hs-identifier hs-var">startRoomParser</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>    </span><span class="annot"><span class="annottext">StParser (Map Name Interactable -&gt; Game)
+-&gt; Name -&gt; StParser (Map Name Interactable -&gt; Game)
+forall a. StParser a -&gt; Name -&gt; StParser a
+</span><a href="DataStructures.html#%3C%3F%3F%3E"><span class="hs-operator hs-var">&lt;??&gt;</span></a></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Game definition&quot;</span></span><span>
+</span><span id="line-47"></span><span>    </span><span class="hs-keyword">where</span><span>
+</span><span id="line-48"></span><span>        </span><span id="local-6989586621679063981"><span class="annot"><span class="annottext">roomMapParser :: StateT
+  (Map Name Interactable, Action ()) (Parser Text) (Map Name Room)
+</span><a href="#local-6989586621679063981"><span class="hs-identifier hs-var hs-var">roomMapParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[(Name, Room)] -&gt; Map Name Room
+forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
+</span><span class="hs-identifier hs-var">M.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(Name, Room)] -&gt; Map Name Room)
+-&gt; StateT
+     (Map Name Interactable, Action ()) (Parser Text) [(Name, Room)]
+-&gt; StateT
+     (Map Name Interactable, Action ()) (Parser Text) (Map Name Room)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">StateT
+  (Map Name Interactable, Action ()) (Parser Text) [(Name, Room)]
+</span><a href="Parsers.RoomParser.html#roomListParser"><span class="hs-identifier hs-var">roomListParser</span></a></span><span> </span><span class="hs-comment">-- PRZEROBI&#262; TAK, &#379;EBY DZIA&#321;A&#321; PARITAMI!!!!!</span><span>
+</span><span id="line-49"></span><span>
+</span><span id="line-50"></span><span class="annot"><a href="GameParser.html#gameParser"><span class="hs-identifier hs-type">gameParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="annot"><a href="DataStructures.html#Game"><span class="hs-identifier hs-type">Game</span></a></span><span>
+</span><span id="line-51"></span><span id="gameParser"><span class="annot"><span class="annottext">gameParser :: Parser Game
+</span><a href="GameParser.html#gameParser"><span class="hs-identifier hs-var hs-var">gameParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679063972"><span class="annot"><span class="annottext">Map Name Interactable -&gt; Game
+</span><a href="#local-6989586621679063972"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">,</span><span class="hs-special">(</span><span id="local-6989586621679063971"><span class="annot"><span class="annottext">Map Name Interactable
+</span><a href="#local-6989586621679063971"><span class="hs-identifier hs-var">s</span></a></span></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Action ()
+</span><span class="hs-identifier">_</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">Map Name Interactable -&gt; Game
+</span><a href="#local-6989586621679063972"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">Map Name Interactable
+</span><a href="#local-6989586621679063971"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((Map Name Interactable -&gt; Game,
+  (Map Name Interactable, Action ()))
+ -&gt; Game)
+-&gt; Parser
+     (Map Name Interactable -&gt; Game, (Map Name Interactable, Action ()))
+-&gt; Parser Game
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">StParser (Map Name Interactable -&gt; Game)
+-&gt; (Map Name Interactable, Action ())
+-&gt; Parser
+     (Map Name Interactable -&gt; Game, (Map Name Interactable, Action ()))
+forall s (m :: * -&gt; *) a. StateT s m a -&gt; s -&gt; m (a, s)
+</span><span class="hs-identifier hs-var hs-var">runStateT</span></span><span> </span><span class="annot"><span class="annottext">StParser (Map Name Interactable -&gt; Game)
+</span><a href="GameParser.html#gameParserSt"><span class="hs-identifier hs-var">gameParserSt</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Map Name Interactable
+forall k a. Map k a
+</span><span class="hs-identifier hs-var">M.empty</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Action ()
+</span><a href="Commands.html#noAction"><span class="hs-identifier hs-var">noAction</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="annot"><a href="GameParser.html#checkGame"><span class="hs-identifier hs-type">checkGame</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="DataStructures.html#Game"><span class="hs-identifier hs-type">Game</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="DataStructures.html#Game"><span class="hs-identifier hs-type">Game</span></a></span><span>
+</span><span id="line-54"></span><span id="checkGame"><span class="annot"><span class="annottext">checkGame :: Game -&gt; Either Name Game
+</span><a href="GameParser.html#checkGame"><span class="hs-identifier hs-var hs-var">checkGame</span></a></span></span><span> </span><span id="local-6989586621679063966"><span class="annot"><span class="annottext">Game
+</span><a href="#local-6989586621679063966"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Map Name Room -&gt; Bool
+forall k a. Ord k =&gt; k -&gt; Map k a -&gt; Bool
+</span><span class="hs-identifier hs-var">M.member</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Game -&gt; Name
+</span><a href="DataStructures.html#currentRoomName"><span class="hs-identifier hs-var hs-var">currentRoomName</span></a></span><span> </span><span class="annot"><span class="annottext">Game
+</span><a href="#local-6989586621679063966"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Game -&gt; Map Name Room
+</span><a href="DataStructures.html#rooms"><span class="hs-identifier hs-var hs-var">rooms</span></a></span><span> </span><span class="annot"><span class="annottext">Game
+</span><a href="#local-6989586621679063966"><span class="hs-identifier hs-var">g</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-55"></span><span>    </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Game -&gt; Either Name Game
+forall a b. b -&gt; Either a b
+</span><span class="hs-identifier hs-var">Right</span></span><span> </span><span class="annot"><span class="annottext">Game
+</span><a href="#local-6989586621679063966"><span class="hs-identifier hs-var">g</span></a></span><span>
+</span><span id="line-56"></span><span>    </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Name -&gt; Either Name Game
+forall a b. a -&gt; Either a b
+</span><span class="hs-identifier hs-var">Left</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Unknown start room name&quot;</span></span><span>
+</span><span id="line-57"></span><span>
+</span><span id="line-58"></span><span class="annot"><a href="GameParser.html#parseGame"><span class="hs-identifier hs-type">parseGame</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="DataStructures.html#Game"><span class="hs-identifier hs-type">Game</span></a></span><span> </span><span>
+</span><span id="line-59"></span><span id="parseGame"><span class="annot"><span class="annottext">parseGame :: Text -&gt; Either Name Game
+</span><a href="GameParser.html#parseGame"><span class="hs-identifier hs-var hs-var">parseGame</span></a></span></span><span> </span><span id="local-6989586621679063961"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679063961"><span class="hs-identifier hs-var">gaml</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Result Game -&gt; Either Name Game
+forall r. Result r -&gt; Either Name r
+</span><a href="Parsers.Utilities.html#eitherResult%27"><span class="hs-identifier hs-var">eitherResult'</span></a></span><span> </span><span class="annot"><span class="annottext">(Result Game -&gt; Either Name Game)
+-&gt; Result Game -&gt; Either Name Game
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">Result Game -&gt; Text -&gt; Result Game
+forall i r. Monoid i =&gt; IResult i r -&gt; i -&gt; IResult i r
+</span><span class="hs-identifier hs-var">feed</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser Game -&gt; Text -&gt; Result Game
+forall a. Parser a -&gt; Text -&gt; Result a
+</span><span class="hs-identifier hs-var">parse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser Game
+</span><a href="GameParser.html#gameParser"><span class="hs-identifier hs-var">gameParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Game -&gt; Parser Text () -&gt; Parser Game
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+forall t. Chunk t =&gt; Parser t ()
+</span><span class="hs-identifier hs-var">endOfInput</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679063961"><span class="hs-identifier hs-var">gaml</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Either Name Game -&gt; (Game -&gt; Either Name Game) -&gt; Either Name Game
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="annot"><span class="annottext">Game -&gt; Either Name Game
+</span><a href="GameParser.html#checkGame"><span class="hs-identifier hs-var">checkGame</span></a></span><span> </span><span class="hs-comment">-- ZMIENI&#262; BO NIE DZIA&#321;A!!!</span><span>
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="annot"><a href="GameParser.html#parseGameFromFile"><span class="hs-identifier hs-type">parseGameFromFile</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">FilePath</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">IO</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Either</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">String</span></span><span> </span><span class="annot"><a href="DataStructures.html#Game"><span class="hs-identifier hs-type">Game</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span id="parseGameFromFile"><span class="annot"><span class="annottext">parseGameFromFile :: Name -&gt; IO (Either Name Game)
+</span><a href="GameParser.html#parseGameFromFile"><span class="hs-identifier hs-var hs-var">parseGameFromFile</span></a></span></span><span> </span><span id="local-6989586621679063954"><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621679063954"><span class="hs-identifier hs-var">path</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Either Name Game
+</span><a href="GameParser.html#parseGame"><span class="hs-identifier hs-var">parseGame</span></a></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Either Name Game) -&gt; IO Text -&gt; IO (Either Name Game)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Name -&gt; IO Text
+</span><span class="hs-identifier hs-var">Data.Text.IO.readFile</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><a href="#local-6989586621679063954"><span class="hs-identifier hs-var">path</span></a></span><span>
+</span><span id="line-63"></span><span>
+</span><span id="line-64"></span><span class="annot"><a href="GameParser.html#testGameParser"><span class="hs-identifier hs-type">testGameParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Result</span></span><span> </span><span class="annot"><a href="DataStructures.html#Game"><span class="hs-identifier hs-type">Game</span></a></span><span>
+</span><span id="line-65"></span><span id="testGameParser"><span class="annot"><span class="annottext">testGameParser :: Result Game
+</span><a href="GameParser.html#testGameParser"><span class="hs-identifier hs-var hs-var">testGameParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Result Game -&gt; Text -&gt; Result Game
+forall i r. Monoid i =&gt; IResult i r -&gt; i -&gt; IResult i r
+</span><span class="hs-identifier hs-var">feed</span></span><span> </span><span>
+</span><span id="line-66"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser Game -&gt; Text -&gt; Result Game
+forall a. Parser a -&gt; Text -&gt; Result a
+</span><span class="hs-identifier hs-var">parse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser Game
+</span><a href="GameParser.html#gameParser"><span class="hs-identifier hs-var">gameParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Game -&gt; Parser Text () -&gt; Parser Game
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+forall t. Chunk t =&gt; Parser t ()
+</span><span class="hs-identifier hs-var">endOfInput</span></span><span class="hs-special">)</span><span>
+</span><span id="line-67"></span><span>        </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;player:\n\
+        \  parameters:\n\
+        \    - life:\n\
+        \        value: 10\n\
+        \  inventory:\n\
+        \  leftHand:\n\
+        \    empty\n\
+        \  rightHand:\n\
+        \    empty\n\
+        \initialMessage:\n\
+        \  Witaj!\n\
+        \rooms:\n\
+        \  - jeden:\n\
+        \      description:\n\ 
+        \        Pierwszy pokoj\n\
+        \      items:\n\
+        \        - axe:\n\
+        \            commands:\n\
+        \      commands:\n\
+        \        - nop:\n\
+        \        {\n\
+        \          print Do nothing\n\
+        \          goto jeden\n\
+        \        }\n\
+        \\n\
+        \start: jeden\n&quot;</span></span><span>
+</span><span id="line-93"></span><span>    </span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span><span>
+</span><span id="line-94"></span></pre></body></html>

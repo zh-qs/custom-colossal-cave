@@ -1,0 +1,488 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- |Provides a 'booleanExpressionParser' parser for processing the boolean expressions.</span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- The possible operations are: @&amp;&amp;@ (logical and) and @||@ (logical or). </span><span>
+</span><span id="line-5"></span><span class="hs-comment">--</span><span>
+</span><span id="line-6"></span><span class="hs-comment">-- Parser makes use of module 'Parsers.ArithmeticExpressionParser' to provide comparison operators (@&gt;,&lt;,&gt;=,&lt;=,==,!=@).</span><span>
+</span><span id="line-7"></span><span class="hs-comment">--</span><span>
+</span><span id="line-8"></span><span class="hs-comment">-- Moreover, the parser provides some useful tests: checking if object is in inventory (@has \&lt;name\&gt;@),</span><span>
+</span><span id="line-9"></span><span class="hs-comment">-- if an object is present in current or other room (@present \&lt;name\&gt; [in \&lt;room\&gt;]@),</span><span>
+</span><span id="line-10"></span><span class="hs-comment">-- or if player is in specified room (@in \&lt;room\&gt;@). </span><span>
+</span><span id="line-11"></span><span class="hs-comment">--</span><span>
+</span><span id="line-12"></span><span class="hs-comment">-- Expressions @askYesNo@ and @prompt \&lt;word\&gt;@ request an input from a user and check if, respectively,</span><span>
+</span><span id="line-13"></span><span class="hs-comment">-- entered &quot;yes&quot;/&quot;y&quot; or @\&lt;word\&gt;@.</span><span>
+</span><span id="line-14"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Parsers.BooleanExpressionParser</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-15"></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="DataStructures.html"><span class="hs-identifier">DataStructures</span></a></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map.Strict</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Attoparsec.Text</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Class</span></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.State.Strict</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>
+</span><span id="line-24"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Commands.html"><span class="hs-identifier">Commands</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-26"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>
+</span><span id="line-27"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.Utilities.html"><span class="hs-identifier">Parsers.Utilities</span></a></span><span>
+</span><span id="line-28"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.ArithmeticExpressionParser.html"><span class="hs-identifier">Parsers.ArithmeticExpressionParser</span></a></span><span>
+</span><span id="line-29"></span><span>
+</span><span id="line-30"></span><span class="hs-comment">-- * Grammar</span><span>
+</span><span id="line-31"></span><span class="hs-comment">--</span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- $grammar</span><span>
+</span><span id="line-33"></span><span class="hs-comment">--</span><span>
+</span><span id="line-34"></span><span class="hs-comment">-- The boolean expression grammar in this module is defined as follows:</span><span>
+</span><span id="line-35"></span><span class="hs-comment">--</span><span>
+</span><span id="line-36"></span><span class="hs-comment">-- * exprB -&gt; termB op exprB </span><span>
+</span><span id="line-37"></span><span class="hs-comment">-- * op -&gt; (@&amp;&amp;@|@||@)</span><span>
+</span><span id="line-38"></span><span class="hs-comment">-- * termB -&gt; @askYesNo@ | @present \&lt;name\&gt;@ | @present \&lt;name\&gt; in \&lt;room\&gt;@</span><span>
+</span><span id="line-39"></span><span class="hs-comment">--   | @in \&lt;room\&gt;@ | @has \&lt;item\&gt;@ | @true@ | @false@ | expr comp expr | ( exprB )</span><span>
+</span><span id="line-40"></span><span class="hs-comment">-- * comp -&gt; @&gt;@ | @&lt;@ | @&gt;=@ | @&lt;=@ | @==@ | @!=@</span><span>
+</span><span id="line-41"></span><span class="hs-comment">--</span><span>
+</span><span id="line-42"></span><span class="hs-comment">-- Logical operators are right-associative and have the same priority.</span><span>
+</span><span id="line-43"></span><span class="hs-comment">--</span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- * Parsing arithmetic expressions</span><span>
+</span><span id="line-46"></span><span>
+</span><span id="line-47"></span><span class="hs-comment">-- |Match an @askYesNo@ prompt.</span><span>
+</span><span id="line-48"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#askYesNoParser"><span class="hs-identifier hs-type">askYesNoParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-49"></span><span id="askYesNoParser"><span class="annot"><span class="annottext">askYesNoParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#askYesNoParser"><span class="hs-identifier hs-var hs-var">askYesNoParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;askYesNo&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Action Bool -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">StIO Bool -&gt; Action Bool
+forall a. StIO a -&gt; Action a
+</span><a href="DataStructures.html#perform"><span class="hs-identifier hs-var">perform</span></a></span><span> </span><span class="annot"><span class="annottext">(StIO Bool -&gt; Action Bool) -&gt; StIO Bool -&gt; Action Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IO String -&gt; StateT Game IO String
+forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
+(MonadTrans t, Monad m) =&gt;
+m a -&gt; t m a
+</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">IO String
+</span><span class="hs-identifier hs-var">getLine</span></span><span> </span><span class="annot"><span class="annottext">StateT Game IO String -&gt; (String -&gt; StIO Bool) -&gt; StIO Bool
+forall (m :: * -&gt; *) a b. Monad m =&gt; m a -&gt; (a -&gt; m b) -&gt; m b
+</span><span class="hs-operator hs-var">&gt;&gt;=</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679062320"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679062320"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-keyword">if</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Char
+</span><span class="hs-identifier hs-var">toLower</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Char) -&gt; String -&gt; String
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679062320"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">String -&gt; [String] -&gt; Bool
+forall (t :: * -&gt; *) a. (Foldable t, Eq a) =&gt; a -&gt; t a -&gt; Bool
+</span><span class="hs-operator hs-var">`elem`</span></span><span> </span><span class="hs-special">[</span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;y&quot;</span></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;yes&quot;</span></span><span class="hs-special">]</span><span> </span><span class="hs-keyword">then</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; StIO Bool
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span> </span><span class="hs-keyword">else</span><span> </span><span class="annot"><span class="annottext">Bool -&gt; StIO Bool
+forall (m :: * -&gt; *) a. Monad m =&gt; a -&gt; m a
+</span><span class="hs-identifier hs-var">return</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-50"></span><span>
+</span><span id="line-51"></span><span class="hs-comment">-- |Match a @prompt &lt;word&gt;@ prompt.</span><span>
+</span><span id="line-52"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#promptParser"><span class="hs-identifier hs-type">promptParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-53"></span><span id="promptParser"><span class="annot"><span class="annottext">promptParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#promptParser"><span class="hs-identifier hs-var hs-var">promptParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;prompt &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">(String -&gt; Action Bool) -&gt; Parser Text (String -&gt; Action Bool)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679062315"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679062315"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">StIO Bool -&gt; Action Bool
+forall a. StIO a -&gt; Action a
+</span><a href="DataStructures.html#perform"><span class="hs-identifier hs-var">perform</span></a></span><span> </span><span class="annot"><span class="annottext">(StIO Bool -&gt; Action Bool) -&gt; StIO Bool -&gt; Action Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IO Bool -&gt; StIO Bool
+forall (t :: (* -&gt; *) -&gt; * -&gt; *) (m :: * -&gt; *) a.
+(MonadTrans t, Monad m) =&gt;
+m a -&gt; t m a
+</span><span class="hs-identifier hs-var">lift</span></span><span> </span><span class="annot"><span class="annottext">(IO Bool -&gt; StIO Bool) -&gt; IO Bool -&gt; StIO Bool
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; String -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">==</span></span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679062315"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Bool) -&gt; IO String -&gt; IO Bool
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">IO String
+</span><span class="hs-identifier hs-var">getLine</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text (String -&gt; Action Bool)
+-&gt; Parser Text String -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; String) -&gt; Parser Text -&gt; Parser Text String
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-54"></span><span>
+</span><span id="line-55"></span><span class="hs-comment">-- |Match a @has &lt;item&gt;@ test.</span><span>
+</span><span id="line-56"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#hasItemParser"><span class="hs-identifier hs-type">hasItemParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-57"></span><span id="hasItemParser"><span class="annot"><span class="annottext">hasItemParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#hasItemParser"><span class="hs-identifier hs-var hs-var">hasItemParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;has &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Action Bool
+</span><a href="Commands.html#checkIfItemIsInInventory"><span class="hs-identifier hs-var">checkIfItemIsInInventory</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Action Bool) -&gt; (Text -&gt; String) -&gt; Text -&gt; Action Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Action Bool) -&gt; Parser Text -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span>
+</span><span id="line-59"></span><span class="hs-comment">-- |Match a @present &lt;item|entity&gt;@ test.</span><span>
+</span><span id="line-60"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#presentParser"><span class="hs-identifier hs-type">presentParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span id="presentParser"><span class="annot"><span class="annottext">presentParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#presentParser"><span class="hs-identifier hs-var hs-var">presentParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;present &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Action Bool
+</span><a href="Commands.html#checkIfInteractablePresent"><span class="hs-identifier hs-var">checkIfInteractablePresent</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Action Bool) -&gt; (Text -&gt; String) -&gt; Text -&gt; Action Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Action Bool) -&gt; Parser Text -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span>
+</span><span id="line-62"></span><span>
+</span><span id="line-63"></span><span class="hs-comment">-- |Match a @present &lt;item|entity&gt; in &lt;room&gt;@ test.</span><span>
+</span><span id="line-64"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#presentInRoomParser"><span class="hs-identifier hs-type">presentInRoomParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-65"></span><span id="presentInRoomParser"><span class="annot"><span class="annottext">presentInRoomParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#presentInRoomParser"><span class="hs-identifier hs-var hs-var">presentInRoomParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;present &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; String -&gt; Action Bool
+</span><a href="Commands.html#checkIfInteractablePresentInRoom"><span class="hs-identifier hs-var">checkIfInteractablePresentInRoom</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; String -&gt; Action Bool)
+-&gt; Parser Text String -&gt; Parser Text (String -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; String) -&gt; Parser Text -&gt; Parser Text String
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text (String -&gt; Action Bool)
+-&gt; Parser Text String -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;in &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser Text String -&gt; Parser Text String
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; String) -&gt; Parser Text -&gt; Parser Text String
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="hs-comment">-- |Match an @in &lt;room&gt;@ test.</span><span>
+</span><span id="line-68"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#inRoomParser"><span class="hs-identifier hs-type">inRoomParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-69"></span><span id="inRoomParser"><span class="annot"><span class="annottext">inRoomParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#inRoomParser"><span class="hs-identifier hs-var hs-var">inRoomParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;in &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">String -&gt; Action Bool
+</span><a href="Commands.html#checkIfRoomIsCurrent"><span class="hs-identifier hs-var">checkIfRoomIsCurrent</span></a></span><span> </span><span class="annot"><span class="annottext">(String -&gt; Action Bool) -&gt; (Text -&gt; String) -&gt; Text -&gt; Action Bool
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Action Bool) -&gt; Parser Text -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span>
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="hs-comment">-- |Match a comparison operator.</span><span>
+</span><span id="line-72"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#comparisonOpParser"><span class="hs-identifier hs-type">comparisonOpParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-73"></span><span id="comparisonOpParser"><span class="annot"><span class="annottext">comparisonOpParser :: Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#comparisonOpParser"><span class="hs-identifier hs-var hs-var">comparisonOpParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-74"></span><span>    </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;==&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">(==)</span></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-75"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;!=&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Eq a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">(/=)</span></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-76"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&gt;=&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">(&gt;=)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-77"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&lt;=&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">(&lt;=)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-78"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><a href="Parsers.Utilities.html#charWithSpaces"><span class="hs-identifier hs-var">charWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'&gt;'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">(&gt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-79"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><a href="Parsers.Utilities.html#charWithSpaces"><span class="hs-identifier hs-var">charWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'&lt;'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Int -&gt; Bool)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Bool
+forall a. Ord a =&gt; a -&gt; a -&gt; Bool
+</span><span class="hs-operator hs-var">(&lt;)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-80"></span><span>
+</span><span id="line-81"></span><span class="hs-comment">-- |Match either a boolean sum or product.</span><span>
+</span><span id="line-82"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#boolOpParser"><span class="hs-identifier hs-type">boolOpParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-83"></span><span id="boolOpParser"><span class="annot"><span class="annottext">boolOpParser :: Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#boolOpParser"><span class="hs-identifier hs-var hs-var">boolOpParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&amp;&amp;&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool -&gt; Bool)
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">(&amp;&amp;)</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;||&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Bool -&gt; Bool -&gt; Bool)
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+forall a b.
+(a -&gt; a -&gt; b) -&gt; Parser (Action a -&gt; Action a -&gt; Action b)
+</span><a href="Parsers.Utilities.html#liftPAction"><span class="hs-identifier hs-var">liftPAction</span></a></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool -&gt; Bool
+</span><span class="hs-operator hs-var">(||)</span></span><span class="hs-special">)</span><span>
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="hs-comment">-- |Match true value. The following representations are correct: @true@, @True@, @TRUE@.</span><span>
+</span><span id="line-86"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#trueParser"><span class="hs-identifier hs-type">trueParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-87"></span><span id="trueParser"><span class="annot"><span class="annottext">trueParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#trueParser"><span class="hs-identifier hs-var hs-var">trueParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;true&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser Text -&gt; Parser Text
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;True&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser Text -&gt; Parser Text
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;TRUE&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Action Bool -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Action Bool -&gt; Parser (Action Bool))
+-&gt; (Bool -&gt; Action Bool) -&gt; Bool -&gt; Parser (Action Bool)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Action Bool
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span>
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="hs-comment">-- |Match false value. The following representations are correct: @false@, @False@, @FALSE@.</span><span>
+</span><span id="line-90"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#falseParser"><span class="hs-identifier hs-type">falseParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-91"></span><span id="falseParser"><span class="annot"><span class="annottext">falseParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#falseParser"><span class="hs-identifier hs-var hs-var">falseParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;false&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser Text -&gt; Parser Text
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;False&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser Text -&gt; Parser Text
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text
+</span><a href="Parsers.Utilities.html#stringWithSpaces"><span class="hs-identifier hs-var">stringWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;FALSE&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Action Bool -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">(Action Bool -&gt; Parser (Action Bool))
+-&gt; (Bool -&gt; Action Bool) -&gt; Bool -&gt; Parser (Action Bool)
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Action Bool
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span>
+</span><span id="line-92"></span><span>
+</span><span id="line-93"></span><span class="hs-comment">-- |Match a sigle term of a boolean expression.</span><span>
+</span><span id="line-94"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#boolTermParser"><span class="hs-identifier hs-type">boolTermParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-95"></span><span id="boolTermParser"><span class="annot"><span class="annottext">boolTermParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#boolTermParser"><span class="hs-identifier hs-var hs-var">boolTermParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-96"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#hasItemParser"><span class="hs-identifier hs-var">hasItemParser</span></a></span><span>
+</span><span id="line-97"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#presentInRoomParser"><span class="hs-identifier hs-var">presentInRoomParser</span></a></span><span>
+</span><span id="line-98"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#inRoomParser"><span class="hs-identifier hs-var">inRoomParser</span></a></span><span>
+</span><span id="line-99"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#presentParser"><span class="hs-identifier hs-var">presentParser</span></a></span><span> </span><span>
+</span><span id="line-100"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#trueParser"><span class="hs-identifier hs-var">trueParser</span></a></span><span> </span><span>
+</span><span id="line-101"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#falseParser"><span class="hs-identifier hs-var">falseParser</span></a></span><span> </span><span>
+</span><span id="line-102"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser (Action Int)
+</span><a href="Parsers.ArithmeticExpressionParser.html#expressionParser"><span class="hs-identifier hs-var">expressionParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Action Int)
+-&gt; Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+-&gt; Parser Text (Action Int -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;**&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Int -&gt; Action Int -&gt; Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#comparisonOpParser"><span class="hs-identifier hs-var">comparisonOpParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text (Action Int -&gt; Action Bool)
+-&gt; Parser (Action Int) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Int)
+</span><a href="Parsers.ArithmeticExpressionParser.html#expressionParser"><span class="hs-identifier hs-var">expressionParser</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-103"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><a href="Parsers.Utilities.html#charWithSpaces"><span class="hs-identifier hs-var">charWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'('</span></span><span> </span><span class="annot"><span class="annottext">Parser Char -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#booleanExpressionParser"><span class="hs-identifier hs-var">booleanExpressionParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool) -&gt; Parser Char -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><a href="Parsers.Utilities.html#charWithSpaces"><span class="hs-identifier hs-var">charWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">')'</span></span><span class="hs-special">)</span><span>
+</span><span id="line-104"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><a href="Parsers.Utilities.html#charWithSpaces"><span class="hs-identifier hs-var">charWithSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'!'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char -&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">(Bool -&gt; Bool) -&gt; Action (Bool -&gt; Bool)
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Bool
+</span><span class="hs-identifier hs-var">not</span></span><span> </span><span class="annot"><span class="annottext">Action (Bool -&gt; Bool) -&gt; Action Bool -&gt; Action Bool
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Action Bool -&gt; Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#boolTermParser"><span class="hs-identifier hs-var">boolTermParser</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-105"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#askYesNoParser"><span class="hs-identifier hs-var">askYesNoParser</span></a></span><span>
+</span><span id="line-106"></span><span>    </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#promptParser"><span class="hs-identifier hs-var">promptParser</span></a></span><span>
+</span><span id="line-107"></span><span>
+</span><span id="line-108"></span><span class="hs-comment">-- |Match a boolean expression. </span><span>
+</span><span id="line-109"></span><span class="annot"><a href="Parsers.BooleanExpressionParser.html#booleanExpressionParser"><span class="hs-identifier hs-type">booleanExpressionParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Bool</span></span><span class="hs-special">)</span><span>
+</span><span id="line-110"></span><span id="booleanExpressionParser"><span class="annot"><span class="annottext">booleanExpressionParser :: Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#booleanExpressionParser"><span class="hs-identifier hs-var hs-var">booleanExpressionParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#boolTermParser"><span class="hs-identifier hs-var">boolTermParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+-&gt; Parser Text (Action Bool -&gt; Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f (a -&gt; b) -&gt; f b
+</span><span class="hs-operator hs-var">&lt;**&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool -&gt; Action Bool -&gt; Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#boolOpParser"><span class="hs-identifier hs-var">boolOpParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text (Action Bool -&gt; Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#booleanExpressionParser"><span class="hs-identifier hs-var">booleanExpressionParser</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+-&gt; Parser (Action Bool) -&gt; Parser (Action Bool)
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action Bool)
+</span><a href="Parsers.BooleanExpressionParser.html#boolTermParser"><span class="hs-identifier hs-var">boolTermParser</span></a></span></pre></body></html>

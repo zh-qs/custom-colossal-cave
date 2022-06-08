@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Parsers.ParametersParser</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-4"></span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="DataStructures.html"><span class="hs-identifier">DataStructures</span></a></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map.Strict</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Attoparsec.Text</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Class</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.State.Strict</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Commands.html"><span class="hs-identifier">Commands</span></a></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.Utilities.html"><span class="hs-identifier">Parsers.Utilities</span></a></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.CommandParser.html"><span class="hs-identifier">Parsers.CommandParser</span></a></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.CodeParser.html"><span class="hs-identifier">Parsers.CodeParser</span></a></span><span>
+</span><span id="line-19"></span><span>
+</span><span id="line-20"></span><span class="annot"><a href="Parsers.ParametersParser.html#singleParameterParser"><span class="hs-identifier hs-type">singleParameterParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-21"></span><span id="singleParameterParser"><span class="annot"><span class="annottext">singleParameterParser :: Int -&gt; Parser (Name, Int)
+</span><a href="Parsers.ParametersParser.html#singleParameterParser"><span class="hs-identifier hs-var hs-var">singleParameterParser</span></a></span></span><span> </span><span id="local-6989586621679063163"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063163"><span class="hs-identifier hs-var">indentationLevel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-22"></span><span>    </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Parser ()
+</span><a href="Parsers.Utilities.html#tabs"><span class="hs-identifier hs-var">tabs</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063163"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-23"></span><span>    </span><span class="annot"><span class="annottext">Parser () -&gt; Parser Text Text -&gt; Parser Text Text
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text Text
+</span><span class="hs-string">&quot;- &quot;</span></span><span> </span><span>
+</span><span id="line-24"></span><span>    </span><span class="annot"><span class="annottext">Parser Text Text -&gt; Parser (Name, Int) -&gt; Parser (Name, Int)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-25"></span><span>        </span><span class="annot"><span class="annottext">(Name -&gt; Int -&gt; (Name, Int))
+-&gt; Parser Text Name -&gt; Parser Text (Int -&gt; (Name, Int))
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; Name
+</span><span class="hs-identifier hs-var">unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; Name) -&gt; Parser Text Text -&gt; Parser Text Name
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-26"></span><span>        </span><span class="annot"><span class="annottext">Parser Text (Int -&gt; (Name, Int))
+-&gt; Parser Text Int -&gt; Parser (Name, Int)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">':'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char -&gt; Parser () -&gt; Parser ()
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span> </span><span class="annot"><span class="annottext">Parser () -&gt; Parser () -&gt; Parser ()
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Parser ()
+</span><a href="Parsers.Utilities.html#tabs"><span class="hs-identifier hs-var">tabs</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063163"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">2</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser () -&gt; Parser Text Text -&gt; Parser Text Text
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text Text
+</span><span class="hs-identifier hs-var">string</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;value: &quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text Text -&gt; Parser Text Int -&gt; Parser Text Int
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser Text Int
+forall a. Integral a =&gt; Parser a
+</span><span class="hs-identifier hs-var">decimal</span></span><span> </span><span class="annot"><span class="annottext">Parser Text Int -&gt; Name -&gt; Parser Text Int
+forall i a. Parser i a -&gt; Name -&gt; Parser i a
+</span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Parameter value&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text Int -&gt; Parser () -&gt; Parser Text Int
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-27"></span><span>    </span><span class="annot"><span class="annottext">Parser (Name, Int) -&gt; Name -&gt; Parser (Name, Int)
+forall i a. Parser i a -&gt; Name -&gt; Parser i a
+</span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Single parameter&quot;</span></span><span>
+</span><span id="line-28"></span><span>
+</span><span id="line-29"></span><span class="annot"><a href="Parsers.ParametersParser.html#parametersHeaderParser"><span class="hs-identifier hs-type">parametersHeaderParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Text</span></span><span>
+</span><span id="line-30"></span><span id="parametersHeaderParser"><span class="annot"><span class="annottext">parametersHeaderParser :: Int -&gt; Parser Text Text
+</span><a href="Parsers.ParametersParser.html#parametersHeaderParser"><span class="hs-identifier hs-var hs-var">parametersHeaderParser</span></a></span></span><span> </span><span id="local-6989586621679063149"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063149"><span class="hs-identifier hs-var">indentationLevel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Parser ()
+</span><a href="Parsers.Utilities.html#tabs"><span class="hs-identifier hs-var">tabs</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063149"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span> </span><span class="annot"><span class="annottext">Parser () -&gt; Parser Text Text -&gt; Parser Text Text
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text Text
+</span><span class="hs-identifier hs-var">string</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;parameters:&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text Text -&gt; Parser () -&gt; Parser Text Text
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text Text -&gt; Name -&gt; Parser Text Text
+forall i a. Parser i a -&gt; Name -&gt; Parser i a
+</span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Parameters header&quot;</span></span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="annot"><a href="Parsers.ParametersParser.html#parametersParser"><span class="hs-identifier hs-type">parametersParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">M.Map</span></span><span> </span><span class="annot"><a href="DataStructures.html#Name"><span class="hs-identifier hs-type">Name</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span class="hs-special">)</span><span>
+</span><span id="line-33"></span><span id="parametersParser"><span class="annot"><span class="annottext">parametersParser :: Int -&gt; Parser (Map Name Int)
+</span><a href="Parsers.ParametersParser.html#parametersParser"><span class="hs-identifier hs-var hs-var">parametersParser</span></a></span></span><span> </span><span id="local-6989586621679063147"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063147"><span class="hs-identifier hs-var">indentationLevel</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Parser Text Text
+</span><a href="Parsers.ParametersParser.html#parametersHeaderParser"><span class="hs-identifier hs-var">parametersHeaderParser</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063147"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text Text -&gt; Parser (Map Name Int) -&gt; Parser (Map Name Int)
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[(Name, Int)] -&gt; Map Name Int
+forall k a. Ord k =&gt; [(k, a)] -&gt; Map k a
+</span><span class="hs-identifier hs-var">M.fromList</span></span><span> </span><span class="annot"><span class="annottext">([(Name, Int)] -&gt; Map Name Int)
+-&gt; Parser Text [(Name, Int)] -&gt; Parser (Map Name Int)
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Name, Int) -&gt; Parser Text [(Name, Int)]
+forall (m :: * -&gt; *) a. MonadPlus m =&gt; m a -&gt; m [a]
+</span><span class="hs-identifier hs-var">many'</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Parser (Name, Int)
+</span><a href="Parsers.ParametersParser.html#singleParameterParser"><span class="hs-identifier hs-var">singleParameterParser</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063147"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span> </span><span class="annot"><span class="annottext">Int -&gt; Int -&gt; Int
+forall a. Num a =&gt; a -&gt; a -&gt; a
+</span><span class="hs-operator hs-var">+</span></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">1</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser (Map Name Int) -&gt; Name -&gt; Parser (Map Name Int)
+forall i a. Parser i a -&gt; Name -&gt; Parser i a
+</span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">Name
+</span><span class="hs-string">&quot;Parameters definition&quot;</span></span></pre></body></html>

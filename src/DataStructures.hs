@@ -20,7 +20,7 @@ type Visibility = Bool
 type StIO a = StateT Game IO a
 type Desc = Action String
 
--- |Stateful 'Parser' with a map of interactables and default room entry action already read as a state.
+-- |Stateful 'Parser' with a map of interactables already read and default room entry action as a state.
 type StParser a = StateT (M.Map Name Interactable, Action ()) Parser a
 
 -- |Name a stateful 'Parser'. The lifted equivalent of '<?>' from attoparsec.

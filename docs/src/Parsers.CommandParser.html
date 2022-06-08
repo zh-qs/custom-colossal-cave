@@ -1,0 +1,320 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# LANGUAGE OverloadedStrings #-}</span><span>
+</span><span id="line-2"></span><span>
+</span><span id="line-3"></span><span class="hs-comment">-- |Provides 'commandListParser', which parses YAML-like list of commands.</span><span>
+</span><span id="line-4"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Parsers.CommandParser</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-5"></span><span>
+</span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="DataStructures.html"><span class="hs-identifier">DataStructures</span></a></span><span>
+</span><span id="line-7"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Map.Strict</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">M</span></span><span>
+</span><span id="line-8"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Attoparsec.Text</span></span><span>
+</span><span id="line-9"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad</span></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.Class</span></span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Monad.Trans.State.Strict</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="annot"><span class="hs-identifier">Data.Text</span></span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">T</span></span><span>
+</span><span id="line-13"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Char</span></span><span>
+</span><span id="line-14"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Commands.html"><span class="hs-identifier">Commands</span></a></span><span>
+</span><span id="line-15"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Applicative</span></span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.Maybe</span></span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.List</span></span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.Utilities.html"><span class="hs-identifier">Parsers.Utilities</span></a></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Parsers.CodeParser.html"><span class="hs-identifier">Parsers.CodeParser</span></a></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- |Match a command name with a code block.</span><span>
+</span><span id="line-22"></span><span class="annot"><a href="Parsers.CommandParser.html#commandParser"><span class="hs-identifier hs-type">commandParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="DataStructures.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-23"></span><span id="commandParser"><span class="annot"><span class="annottext">commandParser :: Parser (Action ()) -&gt; Parser [Command]
+</span><a href="Parsers.CommandParser.html#commandParser"><span class="hs-identifier hs-var hs-var">commandParser</span></a></span></span><span> </span><span id="local-6989586621679063049"><span class="annot"><span class="annottext">Parser (Action ())
+</span><a href="#local-6989586621679063049"><span class="hs-identifier hs-var">parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679063048"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679063048"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679063047"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679063047"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679063046"><span class="annot"><span class="annottext">Action ()
+</span><a href="#local-6989586621679063046"><span class="hs-identifier hs-var">r</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Command) -&gt; [String] -&gt; [Command]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679063045"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679063045"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679063048"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679063045"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Action ()
+</span><a href="#local-6989586621679063046"><span class="hs-identifier hs-var">r</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679063047"><span class="hs-identifier hs-var">ns</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-25"></span><span>        </span><span class="annot"><span class="annottext">((Bool, [String], Action ()) -&gt; [Command])
+-&gt; Parser Text (Bool, [String], Action ()) -&gt; Parser [Command]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-26"></span><span>            </span><span class="annot"><span class="annottext">(Bool -&gt; [String] -&gt; Action () -&gt; (Bool, [String], Action ()))
+-&gt; Parser Text Bool
+-&gt; Parser
+     Text ([String] -&gt; Action () -&gt; (Bool, [String], Action ()))
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'*'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char -&gt; Parser Text Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text Bool -&gt; Parser Text Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>            </span><span class="annot"><span class="annottext">Parser Text ([String] -&gt; Action () -&gt; (Bool, [String], Action ()))
+-&gt; Parser Text [String]
+-&gt; Parser Text (Action () -&gt; (Bool, [String], Action ()))
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; String) -&gt; Parser Text Text -&gt; Parser Text String
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text String -&gt; Parser Char -&gt; Parser Text [String]
+forall (f :: * -&gt; *) a s. Alternative f =&gt; f a -&gt; f s -&gt; f [a]
+</span><span class="hs-operator hs-var">`sepBy`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">','</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-28"></span><span>            </span><span class="annot"><span class="annottext">Parser Text (Action () -&gt; (Bool, [String], Action ()))
+-&gt; Parser (Action ()) -&gt; Parser Text (Bool, [String], Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">':'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char -&gt; Parser Text () -&gt; Parser Text ()
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#skipSpaces"><span class="hs-identifier hs-var">skipSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text () -&gt; Parser (Action ()) -&gt; Parser (Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action ())
+</span><a href="#local-6989586621679063049"><span class="hs-identifier hs-var">parser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Action ()) -&gt; Parser Text () -&gt; Parser (Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-29"></span><span>    </span><span class="annot"><span class="annottext">Parser [Command] -&gt; String -&gt; Parser [Command]
+forall i a. Parser i a -&gt; String -&gt; Parser i a
+</span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Command definition&quot;</span></span><span>
+</span><span id="line-30"></span><span>
+</span><span id="line-31"></span><span class="hs-comment">-- |Match an item-specific command name with a code block.</span><span>
+</span><span id="line-32"></span><span id="local-6989586621679063110"><span class="annot"><a href="Parsers.CommandParser.html#itemCommandParser"><span class="hs-identifier hs-type">itemCommandParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679063110"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679063110"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="DataStructures.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span></span><span>
+</span><span id="line-33"></span><span id="itemCommandParser"><span class="annot"><span class="annottext">itemCommandParser :: forall a. Parser (a -&gt; Action ()) -&gt; Parser (a -&gt; [Command])
+</span><a href="Parsers.CommandParser.html#itemCommandParser"><span class="hs-identifier hs-var hs-var">itemCommandParser</span></a></span></span><span> </span><span id="local-6989586621679063019"><span class="annot"><span class="annottext">Parser (a -&gt; Action ())
+</span><a href="#local-6989586621679063019"><span class="hs-identifier hs-var">parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span class="hs-special">(</span><span id="local-6989586621679063018"><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679063018"><span class="hs-identifier hs-var">b</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679063017"><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679063017"><span class="hs-identifier hs-var">ns</span></a></span></span><span class="hs-special">,</span><span id="local-6989586621679063016"><span class="annot"><span class="annottext">a -&gt; Action ()
+</span><a href="#local-6989586621679063016"><span class="hs-identifier hs-var">f</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679063015"><span class="annot"><span class="annottext">Action ()
+</span><a href="#local-6989586621679063015"><span class="hs-identifier hs-var">s</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">(String -&gt; Command) -&gt; [String] -&gt; [Command]
+forall a b. (a -&gt; b) -&gt; [a] -&gt; [b]
+</span><span class="hs-identifier hs-var">map</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679063014"><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679063014"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Bool
+</span><a href="#local-6989586621679063018"><span class="hs-identifier hs-var">b</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">String
+</span><a href="#local-6989586621679063014"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">,</span><span class="annot"><span class="annottext">Action ()
+</span><a href="#local-6989586621679063015"><span class="hs-identifier hs-var">s</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[String]
+</span><a href="#local-6989586621679063017"><span class="hs-identifier hs-var">ns</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">(Action () -&gt; [Command]) -&gt; (a -&gt; Action ()) -&gt; a -&gt; [Command]
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><span class="hs-operator hs-var">.</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; Action ()
+</span><a href="#local-6989586621679063016"><span class="hs-identifier hs-var">f</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span>        </span><span class="annot"><span class="annottext">((Bool, [String], a -&gt; Action ()) -&gt; a -&gt; [Command])
+-&gt; Parser Text (Bool, [String], a -&gt; Action ())
+-&gt; Parser Text (a -&gt; [Command])
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">,</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-36"></span><span>            </span><span class="annot"><span class="annottext">(Bool
+ -&gt; [String]
+ -&gt; (a -&gt; Action ())
+ -&gt; (Bool, [String], a -&gt; Action ()))
+-&gt; Parser Text Bool
+-&gt; Parser
+     Text
+     ([String] -&gt; (a -&gt; Action ()) -&gt; (Bool, [String], a -&gt; Action ()))
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">'*'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char -&gt; Parser Text Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">False</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text Bool -&gt; Parser Text Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Bool -&gt; Parser Text Bool
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Bool
+</span><span class="hs-identifier hs-var">True</span></span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>            </span><span class="annot"><span class="annottext">Parser
+  Text
+  ([String] -&gt; (a -&gt; Action ()) -&gt; (Bool, [String], a -&gt; Action ()))
+-&gt; Parser Text [String]
+-&gt; Parser
+     Text ((a -&gt; Action ()) -&gt; (Bool, [String], a -&gt; Action ()))
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">(</span><span class="annot"><span class="annottext">Text -&gt; String
+</span><span class="hs-identifier hs-var">T.unpack</span></span><span> </span><span class="annot"><span class="annottext">(Text -&gt; String) -&gt; Parser Text Text -&gt; Parser Text String
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">(Char -&gt; Bool) -&gt; Parser Text Text
+</span><span class="hs-identifier hs-var">takeWhile1</span></span><span> </span><span class="annot"><span class="annottext">Char -&gt; Bool
+</span><span class="hs-identifier hs-var">isAlphaNum</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text String -&gt; Parser Char -&gt; Parser Text [String]
+forall (f :: * -&gt; *) a s. Alternative f =&gt; f a -&gt; f s -&gt; f [a]
+</span><span class="hs-operator hs-var">`sepBy`</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">','</span></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-38"></span><span>            </span><span class="annot"><span class="annottext">Parser Text ((a -&gt; Action ()) -&gt; (Bool, [String], a -&gt; Action ()))
+-&gt; Parser (a -&gt; Action ())
+-&gt; Parser Text (Bool, [String], a -&gt; Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Char -&gt; Parser Char
+</span><span class="hs-identifier hs-var">char</span></span><span> </span><span class="annot"><span class="annottext">Char
+</span><span class="hs-char">':'</span></span><span> </span><span class="annot"><span class="annottext">Parser Char -&gt; Parser Text () -&gt; Parser Text ()
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#skipSpaces"><span class="hs-identifier hs-var">skipSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+-&gt; Parser (a -&gt; Action ()) -&gt; Parser (a -&gt; Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (a -&gt; Action ())
+</span><a href="#local-6989586621679063019"><span class="hs-identifier hs-var">parser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (a -&gt; Action ())
+-&gt; Parser Text () -&gt; Parser (a -&gt; Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span>
+</span><span id="line-39"></span><span>    </span><span class="annot"><span class="annottext">Parser Text (a -&gt; [Command])
+-&gt; String -&gt; Parser Text (a -&gt; [Command])
+forall i a. Parser i a -&gt; String -&gt; Parser i a
+</span><span class="hs-operator hs-var">&lt;?&gt;</span></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Command definition&quot;</span></span><span>
+</span><span id="line-40"></span><span>
+</span><span id="line-41"></span><span class="hs-comment">-- |Match an item command list with custom keyword.</span><span>
+</span><span id="line-42"></span><span id="local-6989586621679063105"><span class="annot"><a href="Parsers.CommandParser.html#baseItemCommandListParser"><span class="hs-identifier hs-type">baseItemCommandListParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679063105"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621679063105"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="DataStructures.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span class="hs-special">]</span><span class="hs-special">)</span></span><span>
+</span><span id="line-43"></span><span id="baseItemCommandListParser"><span class="annot"><span class="annottext">baseItemCommandListParser :: forall a.
+Text -&gt; Int -&gt; Parser (a -&gt; Action ()) -&gt; Parser (a -&gt; [Command])
+</span><a href="Parsers.CommandParser.html#baseItemCommandListParser"><span class="hs-identifier hs-var hs-var">baseItemCommandListParser</span></a></span></span><span> </span><span id="local-6989586621679063005"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679063005"><span class="hs-identifier hs-var">keyword</span></a></span></span><span> </span><span id="local-6989586621679063004"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063004"><span class="hs-identifier hs-var">indentationLevel</span></a></span></span><span> </span><span id="local-6989586621679063003"><span class="annot"><span class="annottext">Parser (a -&gt; Action ())
+</span><a href="#local-6989586621679063003"><span class="hs-identifier hs-var">parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">((a -&gt; [Command]) -&gt; (a -&gt; [Command]) -&gt; a -&gt; [Command])
+-&gt; (a -&gt; [Command]) -&gt; [a -&gt; [Command]] -&gt; a -&gt; [Command]
+forall (t :: * -&gt; *) b a.
+Foldable t =&gt;
+(b -&gt; a -&gt; b) -&gt; b -&gt; t a -&gt; b
+</span><span class="hs-identifier hs-var">foldl'</span></span><span> </span><span class="annot"><span class="annottext">(((a -&gt; [Command]) -&gt; (a -&gt; [Command]) -&gt; a -&gt; [Command])
+ -&gt; (a -&gt; [Command]) -&gt; [a -&gt; [Command]] -&gt; a -&gt; [Command])
+-&gt; Parser
+     Text ((a -&gt; [Command]) -&gt; (a -&gt; [Command]) -&gt; a -&gt; [Command])
+-&gt; Parser
+     Text ((a -&gt; [Command]) -&gt; [a -&gt; [Command]] -&gt; a -&gt; [Command])
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">((a -&gt; [Command]) -&gt; (a -&gt; [Command]) -&gt; a -&gt; [Command])
+-&gt; Parser
+     Text ((a -&gt; [Command]) -&gt; (a -&gt; [Command]) -&gt; a -&gt; [Command])
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679063001"><span class="annot"><span class="annottext">a -&gt; [Command]
+</span><a href="#local-6989586621679063001"><span class="hs-identifier hs-var">f</span></a></span></span><span> </span><span id="local-6989586621679063000"><span class="annot"><span class="annottext">a -&gt; [Command]
+</span><a href="#local-6989586621679063000"><span class="hs-identifier hs-var">g</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="hs-glyph">\</span><span id="local-6989586621679062999"><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679062999"><span class="hs-identifier hs-var">n</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">a -&gt; [Command]
+</span><a href="#local-6989586621679063001"><span class="hs-identifier hs-var">f</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679062999"><span class="hs-identifier hs-var">n</span></a></span><span> </span><span class="annot"><span class="annottext">[Command] -&gt; [Command] -&gt; [Command]
+forall a. [a] -&gt; [a] -&gt; [a]
+</span><span class="hs-operator hs-var">++</span></span><span> </span><span class="annot"><span class="annottext">a -&gt; [Command]
+</span><a href="#local-6989586621679063000"><span class="hs-identifier hs-var">g</span></a></span><span> </span><span class="annot"><span class="annottext">a
+</span><a href="#local-6989586621679062999"><span class="hs-identifier hs-var">n</span></a></span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser
+  Text ((a -&gt; [Command]) -&gt; [a -&gt; [Command]] -&gt; a -&gt; [Command])
+-&gt; Parser Text (a -&gt; [Command])
+-&gt; Parser Text ([a -&gt; [Command]] -&gt; a -&gt; [Command])
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">(a -&gt; [Command]) -&gt; Parser Text (a -&gt; [Command])
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">[Command] -&gt; a -&gt; [Command]
+forall a b. a -&gt; b -&gt; a
+</span><span class="hs-identifier hs-var">const</span></span><span> </span><span class="hs-special">[</span><span class="hs-special">]</span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser Text ([a -&gt; [Command]] -&gt; a -&gt; [Command])
+-&gt; Parser Text [a -&gt; [Command]] -&gt; Parser Text (a -&gt; [Command])
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; Parser Text (a -&gt; [Command])
+-&gt; Int
+-&gt; String
+-&gt; Parser Text [a -&gt; [Command]]
+forall a. Text -&gt; Parser a -&gt; Int -&gt; String -&gt; Parser [a]
+</span><a href="Parsers.Utilities.html#listParser"><span class="hs-identifier hs-var">listParser</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679063005"><span class="hs-identifier hs-var">keyword</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser (a -&gt; Action ()) -&gt; Parser Text (a -&gt; [Command])
+forall a. Parser (a -&gt; Action ()) -&gt; Parser (a -&gt; [Command])
+</span><a href="Parsers.CommandParser.html#itemCommandParser"><span class="hs-identifier hs-var">itemCommandParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (a -&gt; Action ())
+</span><a href="#local-6989586621679063003"><span class="hs-identifier hs-var">parser</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679063004"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Command list&quot;</span></span><span>
+</span><span id="line-44"></span><span>
+</span><span id="line-45"></span><span class="hs-comment">-- |Match a command list with custom keyword.</span><span>
+</span><span id="line-46"></span><span class="annot"><a href="Parsers.CommandParser.html#baseCommandListParser"><span class="hs-identifier hs-type">baseCommandListParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">T.Text</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="DataStructures.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-47"></span><span id="baseCommandListParser"><span class="annot"><span class="annottext">baseCommandListParser :: Text -&gt; Int -&gt; Parser (Action ()) -&gt; Parser [Command]
+</span><a href="Parsers.CommandParser.html#baseCommandListParser"><span class="hs-identifier hs-var hs-var">baseCommandListParser</span></a></span></span><span> </span><span id="local-6989586621679062995"><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679062995"><span class="hs-identifier hs-var">keyword</span></a></span></span><span> </span><span id="local-6989586621679062994"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679062994"><span class="hs-identifier hs-var">indentationLevel</span></a></span></span><span> </span><span id="local-6989586621679062993"><span class="annot"><span class="annottext">Parser (Action ())
+</span><a href="#local-6989586621679062993"><span class="hs-identifier hs-var">parser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">[[Command]] -&gt; [Command]
+forall (t :: * -&gt; *) a. Foldable t =&gt; t [a] -&gt; [a]
+</span><span class="hs-identifier hs-var">concat</span></span><span> </span><span class="annot"><span class="annottext">([[Command]] -&gt; [Command])
+-&gt; Parser Text [[Command]] -&gt; Parser [Command]
+forall (f :: * -&gt; *) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><span class="hs-operator hs-var">&lt;$&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text
+-&gt; Parser [Command] -&gt; Int -&gt; String -&gt; Parser Text [[Command]]
+forall a. Text -&gt; Parser a -&gt; Int -&gt; String -&gt; Parser [a]
+</span><a href="Parsers.Utilities.html#listParser"><span class="hs-identifier hs-var">listParser</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><a href="#local-6989586621679062995"><span class="hs-identifier hs-var">keyword</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser (Action ()) -&gt; Parser [Command]
+</span><a href="Parsers.CommandParser.html#commandParser"><span class="hs-identifier hs-var">commandParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Action ())
+</span><a href="#local-6989586621679062993"><span class="hs-identifier hs-var">parser</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679062994"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span> </span><span class="annot"><span class="annottext">String
+</span><span class="hs-string">&quot;Command list&quot;</span></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="hs-comment">-- |Match a command list. Takes indentation level and either 'commandParser' or 'itemCommandParser' as an argument.</span><span>
+</span><span id="line-50"></span><span class="annot"><a href="Parsers.CommandParser.html#commandListParser"><span class="hs-identifier hs-type">commandListParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">[</span><span class="annot"><a href="DataStructures.html#Command"><span class="hs-identifier hs-type">Command</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-51"></span><span id="commandListParser"><span class="annot"><span class="annottext">commandListParser :: Int -&gt; Parser (Action ()) -&gt; Parser [Command]
+</span><a href="Parsers.CommandParser.html#commandListParser"><span class="hs-identifier hs-var hs-var">commandListParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Text -&gt; Int -&gt; Parser (Action ()) -&gt; Parser [Command]
+</span><a href="Parsers.CommandParser.html#baseCommandListParser"><span class="hs-identifier hs-var">baseCommandListParser</span></a></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;commands&quot;</span></span><span>
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="hs-comment">-- |Match an 'onEntry' command.</span><span>
+</span><span id="line-54"></span><span class="annot"><a href="Parsers.CommandParser.html#onEntryParser"><span class="hs-identifier hs-type">onEntryParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Int</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Parser</span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="DataStructures.html#Action"><span class="hs-identifier hs-type">Action</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span class="hs-special">)</span><span>
+</span><span id="line-55"></span><span id="onEntryParser"><span class="annot"><span class="annottext">onEntryParser :: Int -&gt; Action () -&gt; Parser (Action ())
+</span><a href="Parsers.CommandParser.html#onEntryParser"><span class="hs-identifier hs-var hs-var">onEntryParser</span></a></span></span><span> </span><span id="local-6989586621679062989"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679062989"><span class="hs-identifier hs-var">indentationLevel</span></a></span></span><span> </span><span id="local-6989586621679062988"><span class="annot"><span class="annottext">Action ()
+</span><a href="#local-6989586621679062988"><span class="hs-identifier hs-var">defaultAction</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Int -&gt; Parser Text ()
+</span><a href="Parsers.Utilities.html#tabs"><span class="hs-identifier hs-var">tabs</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621679062989"><span class="hs-identifier hs-var">indentationLevel</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text () -&gt; Parser Text Text -&gt; Parser Text Text
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Text -&gt; Parser Text Text
+</span><span class="hs-identifier hs-var">string</span></span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;onEntry:&quot;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text Text -&gt; Parser Text () -&gt; Parser Text ()
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text () -&gt; Parser Text () -&gt; Parser Text ()
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#skipSpaces"><span class="hs-identifier hs-var">skipSpaces</span></a></span><span> </span><span class="annot"><span class="annottext">Parser Text () -&gt; Parser (Action ()) -&gt; Parser (Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f b
+</span><span class="hs-operator hs-var">*&gt;</span></span><span> </span><span class="annot"><span class="annottext">Parser (Action ())
+</span><a href="Parsers.CodeParser.html#codeParser"><span class="hs-identifier hs-var">codeParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (Action ()) -&gt; Parser Text () -&gt; Parser (Action ())
+forall (f :: * -&gt; *) a b. Applicative f =&gt; f a -&gt; f b -&gt; f a
+</span><span class="hs-operator hs-var">&lt;*</span></span><span> </span><span class="annot"><span class="annottext">Parser Text ()
+</span><a href="Parsers.Utilities.html#newLines"><span class="hs-identifier hs-var">newLines</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Parser (Action ()) -&gt; Parser (Action ()) -&gt; Parser (Action ())
+forall (f :: * -&gt; *) a. Alternative f =&gt; f a -&gt; f a -&gt; f a
+</span><span class="hs-operator hs-var">&lt;|&gt;</span></span><span> </span><span class="annot"><span class="annottext">Action () -&gt; Parser (Action ())
+forall (f :: * -&gt; *) a. Applicative f =&gt; a -&gt; f a
+</span><span class="hs-identifier hs-var">pure</span></span><span> </span><span class="annot"><span class="annottext">Action ()
+</span><a href="#local-6989586621679062988"><span class="hs-identifier hs-var">defaultAction</span></a></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><a href="Parsers.CommandParser.html#testCommandParser"><span class="hs-identifier hs-type">testCommandParser</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Result</span></span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span>
+</span><span id="line-58"></span><span id="testCommandParser"><span class="annot"><span class="annottext">testCommandParser :: Result ()
+</span><a href="Parsers.CommandParser.html#testCommandParser"><span class="hs-identifier hs-var hs-var">testCommandParser</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">IResult Text (String -&gt; [Command]) -&gt; Result ()
+forall (f :: * -&gt; *) a. Functor f =&gt; f a -&gt; f ()
+</span><span class="hs-identifier hs-var">void</span></span><span> </span><span class="annot"><span class="annottext">(IResult Text (String -&gt; [Command]) -&gt; Result ())
+-&gt; IResult Text (String -&gt; [Command]) -&gt; Result ()
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><span class="hs-operator hs-var">$</span></span><span> </span><span class="annot"><span class="annottext">IResult Text (String -&gt; [Command])
+-&gt; Text -&gt; IResult Text (String -&gt; [Command])
+forall i r. Monoid i =&gt; IResult i r -&gt; i -&gt; IResult i r
+</span><span class="hs-identifier hs-var">feed</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser (String -&gt; [Command])
+-&gt; Text -&gt; IResult Text (String -&gt; [Command])
+forall a. Parser a -&gt; Text -&gt; Result a
+</span><span class="hs-identifier hs-var">parse</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">Parser (String -&gt; Action ()) -&gt; Parser (String -&gt; [Command])
+forall a. Parser (a -&gt; Action ()) -&gt; Parser (a -&gt; [Command])
+</span><a href="Parsers.CommandParser.html#itemCommandParser"><span class="hs-identifier hs-var">itemCommandParser</span></a></span><span> </span><span class="annot"><span class="annottext">Parser (String -&gt; Action ())
+</span><a href="Parsers.CodeParser.html#itemCodeParser"><span class="hs-identifier hs-var">itemCodeParser</span></a></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;eat:\n\
+    \            {\n\
+    \              println Delicious!\n\
+    \              player.hunger = player.hunger + 10\n\
+    \              discard\n\
+    \            }\n&quot;</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Text
+</span><span class="hs-string">&quot;&quot;</span></span></pre></body></html>

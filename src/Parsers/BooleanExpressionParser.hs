@@ -1,5 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |Provides a 'booleanExpressionParser' parser for processing the boolean expressions.
+-- The possible operations are: @&&@ (logical and) and @||@ (logical or). 
+--
+-- Parser makes use of module 'Parsers.ArithmeticExpressionParser' to provide comparison operators (@>,<,>=,<=,==,!=@).
+--
+-- Moreover, the parser provides some useful tests: checking if object is in inventory (@has \<name\>@),
+-- if an object is present in current or other room (@present \<name\> [in \<room\>]@),
+-- or if player is in specified room (@in \<room\>@). 
+--
+-- Expressions @askYesNo@ and @prompt \<word\>@ request an input from a user and check if, respectively,
+-- entered "yes"/"y" or @\<word\>@.
 module Parsers.BooleanExpressionParser where
 
 import DataStructures
@@ -15,6 +26,23 @@ import Control.Applicative
 import Data.Maybe
 import Parsers.Utilities
 import Parsers.ArithmeticExpressionParser
+
+-- * Grammar
+--
+-- $grammar
+--
+-- The boolean expression grammar in this module is defined as follows:
+--
+-- * exprB -> termB op exprB 
+-- * op -> (@&&@|@||@)
+-- * termB -> @askYesNo@ | @present \<name\>@ | @present \<name\> in \<room\>@
+--   | @in \<room\>@ | @has \<item\>@ | @true@ | @false@ | expr comp expr | ( exprB )
+-- * comp -> @>@ | @<@ | @>=@ | @<=@ | @==@ | @!=@
+--
+-- Logical operators are right-associative and have the same priority.
+--
+
+-- * Parsing arithmetic expressions
 
 -- |Match an @askYesNo@ prompt.
 askYesNoParser :: Parser (Action Bool)
