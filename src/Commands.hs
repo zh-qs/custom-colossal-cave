@@ -121,19 +121,22 @@ dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi cc
         itMap)
 
 moveItemToRoom :: ItemName -> Name -> Action ()
-moveItemToRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
-        p
-        im fm 
-        goe gr gi ccnt
-        (M.adjust 
-            (\(Room d e its cmds) -> Room d e (item:its) cmds)
-            room
-            (M.adjust 
-            (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
-            n rs)) 
-        n 
-        itMap)
+moveItemToRoom item room = perform $ gets (\g -> item `elem` interactables (rooms g M.! currentRoomName g))
+    >>= (\b -> if b 
+        then modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
+            Game 
+                p
+                im fm 
+                goe gr gi ccnt
+                (M.adjust 
+                    (\(Room d e its cmds) -> Room d e (item:its) cmds)
+                    room
+                    (M.adjust 
+                    (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
+                    n rs)) 
+                n 
+                itMap)
+        else lift (return ()))
 
 removeItemFromRoom :: ItemName -> Name -> Action ()
 removeItemFromRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
@@ -167,6 +170,18 @@ discardItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi
         goe gr gi ccnt
         (M.adjust 
             (\(Room d e its cmds) -> Room d e (filter (/=item) its) cmds)
+            n rs) 
+        n 
+        itMap)
+
+dropAllItemsInCurrentRoom :: Action ()
+dropAllItemsInCurrentRoom = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+    Game 
+        (Player ps [] lh rh) 
+        im fm 
+        goe gr gi ccnt
+        (M.adjust 
+            (\(Room d e its cmds) -> Room d e (i++its) cmds)
             n rs) 
         n 
         itMap)

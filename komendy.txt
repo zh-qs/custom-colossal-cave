@@ -7,13 +7,16 @@ TODO:           co się dzieje po wyjściu -> zamienić finalMessage na finalAct
         !? połączyć entity z itemem
         call command for item
         !!dropall
+        !!ATTACK
+        !!THROW
+        !!$code
 TODO z GAMLem: SAY <STH>
                GOTO <WHERE> (komenda, nie instrukcja)
                
 
-               !ATTACK
+               
                DRINK WATER kiedy nie ma wody -> butelka
-               !THROW
+               !!THROW
                CAVE, FIND CAVE, WHERE CAVE
                !FOO, ...
                !?move sth from room to room

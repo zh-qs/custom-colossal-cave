@@ -96,6 +96,10 @@ takeItemParser = baseCodeLineParser "take " (takeItem . unpack <$> takeTill isSp
 dropItemParser :: Parser (Action ())
 dropItemParser = baseCodeLineParser "drop " (dropItem . unpack <$> takeTill isSpace) "drop"
 
+-- |Match a @dropall@ instruction.
+dropAllParser :: Parser (Action ())
+dropAllParser = baseCodeLineParser "dropall" (pure dropAllItemsInCurrentRoom) "dropall"
+
 -- |Match a @discard@ instruction.
 discardItemParser :: Parser (ItemName -> Action ())
 discardItemParser = baseCodeLineParser "discard" (pure discardItem) "discard"
@@ -164,6 +168,7 @@ commonCodeLineParser =
         <|> printParser
         <|> printLineParser
         <|> printValueParser
+        <|> dropAllParser
         <|> changePlayerParameterParser
         <|> changeEntityParameterParser
         <|> removeItemFromRoomParser

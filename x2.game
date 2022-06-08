@@ -404,7 +404,7 @@ items:
                   println THE RESULTING RUCKUS HAS AWAKENED THE DWARVES.	THERE ARE NOW SEVERAL
                   println THREATENING LITTLE DWARVES IN THE ROOM WITH YOU!  MOST OF THEM THROW
                   println KNIVES AT YOU!	ALL OF THEM GET YOU!
-                  goto death
+                  global room.die
                 }
                 else
                 {
@@ -655,7 +655,7 @@ items:
               {
                 println YOU PROD THE NEAREST DWARF, WHO WAKES UP GRUMPILY, TAKES ONE LOOK AT
                 println YOU, CURSES, AND GRABS FOR HIS AXE.
-                goto death
+                global room.die
               }
             }
         - FEED:
@@ -853,7 +853,7 @@ items:
               {
                 println YOU STRIKE THE MIRROR A RESOUNDING BLOW, WHEREUPON IT SHATTERS INTO A
                 println MYRIAD TINY FRAGMENTS.
-                goto death
+                global room.die
               }
             }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
@@ -1451,7 +1451,7 @@ global:
         if player.wasdark == 1 && rnd % 100 < 35 then
         {
           println YOU FELL INTO A PIT AND BROKE EVERY BONE IN YOUR BODY!
-          goto death
+          global room.die
         }
         else
         {
@@ -1466,6 +1466,27 @@ global:
       player.turns += 1
     }
   room:
+    - *die20:
+        {
+          dropall
+          move LAMP to room1
+          player.param2 = 0
+          goto room20
+        }
+    - *die21:
+        {
+          dropall
+          move LAMP to room1
+          player.param2 = 0
+          goto room21
+        }
+    - *die:
+        {
+          dropall
+          move LAMP to room1
+          player.param2 = 0
+          goto death
+        }
     - *setscore:
         {
           player.score = 2
@@ -2525,7 +2546,7 @@ rooms:
               {
                 player.dflag = 1
               }
-              goto room20
+              global room.die20
               }
               else
               {
@@ -2630,7 +2651,7 @@ rooms:
             {
               if player.param12 != 1 then
               {
-              goto room21
+              global room.die21
               }
               else
               {
@@ -2885,7 +2906,7 @@ rooms:
             {
               if player.param12 != 1 then
               {
-              goto room21
+              global room.die21
               }
               else
               {
@@ -3086,7 +3107,7 @@ rooms:
             }
         - JUMP:
             {
-              goto room20
+              global room.die20
             }
   - room36:
       description:
@@ -4181,7 +4202,7 @@ rooms:
             }
         - JUMP:
             {
-              goto room20
+              global room.die20
             }
         - WEST,W,GIANT:
             {
@@ -4698,7 +4719,7 @@ rooms:
             }
         - JUMP:
             {
-              goto room20
+              global room.die20
             }
   - room111:
       description:
@@ -4852,7 +4873,7 @@ rooms:
                 println THERE IS A LOUD EXPLOSION, AND A TWENTY-FOOT HOLE APPEARS IN THE FAR
                 println WALL, BURYING THE SNAKES IN THE RUBBLE.  A RIVER OF MOLTEN LAVA POURS
                 println IN THROUGH THE HOLE, DESTROYING EVERYTHING IN ITS PATH, INCLUDING YOU!
-                goto death
+                global room.die
               }
             }
   - room116:
@@ -4926,7 +4947,7 @@ rooms:
             {
               if player.param32 != 0 then
               {
-              goto room21
+              global room.die21
               }
               else
               {
@@ -5746,7 +5767,7 @@ rooms:
               println OKAY, NOW WHERE DID I PUT MY ORANGE SMOKE?....	>POOF!<
               println EVERYTHING DISAPPEARS IN A DENSE CLOUD OF ORANGE SMOKE.
             }
-            # reincarnate
+            goto room3
           }
           else
           {
