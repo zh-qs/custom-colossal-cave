@@ -37,7 +37,7 @@ code3:
   # chasm -> param32
   # bear -> param35
   # spice -> param63
-  if player.param33 != 1
+  if player.param33 == 1
   {
 	if player.param33 == 0 then
 	{
@@ -58,11 +58,11 @@ code3:
 	  drop BEAR
 	  move BEAR to room116 (lub 122)
 	  player.param35 = 3
-	  if player.param63 < 0 then
+	  if player.find63 == 0 then
 	  {
 	    player.treasuresUnableToFind += 1
 	  }
-	  #call die -> trzeba zrobić coś z reinkarnacją
+	  global room.die
 	}
   }
   else

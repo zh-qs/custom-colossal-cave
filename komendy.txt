@@ -6,10 +6,8 @@ TODO:           co się dzieje po wyjściu -> zamienić finalMessage na finalAct
         !command overriding i domyślnych wiadomości
         !? połączyć entity z itemem
         call command for item
-        !!dropall
         !!ATTACK
         !!THROW
-        !!$code
 TODO z GAMLem: SAY <STH>
                GOTO <WHERE> (komenda, nie instrukcja)
                

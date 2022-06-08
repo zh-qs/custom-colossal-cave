@@ -2152,7 +2152,7 @@ rooms:
             {
               goto room11
             }
-        - PLUGHOLE:
+        - PLUGH:
             {
               if player.dflag < 1 then
               {
@@ -3041,7 +3041,7 @@ rooms:
       items:
       entities:
       commands:
-        - PLUGHOLE:
+        - PLUGH:
             {
               goto room3
             }
@@ -3061,12 +3061,9 @@ rooms:
             {
               if has EMERALD then
               {
-              println $code(2)
+                drop EMERALD
               }
-              else
-              {
               call unnamed486
-              }
             }
         - *unnamed486:
             {
@@ -4415,7 +4412,27 @@ rooms:
             }
         - EAST,E,PASSAGE,TUNNEL:
             {
-              println $code(1)
+              if invcount == 0 || (invcount == 1 && has EMERALD) then
+              {
+                # panika -> będzie jeszcze gdzieś indziej
+                if player.closing == 1 then
+                {
+                  println A MYSTERIOUS RECORDED VOICE GROANS INTO LIFE AND ANNOUNCES:
+                  println    "THIS EXIT IS CLOSED.  PLEASE LEAVE VIA MAIN OFFICE."
+                  if player.panic == 0 then
+                  {
+                    player.clock2 = 15
+                  }
+                  player.panic = 1
+                }
+                # tu jeszcze rzeczy z krasnoludami
+                goto room100
+              }
+              else
+              {
+                println SOMETHING YOU'RE CARRYING WON'T FIT THROUGH THE TUNNEL WITH YOU.
+                println YOU'D BEST TAKE INVENTORY AND DROP SOMETHING.
+              }
             }
         - *unnamed667:
             {
@@ -4441,7 +4458,27 @@ rooms:
             }
         - WEST,W,PASSAGE,TUNNEL,OUT,OUTSIDE,EXIT,LEAVE:
             {
-              println $code(1)
+              if invcount == 0 || (invcount == 1 && has EMERA) then
+              {
+                # panika -> będzie jeszcze gdzieś indziej
+                if player.closing == 1 then
+                {
+                  println A MYSTERIOUS RECORDED VOICE GROANS INTO LIFE AND ANNOUNCES:
+                  println    "THIS EXIT IS CLOSED.  PLEASE LEAVE VIA MAIN OFFICE."
+                  if player.panic == 0 then
+                  {
+                    player.clock2 = 15
+                  }
+                  player.panic = 1
+                }
+                # tu jeszcze rzeczy z krasnoludami
+                goto room99
+              }
+              else
+              {
+                println SOMETHING YOU'RE CARRYING WON'T FIT THROUGH THE TUNNEL WITH YOU.
+                println YOU'D BEST TAKE INVENTORY AND DROP SOMETHING.
+              }
             }
         - *unnamed669:
             {
@@ -4451,12 +4488,9 @@ rooms:
             {
               if has EMERALD then
               {
-              println $code(2)
+                drop EMERALD
               }
-              else
-              {
               call unnamed671
-              }
             }
         - *unnamed671:
             {
@@ -4941,7 +4975,48 @@ rooms:
             }
         - *unnamed726:
             {
-              println $code(3)
+              # troll -> param33
+              # chasm -> param32
+              # bear -> param35
+              # spice -> param63
+              if player.param33 != 1 then
+              {
+                if player.param33 == 0 then
+                {
+                  player.param33 = 1
+                }
+                if !has BEAR then
+                {
+                  goto room122
+                }
+                else
+                {
+                  println JUST AS YOU REACH THE OTHER SIDE, THE BRIDGE BUCKLES BENEATH THE
+                  println WEIGHT OF THE BEAR, WHICH WAS STILL FOLLOWING YOU AROUND.  YOU
+                  println SCRABBLE DESPERATELY FOR SUPPORT, BUT AS THE BRIDGE COLLAPSES YOU
+                  println STUMBLE BACK AND FALL INTO THE CHASM.
+                  player.param32 = 1
+                  player.param33 = 2
+                  drop BEAR
+                  move BEAR to room122
+                  player.param35 = 3
+                  if player.find63 == 0 then
+                  {
+                    player.treasuresUnableToFind += 1
+                  }
+                  global room.die
+                }
+              }
+              else
+              {
+                println THE TROLL STEPS OUT FROM BENEATH THE BRIDGE AND BLOCKS YOUR WAY.
+                player.param33 = 0
+                remove TROLL2
+                put TROLL
+                remove TROLL2 from room122
+                put TROLL in room122
+                goto room117
+              }
             }
         - JUMP:
             {
@@ -5060,7 +5135,48 @@ rooms:
             }
         - *unnamed739:
             {
-              println $code(3)
+              # troll -> param33
+              # chasm -> param32
+              # bear -> param35
+              # spice -> param63
+              if player.param33 != 1 then
+              {
+                if player.param33 == 0 then
+                {
+                  player.param33 = 1
+                }
+                if !has BEAR then
+                {
+                  goto room117
+                }
+                else
+                {
+                  println JUST AS YOU REACH THE OTHER SIDE, THE BRIDGE BUCKLES BENEATH THE
+                  println WEIGHT OF THE BEAR, WHICH WAS STILL FOLLOWING YOU AROUND.  YOU
+                  println SCRABBLE DESPERATELY FOR SUPPORT, BUT AS THE BRIDGE COLLAPSES YOU
+                  println STUMBLE BACK AND FALL INTO THE CHASM.
+                  player.param32 = 1
+                  player.param33 = 2
+                  drop BEAR
+                  move BEAR to room117
+                  player.param35 = 3
+                  if player.find63 == 0 then
+                  {
+                    player.treasuresUnableToFind += 1
+                  }
+                  global room.die
+                }
+              }
+              else
+              {
+                println THE TROLL STEPS OUT FROM BENEATH THE BRIDGE AND BLOCKS YOUR WAY.
+                player.param33 = 0
+                remove TROLL2
+                put TROLL
+                remove TROLL2 from room117
+                put TROLL in room117
+                goto room122
+              }
             }
         - JUMP:
             {
