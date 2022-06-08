@@ -243,14 +243,14 @@ changePlayerParameter name f = perform $ modify' (\(Game m (Player ps i lh rh) i
 getPlayerParameter :: Name -> Action Int
 getPlayerParameter name = perform (gets (\(Game m p im fm goe gr gi ccnt rs n itMap) -> playerParameters p M.!? name)) >>= assertNotNothing ("ERROR: Parameter not found: player." ++ name)
 
--- |Change specified entity parameter with a function.
-changeEntityParameter :: Name -> Name -> (Int -> Int) -> Action ()
-changeEntityParameter entityName name f = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n imap) -> Game m p im fm goe gr gi ccnt rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
+-- |Change specified item parameter with a function.
+changeItemParameter :: ItemName -> Name -> (Int -> Int) -> Action ()
+changeItemParameter itemName name f = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n imap) -> Game m p im fm goe gr gi ccnt rs n (M.adjust (\i -> Item (longName i) (getDescription i) (M.adjust f name $ itemParameters i) $ getCommands i) itemName imap))
 
--- |Get specified entity parameter. If a parameter does not exist, terminate execution with an error.
-getEntityParameter :: Name -> Name -> Action Int
-getEntityParameter entityName name = perform (gets (\g -> globalNameMap g M.!? entityName)) >>= assertNotNothing ("ERROR: Entity not found: " ++ entityName) 
-    >>= (\e -> pure $ entityParameters e M.!? name) >>= assertNotNothing ("ERROR: Parameter not found: entity." ++ entityName ++ "." ++ name)
+-- |Get specified item parameter. If a parameter does not exist, terminate execution with an error.
+getItemParameter :: ItemName -> Name -> Action Int
+getItemParameter itemName name = perform (gets (\g -> globalNameMap g M.!? itemName)) >>= assertNotNothing ("ERROR: Item not found: " ++ itemName) 
+    >>= (\e -> pure $ itemParameters e M.!? name) >>= assertNotNothing ("ERROR: Parameter not found: item." ++ itemName ++ "." ++ name)
 
 -- |Perform either first or second action, regarding of the result of 'Action Bool'.
 conditionallyPerformAction :: Action Bool -> Action () -> Action () -> Action ()

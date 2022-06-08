@@ -30,13 +30,10 @@ type StParser a = StateT (M.Map Name Interactable, Action ()) Parser a
 -- |Representation of a command entered in a console by user
 type Command = (Visibility, Name, Action ())
 
-data Interactable = Item { longName :: Name, getDescription :: Desc, getCommands :: [Command] }
-    | Entity { getDescription :: Desc, entityParameters :: M.Map Name Int, getCommands :: [Command] }
-    | Invalid
+data Interactable = Item { longName :: Name, getDescription :: Desc, itemParameters :: M.Map Name Int, getCommands :: [Command] }
 
 instance Show Interactable where
-    show item@(Item {}) = "Item(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands item) ++ ")"
-    show entity@(Entity {}) = "Entity(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands entity) ++ ")"
+    show item = "Item(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands item) ++ ")"
 
 data Room = Room { description :: Desc, onEntry :: Action (), interactables :: [Name], roomCommands :: [Command] }
 

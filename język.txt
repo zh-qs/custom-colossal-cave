@@ -50,6 +50,8 @@ item:
     longName: $string
     description:
       $switch
+    parameters:
+      $list:parameter
     commands:
       $list:itemCommand
 
@@ -63,8 +65,6 @@ room:
       }
     items:
       $list:item
-    entities:
-      $list:entity
     commands
       $list:command
 
@@ -96,7 +96,7 @@ commonInstructions:
   println <string>
   printval <expr>
   player.<parameter> =|+=|-=|*= <expr>
-  entity.<name>.<parameter> =|+=|-=|*= <expr>
+  item.<name>.<parameter> =|+=|-=|*= <expr>
   give <item>
   put <item>
   remove <item>
@@ -128,8 +128,8 @@ EXPRESSION GRAMMAR:
   expr -> term (`+`|`-`) expr | term
   term -> factor (`*`|`/`|`%`) term | factor
   factor -> integer | ident | `(` expr `)` | `rnd` | `invcount` | `cmdcount`
-  ident -> `entity.<name>.<parameter>` | `player.<parameter>`
+  ident -> `item.<name>.<parameter>` | `player.<parameter>`
 
 BOOLEAN EXPRESSION GRAMMAR:
   exprB -> termB (`&&`|`||`) exprB | termB
-  termB -> `askYesNo` | `present` <item|entity> | `present` <item|entity> `in` <room> | `in` <room> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 
+  termB -> `askYesNo` | `present` <item> | `present` <item> `in` <room> | `in` <room> | `has` <item> | `true` | `True` | `TRUE` | `false` | `False` | `FALSE` | expr (`<`|`>`|`<=`|`>=`|`==`|`!=`) expr | `(` exprB `)` 

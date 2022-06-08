@@ -56,11 +56,11 @@ promptParser = stringWithSpaces "prompt " *> (pure (\s -> perform $ lift $ (==s)
 hasItemParser :: Parser (Action Bool)
 hasItemParser = stringWithSpaces "has " *> (checkIfItemIsInInventory . T.unpack <$> takeWhile1 isAlphaNum)
 
--- |Match a @present <item|entity>@ test.
+-- |Match a @present <item>@ test.
 presentParser :: Parser (Action Bool)
 presentParser = stringWithSpaces "present " *> (checkIfInteractablePresent . T.unpack <$> takeWhile1 isAlphaNum)
 
--- |Match a @present <item|entity> in <room>@ test.
+-- |Match a @present <item> in <room>@ test.
 presentInRoomParser :: Parser (Action Bool)
 presentInRoomParser = stringWithSpaces "present " *> (checkIfInteractablePresentInRoom <$> (T.unpack <$> takeWhile1 isAlphaNum) <*> (stringWithSpaces "in " *> (T.unpack <$> takeWhile1 isAlphaNum)))
 

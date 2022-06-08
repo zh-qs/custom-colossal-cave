@@ -12,7 +12,7 @@ import Text.Read
 import qualified Data.Map.Merge.Strict as M
 import qualified Data.Map.Strict as M
 
-data InteractableState = ItemState | EntityState { entityStateParameters :: M.Map Name Int } deriving (Show, Read)
+data InteractableState = ItemState { itemStateParameters :: M.Map Name Int } deriving (Show, Read)
 
 data RoomState = RoomState {
     interactableStates :: [Name]
@@ -27,8 +27,7 @@ data GameState = GameState {
     } deriving (Show, Read)
 
 toInteractableState :: Interactable -> InteractableState
-toInteractableState (Item {}) = ItemState
-toInteractableState (Entity _ params _) = EntityState params
+toInteractableState = ItemState . itemParameters
 
 toRoomState :: Room -> RoomState
 toRoomState = RoomState . interactables
@@ -43,9 +42,7 @@ setRoomStates :: M.Map Name RoomState -> M.Map Name Room -> M.Map Name Room
 setRoomStates = M.merge M.dropMissing M.dropMissing (M.zipWithMatched setRoomState) 
 
 setInteractableState :: Name -> InteractableState -> Interactable -> Interactable
-setInteractableState _ ItemState i@(Item {}) = i
-setInteractableState _ (EntityState params) (Entity desc _ cmds) = Entity desc params cmds
-setInteractableState _ _ _ = Invalid -- unmatched types
+setInteractableState _ (ItemState params) (Item ln d _ cmds) = Item ln d params cmds
 
 setInteractableStates :: M.Map Name InteractableState -> M.Map Name Interactable -> M.Map Name Interactable
 setInteractableStates = M.merge M.dropMissing M.dropMissing (M.zipWithMatched setInteractableState)

@@ -23,6 +23,7 @@ items:
       description:
         - true:
             On the ground there is a delicious food.
+      parameters:
       commands:
         - eat:
             {
@@ -119,6 +120,7 @@ rooms:
             description:
               - true:
                   There is a drink on a table.
+            parameters:
             commands:
               - drink:
                   {
@@ -141,8 +143,8 @@ rooms:
                   {
                     global item.invisible DRINK
                   }
-      entities:
         - dragon:
+            longName: DRAGON!
             description:
               - true:
                   An old dragon stares at you.
@@ -153,9 +155,9 @@ rooms:
               - touch:
                   {
                     println You touched dragon. Nothing happened.
-                    entity.dragon.money -= 1
+                    item.dragon.money -= 1
                     print But... he dropped 1 money! (sadeg). Now he has 
-                    printval entity.dragon.money
+                    printval item.dragon.money
                     println  money!
                   }
       commands:
