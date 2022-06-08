@@ -2088,7 +2088,7 @@ global:
         {
           println WHAT?
         }
-    - INVENTORY:
+    - INVENTORY,INV:
         {
           println YOU ARE CURRENTLY HOLDING THE FOLLOWING:
           showInventory
@@ -2342,7 +2342,7 @@ global:
         {
           println YOU HAVE NO SOURCE OF LIGHT.
         }
-    - FIND,WHERE,INVENTORY:
+    - FIND,WHERE,INVENTORY,INV:
         {
           if has then
           {
