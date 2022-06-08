@@ -1,3 +1,4 @@
+-- |The startup module for application. Contains entry function 'main' and functions to read arguments from command line.
 module Main where
 
 import Data.List
@@ -10,13 +11,16 @@ import System.IO.Error
 import GameParser
 import GamePlay
 
+-- |The 'String' which is displayed in case of incorrect number of arguments provided.
 usage :: String
-usage = "USAGE: the-game game-file.gaml"
+usage = "USAGE: the-game game-file.game"
 
+-- |Gets file name from arguments: if number of arguments provided is not equal to one, return 'Left usage'.
 getFileNameFromArgs :: [String] -> IO (Either String String)
 getFileNameFromArgs (file:[]) = return $ Right file
 getFileNameFromArgs _ = return $ Left usage
 
+-- |Execute a 'StateT' transformer, but return nothing.
 execStateT_ :: Monad m => StateT s m a -> s -> m ()
 execStateT_ st s = void $ execStateT st s
 

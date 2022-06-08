@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |Collects general parsers and useful functions used by many specific parsers. 
 module Parsers.Utilities where
 
 import DataStructures

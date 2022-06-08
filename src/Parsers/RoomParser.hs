@@ -36,33 +36,3 @@ roomParser = gets snd >>= (\action ->
 
 roomListParser :: StParser [(Name,Room)]
 roomListParser = listParserSt "rooms" roomParser 1 "Room list definition"
---roomListParser = lift (string "rooms:" *> newLines *> tabs 1 *> string "- ") *> ((\a -> [a]) <$> roomParser) <??> "Room list definition" -- for testing
-
-testDescriptionParser :: Result Desc
-testDescriptionParser = feed (parse (descriptionParser <* endOfInput) "description:\n        AAAAAAAAA\n        BBBBBBBB\n") ""
-
-testRoomParser :: Result (Name,Room)
-testRoomParser = feed 
-    (parse (evalStateT roomParser (M.empty,noAction) <* endOfInput)
-        "kitchen:\n\
-        \      description:\n\
-        \        You are in your kitchen, looking at the table.\n\
-        \      items:\n\
-        \        - food:\n\
-        \            commands:\n\
-        \        - drink:\n\
-        \            commands:\n\
-        \              - drink:\n\
-        \                  {\n\
-        
-        \                  }\n\
-        \      commands:\n\
-        \        - nop:\n\
-        \            {\n\
-        \              print You just wait and do nothing.\n\
-        \              goto kitchen\n\
-        \            }\n"
-    ) ""
-
- --   \              if player.hunger < 99 then player.hunger += 2 else player.hunger = 100\n\
- --       \              discard\n\

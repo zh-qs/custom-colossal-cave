@@ -53,11 +53,3 @@ commandListParser = baseCommandListParser "commands"
 -- |Match an 'onEntry' command.
 onEntryParser :: Int -> Action () -> Parser (Action ())
 onEntryParser indentationLevel defaultAction = (tabs indentationLevel *> string "onEntry:" *> newLines *> skipSpaces *> codeParser <* newLines) <|> pure defaultAction
-
-testCommandParser :: Result ()
-testCommandParser = void $ feed (parse (itemCommandParser itemCodeParser) "eat:\n\
-    \            {\n\
-    \              println Delicious!\n\
-    \              player.hunger = player.hunger + 10\n\
-    \              discard\n\
-    \            }\n") ""

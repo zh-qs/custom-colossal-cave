@@ -26,29 +26,3 @@ playerParser = (lift (string "player:\n")
         <$> lift (parametersParser 1)
         <*> inventoryParser))
     <??> "Player definition"
-
-testPlayerParser :: Result Player
-testPlayerParser = feed 
-    (parse (evalStateT playerParser (M.empty,noAction) <* endOfInput) 
-        "player:\n\
-        \  parameters:\n\
-        \    - health:\n\
-        \        value: 69\n\
-        \    - hunger:\n\
-        \        value: 101\n\
-        \  inventory:\n\
-        \    - axe:\n\
-        \        commands:\n\
-        \          - kill: { \n\
-        \                    print Kill!\n\
-        \                  }\n\
-        \          - throw: {\n\
-        \                     print Throw!\n\
-        \                   }\n\
-        \  rightHand:\n\
-        \    potion:\n\
-        \      commands:\n\
-        \  leftHand:\n\
-        \    empty\n"
-    ) ""
-

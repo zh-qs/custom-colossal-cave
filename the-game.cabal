@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 55dcc81a7b8180e04587fb7c34be34598fa133b63d5352a69e3c8d52a6c8afdc
+-- hash: e032bf498791075bd3a188c18165276d9defc14ca2b7efdf68342d3c9ef97e5c
 
 name:           the-game
 version:        0.1.0.0
@@ -38,7 +38,6 @@ executable the-game
       Parsers.RoomParser
       Parsers.SwitchParser
       Parsers.Utilities
-      PartialMap
       Paths_the_game
   hs-source-dirs:
       src

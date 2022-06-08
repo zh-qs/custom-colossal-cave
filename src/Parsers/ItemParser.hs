@@ -42,6 +42,3 @@ itemParser indentationLevel =
 
 itemListParser :: Text -> Int -> String -> StParser [ItemName]
 itemListParser keyword indentationLevel msg = listParserSt keyword (itemParser indentationLevel) indentationLevel msg
-
-testItemParser :: Result ItemName
-testItemParser = feed (parse (evalStateT (itemParser 1) (M.empty,noAction) <* endOfInput) "axe:\n      commands:\n        - kill: { print Kill!\n }\n") ""

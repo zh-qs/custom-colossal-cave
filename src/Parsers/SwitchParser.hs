@@ -25,13 +25,3 @@ conditionPairListParser keyword indentationLevel msg = listParser keyword (condi
 
 switchParser :: Text -> Int -> String -> Parser (Action String)
 switchParser keyword indentationLevel msg = Data.List.foldr (\(sbool,str) sstr -> sbool >>= (\b -> if b then return str else sstr)) (pure "") <$> conditionPairListParser keyword indentationLevel msg
-
-testSwitchParser :: Result [String]
-testSwitchParser = Data.List.map (\(sbool,str) -> str) <$> feed (parse (conditionPairListParser "description" 3 "AAA")
-        "      description:\n\
-        \        - player.life > 10:\n\
-        \            Hej!!!\n\
-        \            Ciesz sie zyciem!!!\n\
-        \        - true:\n\
-        \            Dzien dobry.\n\
-        \            Czas mija.\n") ""
