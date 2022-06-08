@@ -17,9 +17,6 @@ fst3 (a, b, c) = a
 combinedCommands :: [Command] -> M.Map String (Action ())
 combinedCommands cmds = M.fromList $ map (\(_,n,r) -> (n, r)) cmds
 
--- unknownCommand :: Action ()
--- unknownCommand = perform $ lift $ putStrLn "Unknown command"
-
 getInitialMessage :: StIO String
 getInitialMessage = gets (\g -> initialMessage g)
 
