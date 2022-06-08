@@ -174,6 +174,9 @@ discardItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi
 getCommandCount :: Action Int
 getCommandCount = perform $ gets commandCount
 
+increaseCommandCount :: Action ()
+increaseCommandCount = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n imap) -> Game p im fm goe gr gi (ccnt+1) rs n imap)
+
 printMessage :: String -> Action ()
 printMessage s = perform $ lift $ putStr s >> hFlush stdout
 

@@ -1492,7 +1492,7 @@ global:
           {
             player.score += 10
           }
-                    if present DIAMOND in room3 && player.param51 == 0 then
+          if present DIAMOND in room3 && player.param51 == 0 then
           {
             player.score += 10
           }
@@ -1793,9 +1793,9 @@ global:
         }
     - SCORE:
         {
-          call setscore
-          print IF YOU WERE TO QUIT NOW, YOU WOULD SCORE
-          printval player.score
+          global room.setscore
+          print IF YOU WERE TO QUIT NOW, YOU WOULD SCORE 
+          printval player.score - 4 - 10*(player.maxdie - player.numdie)
           println  OUT OF A POSSIBLE 350.
         }
     - FEE:
@@ -1814,7 +1814,7 @@ global:
         }
     - FIE:
         {
-          if player.foobar == 0 || player.foobarcmdcnd + 1 != cmdcount then
+          if player.foobar == 0 || player.foobarcmdcnt + 1 != cmdcount then
           {
             println NOTHING HAPPENS.
             player.foobar = 0
@@ -1833,7 +1833,7 @@ global:
         }
     - FOE:
         {
-          if player.foobar == 0 || player.foobarcmdcnd + 1 != cmdcount then
+          if player.foobar == 0 || player.foobarcmdcnt + 1 != cmdcount then
           {
             println NOTHING HAPPENS.
             player.foobar = 0
@@ -1852,14 +1852,13 @@ global:
         }
     - FOO:
         {
-          if player.foobar == 0 || player.foobarcmdcnd + 1 != cmdcount then
+          if player.foobar == 0 || player.foobarcmdcnt + 1 != cmdcount then
           {
             println NOTHING HAPPENS.
             player.foobar = 0
           }
           else if player.foobar == 3 then
           {
-            println OK
             player.foobarcmdcnt = cmdcount
             player.foobar = 0
             if present EGGS in room92 || (has EGGS && in room92) then
@@ -2134,10 +2133,18 @@ rooms:
             }
         - PLUGHOLE:
             {
+              if player.dflag < 1 then
+              {
+                player.dflag = 1
+              }
               goto room33
             }
         - DOWNSTREAM,STREAM:
             {
+              if player.dflag < 1 then
+              {
+                player.dflag = 1
+              }
               goto room79
             }
   - room4:
@@ -2514,6 +2521,10 @@ rooms:
             {
               if has GOLD then
               {
+              if player.dflag < 1 then
+              {
+                player.dflag = 1
+              }
               goto room20
               }
               else
@@ -2523,10 +2534,18 @@ rooms:
             }
         - *unnamed431:
             {
+              if player.dflag < 1 then
+              {
+                player.dflag = 1
+              }
               goto room15
             }
         - CRACK,WEST,W:
             {
+              if player.dflag < 1 then
+              {
+                player.dflag = 1
+              }
               goto room16
             }
   - room15:
@@ -5748,7 +5767,7 @@ rooms:
       description:
       onEntry:
         {
-          call setscore
+          global room.setscore
           print YOU HAVE SCORED A TOTAL OF 
           printval player.score
           println  POINTS, OUT OF A POSSIBLE MAXIMUM OF

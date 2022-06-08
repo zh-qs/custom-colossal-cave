@@ -6,7 +6,7 @@ TODO:           co się dzieje po wyjściu -> zamienić finalMessage na finalAct
         !command overriding i domyślnych wiadomości
         !? połączyć entity z itemem
         call command for item
-
+        !!dropall
 TODO z GAMLem: SAY <STH>
                GOTO <WHERE> (komenda, nie instrukcja)
                
@@ -19,7 +19,6 @@ TODO z GAMLem: SAY <STH>
                !?move sth from room to room
                ?NORTHEAST
                DFLAG
-                !global onEntry call
                 !!$code
 
                 C  EVERY INPUT, CHECK "FOOBAR" FLAG.  IF ZERO, NOTHING'S GOING ON.  IF POS,

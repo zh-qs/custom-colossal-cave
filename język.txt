@@ -109,6 +109,8 @@ commonInstructions:
   restore
   showInventory
   global room.<globalRoomCommand>
+  globalOnEntry
+  dropall
   #<comment>
 
 itemInstructions:
@@ -122,7 +124,7 @@ itemInstructions:
 EXPRESSION GRAMMAR:
   expr -> term (`+`|`-`) expr | term
   term -> factor (`*`|`/`|`%`) term | factor
-  factor -> integer | ident | `(` expr `)` | `rnd`
+  factor -> integer | ident | `(` expr `)` | `rnd` | `invcount` | `cmdcount`
   ident -> `entity.<name>.<parameter>` | `player.<parameter>`
 
 BOOLEAN EXPRESSION GRAMMAR:

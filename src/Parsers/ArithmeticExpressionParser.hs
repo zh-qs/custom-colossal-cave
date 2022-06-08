@@ -46,24 +46,31 @@ identificatorParser = (getPlayerParameter <$> playerParameterAccessorParser) <|>
 
 -- |Match multiplication or division operator.
 mulOpParser :: Parser (Action Int -> Action Int -> Action Int)
-mulOpParser = (charWithSpaces '*' *> liftPAction (*)) <|> (charWithSpaces '/' *> liftPAction div) <|> (charWithSpaces '%' *> liftPAction mod)
+mulOpParser = (charWithSpaces '*' *> liftPAction (*)) <|> (charWithSpaces '/' *> liftPAction (flip div)) <|> (charWithSpaces '%' *> liftPAction (flip mod))
 
 -- |Match addition or subtraction operator.
 addOpParser :: Parser (Action Int -> Action Int -> Action Int)
-addOpParser = (charWithSpaces '+' *> liftPAction (+)) <|> (charWithSpaces '-' *> liftPAction (-))
+addOpParser = (charWithSpaces '+' *> liftPAction (+)) <|> (charWithSpaces '-' *> liftPAction (flip (-)))
 
 -- |Match a single term of a sum.
 termParser :: Parser (Action Int)
-termParser = (factorParser <**> mulOpParser <*> termParser) <|> factorParser
+termParser = factorParser <**> termParser'
+
+termParser' :: Parser (Action Int -> Action Int)
+termParser' = ((flip (.) <$> (mulOpParser <*> factorParser)) <*> termParser') <|> pure id
 
 -- |Match an arithmetic expression and return its symbolic representation in a parser.
 expressionParser :: Parser (Action Int)
-expressionParser = (termParser <**> addOpParser <*> expressionParser) <|> termParser
+expressionParser = termParser <**> expressionParser'
+
+expressionParser' :: Parser (Action Int -> Action Int)
+expressionParser' = ((flip (.) <$> (addOpParser <*> termParser)) <*> expressionParser') <|> pure id
 
 -- |Match a single factor of a term.
 factorParser :: Parser (Action Int)
 factorParser = 
     inventoryCountParser 
+    <|> commandCountParser
     <|> randomNumberParser 
     <|> constantParser 
     <|> identificatorParser 

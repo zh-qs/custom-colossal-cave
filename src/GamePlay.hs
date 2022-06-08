@@ -37,7 +37,7 @@ getCommandsForRoom = perform $ gets (\g -> filter fst3 $
         $ (interactables $ rooms g M.! currentRoomName g) ++ (playerInventory $ player g)))
 
 processCommand :: String -> Action ()
-processCommand cmd = getCommandsForRoom >>= (\cmds -> M.findWithDefault unknownCommand cmd $ combinedCommands cmds)
+processCommand cmd = increaseCommandCount >> getCommandsForRoom >>= (\cmds -> M.findWithDefault unknownCommand cmd $ combinedCommands cmds)
 
 readCommand :: Action ()
 readCommand = perform (lift (putChar '>' >> hFlush stdout >> getLine)) >>= processCommand
