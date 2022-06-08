@@ -1,7 +1,9 @@
 unknownCommandMessages:
   - HUH...
-  - I DON'T KNOW WHAT TO RESPOND.
+  - UHM...
+  - I DON'T KNOW HOW TO RESPOND.
   - I DON'T UNDERSTAND YOU.
+  - HMM... MAYBE I FORGOT TO TELL YOU THAT I UNDERSTAND ONLY UPPERCASE LETTERS.
 
 player:
   parameters:
@@ -347,6 +349,22 @@ items:
         - player.param8 == 1:
             THERE IS A LITTLE BIRD IN THE CAGE.
       commands:
+        - ATTACK:
+            {
+              if player.closed == 0 then
+              {
+                println THE LITTLE BIRD IS NOW DEAD.  ITS BODY DISAPPEARS.
+                remove BIRD
+                if present SNAKE in room19 then
+                {
+                  player.treasuresUnableToFind += 1
+                }
+              }
+              else
+              {
+                println OH, LEAVE THE POOR UNHAPPY BIRD ALONE.
+              }
+            }
         - FEED:
             {
               println IT'S NOT HUNGRY (IT'S MERELY PININ' FOR THE FJORDS).  BESIDES, YOU
@@ -409,7 +427,7 @@ items:
                   println THE RESULTING RUCKUS HAS AWAKENED THE DWARVES.	THERE ARE NOW SEVERAL
                   println THREATENING LITTLE DWARVES IN THE ROOM WITH YOU!  MOST OF THEM THROW
                   println KNIVES AT YOU!	ALL OF THEM GET YOU!
-                  global room.die
+                  goto summary
                 }
                 else
                 {
@@ -488,6 +506,10 @@ items:
         - player.param11 == 1:
             
       commands:
+        - ATTACK:
+            {
+              println ATTACKING THE SNAKE BOTH DOESN'T WORK AND IS VERY DANGEROUS.
+            }
         - FEED:
             {
               if present BIRD && player.closed == 0 then
@@ -545,6 +567,10 @@ items:
         - player.param14 == 0:
             THERE IS AN ENORMOUS CLAM HERE WITH ITS SHELL TIGHTLY CLOSED.
       commands:
+        - ATTACK:
+            {
+              println THE SHELL IS VERY STRONG AND IS IMPERVIOUS TO ATTACK.
+            }
         - EAT,DEVOUR:
             {
               println I THINK I JUST LOST MY APPETITE.
@@ -582,6 +608,10 @@ items:
             INTERESTING.  THERE SEEMS TO BE SOMETHING WRITTEN ON THE UNDERSIDE OF
             THE OYSTER.
       commands:
+        - ATTACK:
+            {
+              println THE SHELL IS VERY STRONG AND IS IMPERVIOUS TO ATTACK.
+            }
         - READ,PERUSE:
             {
               if has then
@@ -650,6 +680,20 @@ items:
       longName: 
       description:
       commands:
+        - ATTACK:
+            {
+              if player.closed == 1 then
+              {
+                println THE RESULTING RUCKUS HAS AWAKENED THE DWARVES.	THERE ARE NOW SEVERAL
+                println THREATENING LITTLE DWARVES IN THE ROOM WITH YOU!  MOST OF THEM THROW
+                println KNIVES AT YOU!	ALL OF THEM GET YOU!
+                goto summary
+              }
+              else
+              {
+                println WITH WHAT?  YOUR BARE HANDS?
+              }
+            }
         - WAKE,DISTURB:
             {
               if player.closing == 0 then
@@ -693,6 +737,27 @@ items:
         - player.param19 == 0:
             THERE IS FOOD HERE.
       commands:
+        - THROW,TOSS:
+            {
+              if !has FOOD then
+              {
+                println YOU AREN'T CARRYING IT!
+              }
+              else if present BEAR then
+              {
+                drop
+                remove FOOD
+                player.param35 = 1
+                player.param28 = 0
+                println THE BEAR EAGERLY WOLFS DOWN YOUR FOOD, AFTER WHICH HE SEEMS TO CALM
+                println DOWN CONSIDERABLY AND EVEN BECOMES RATHER FRIENDLY.
+              }
+              else
+              {
+                drop
+                println OK
+              }
+            }
   - BOTTLE:
       longName: SMALL BOTTLE
       description:
@@ -942,6 +1007,55 @@ items:
         - player.param28 == 1:
             THERE IS A LITTLE AXE LYING BESIDE THE BEAR.
       commands:
+        - THROW:
+            {
+              if !has AXE then
+              {
+                println YOU AREN'T CARRYING IT!
+              }
+              else
+              {
+                if present DWARF then
+                {
+                  println YOU KILLED A LITTLE DWARF.  THE BODY VANISHES IN A CLOUD OF GREASY
+                  println BLACK SMOKE.
+                  remove DWARF
+                  drop
+                }
+                else if present DRAGON then
+                {
+                  println THE AXE BOUNCES HARMLESSLY OFF THE DRAGON'S THICK SCALES.
+                  drop
+                }
+                else if present TROLL then
+                {
+                  println THE TROLL DEFTLY CATCHES THE AXE, EXAMINES IT CAREFULLY, AND TOSSES IT
+                  println BACK, DECLARING, "GOOD WORKMANSHIP, BUT IT'S NOT VALUABLE ENOUGH."
+                  drop
+                }
+                else if present BEAR && player.param35 == 0 then
+                {
+                  println THE AXE MISSES AND LANDS NEAR THE BEAR WHERE YOU CAN'T GET AT IT.
+                  player.param28 = 1
+                  drop
+                }
+                else if present SNAKE then
+                {
+                  println ATTACKING THE SNAKE BOTH DOESN'T WORK AND IS VERY DANGEROUS.
+                  drop
+                }
+                else if present CLAM || present OYSTER then
+                {
+                  println THE SHELL IS VERY STRONG AND IS IMPERVIOUS TO ATTACK.
+                  drop
+                }
+                else
+                {
+                  println OK
+                  drop
+                }
+              }
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param28 == 0 then
@@ -984,6 +1098,36 @@ items:
         - player.param31 == 2:
             THE BODY OF A HUGE GREEN DEAD DRAGON IS LYING OFF TO ONE SIDE.
       commands:
+        - ATTACK:
+            {
+              if player.param31 != 0 then
+              {
+                println FOR CRYING OUT LOUD, THE POOR THING IS ALREADY DEAD!
+              }
+              else
+              {
+                println WITH WHAT?  YOUR BARE HANDS?
+                print >
+                if askYesNo then
+                {
+                  println CONGRATULATIONS!  YOU HAVE JUST VANQUISHED A DRAGON WITH YOUR BARE
+                  println HANDS!
+                  player.param31 = 2
+                  player.param62 = 0
+                  remove RUG from room119
+                  remove RUG from room121
+                  remove DRAGON from room119
+                  remove DRAGON from room121
+                  put RUG in room120
+                  put DRAGON in room120
+                  goto room120
+                }
+                else
+                {
+                  println SAY IT AGAIN.
+                }
+              }
+            }
         - FEED:
             {
               if player.param31 != 0 then
@@ -1028,6 +1172,11 @@ items:
         - player.param33 == 2:
             
       commands:
+        - ATTACK:
+            {
+              println TROLLS ARE CLOSE RELATIVES WITH THE ROCKS AND HAVE SKIN AS TOUGH AS
+              println THAT OF A RHINOCEROS.  THE TROLL FENDS OFF YOUR BLOWS EFFORTLESSLY.
+            }
         - FEED:
             {
               println GLUTTONY IS NOT ONE OF THE TROLL'S VICES.  AVARICE, HOWEVER, IS.
@@ -1062,6 +1211,17 @@ items:
         - player.param35 == 3:
             
       commands:
+        - ATTACK:
+            {
+              if player.param35 < 2 then
+              {
+                println WITH WHAT?  YOUR BARE HANDS?  AGAINST *HIS* BEAR HANDS??
+              }
+              else
+              {
+                println THE BEAR IS CONFUSED; HE ONLY WANTS TO BE YOUR FRIEND.
+              }
+            }
         - FEED:
             {
               if present FOOD then
@@ -1125,8 +1285,8 @@ items:
                 if present TROLL then
                 {
                   remove TROLL from room116
-                  put TROLL2 in room122
-                  remove TROLL from room116
+                  put TROLL2 in room116
+                  remove TROLL from room122
                   put TROLL2 in room122
                   player.param33 = 2
                   println THE BEAR LUMBERS TOWARD THE TROLL, WHO LETS OUT A STARTLED SHRIEK AND
@@ -1203,31 +1363,77 @@ items:
         - player.param50 == 0:
             THERE IS A LARGE SPARKLING NUGGET OF GOLD HERE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure GOLD
+            }
   - DIAMOND:
       longName: SEVERAL DIAMONDS
       description:
         - player.param51 == 0:
             THERE ARE DIAMONDS HERE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure DIAMOND
+            }
   - SILVER:
       longName: BARS OF SILVER
       description:
         - player.param52 == 0:
             THERE ARE BARS OF SILVER HERE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure SILVER
+            }
   - JEWELRY:
       longName: PRECIOUS JEWELRY
       description:
         - player.param53 == 0:
             THERE IS PRECIOUS JEWELRY HERE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure JEWELRY
+            }
   - COINS:
       longName: RARE COINS
       description:
         - player.param54 == 0:
             THERE ARE MANY COINS HERE!
       commands:
-        - DROP,RELEASE,DUMP,THROW,TOSS:
+        - THROW,TOSS:
+            {
+              if has then
+              {
+                if present TROLL then
+                {
+                  println THE TROLL CATCHES YOUR TREASURE AND SCURRIES AWAY OUT OF SIGHT.
+                  remove TROLL from room116
+                  put TROLL2 in room116
+                  remove TROLL from room122
+                  put TROLL2 in room122
+                  discard
+                }
+                else if present MACHINE then
+                {
+                  discard
+                  put BATTERIES
+                  println THERE ARE FRESH BATTERIES HERE.
+                }
+                else
+                {
+                  drop
+                  println OK
+                }
+              }
+              else
+              {
+                println YOU AREN'T CARRYING IT!
+              }
+            }
+        - DROP,RELEASE,DUMP:
             {
               if has then
               {
@@ -1254,6 +1460,10 @@ items:
         - player.param55 == 0:
             THE PIRATE'S TREASURE CHEST IS HERE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure CHEST
+            }
   - EGGS:
       longName: GOLDEN EGGS
       description:
@@ -1264,12 +1474,20 @@ items:
         - player.param56 == 2:
             DONE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure EGGS
+            }
   - TRIDENT:
       longName: JEWELED TRIDENT
       description:
         - player.param57 == 0:
             THERE IS A JEWEL-ENCRUSTED TRIDENT HERE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure TRIDENT
+            }
   - VASE:
       longName: MING VASE
       description:
@@ -1339,18 +1557,30 @@ items:
         - player.param59 == 0:
             THERE IS AN EMERALD HERE THE SIZE OF A PLOVER'S EGG!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure EMERALD
+            }
   - PLATINUM:
       longName: PLATINUM PYRAMID
       description:
         - player.param60 == 0:
             THERE IS A PLATINUM PYRAMID HERE, 8 INCHES ON A SIDE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure PLATINUM
+            }
   - PEARL:
       longName: GLISTENING PEARL
       description:
         - player.param61 == 0:
             OFF TO ONE SIDE LIES A GLISTENING PEARL!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure PEARL
+            }
   - RUG:
       longName: PERSIAN RUG
       description:
@@ -1359,6 +1589,10 @@ items:
         - player.param62 == 1:
             THE DRAGON IS SPRAWLED OUT ON A PERSIAN RUG!!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure RUG
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param62 == 1 then
@@ -1373,9 +1607,7 @@ items:
                 }
                 else
                 {
-                  remove RUG from room119
-                  remove RUG from room121
-                  give RUG
+                  take RUG
                 }
               }
             }
@@ -1385,6 +1617,10 @@ items:
         - player.param63 == 0:
             THERE ARE RARE SPICES HERE!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure SPICE
+            }
   - CHAIN:
       longName: GOLDEN CHAIN
       description:
@@ -1395,6 +1631,10 @@ items:
         - player.param64 == 2:
             THERE IS A GOLDEN CHAIN LOCKED TO THE WALL!
       commands:
+        - THROW:
+            {
+              global item.trollTreasure CHAIN
+            }
         - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
             {
               if player.param64 != 0 then
@@ -1598,6 +1838,19 @@ global:
           else
           {
             player.dark = 1
+          }
+        }
+    - CAVE:
+        {
+          if in room1 || in room2 || in room3 || in room4
+             || in room5 || in room6 || in room7 then
+          {
+            println I DON'T KNOW WHERE THE CAVE IS, BUT HEREABOUTS NO STREAM CAN RUN ON
+            println THE SURFACE FOR LONG.  I WOULD TRY THE STREAM.
+          }
+          else
+          {
+            println I NEED MORE DETAILED INSTRUCTIONS TO DO THAT.
           }
         }
     - LOOK:
@@ -1954,7 +2207,39 @@ global:
         {
           println WHAT?
         }
+    - ATTACK:
+        {
+          println WHAT?
+        }
   item:
+    - *trollTreasure:
+        {
+          if has then
+          {
+            if present TROLL then
+            {
+              println THE TROLL CATCHES YOUR TREASURE AND SCURRIES AWAY OUT OF SIGHT.
+              remove TROLL from room116
+              put TROLL2 in room116
+              remove TROLL from room122
+              put TROLL2 in room122
+              discard
+            }
+            else
+            {
+              drop
+              println OK
+            }
+          }
+          else
+          {
+            println YOU AREN'T CARRYING IT!
+          }
+        }
+    - ATTACK:
+        {
+          println THERE IS NOTHING HERE TO ATTACK.
+        }
     - CARRY,TAKE,KEEP,CATCH,STEAL,CAPTURE,GET,TOTE:
         {
           if has then

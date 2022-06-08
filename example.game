@@ -71,6 +71,10 @@ global:
          println OK
        }
   item:
+    - *invisible:
+        {
+          println INVISIBLE!
+        }
     - take:
         {
           if has then
@@ -132,6 +136,10 @@ rooms:
                   {
                     take
                     println Took a drink.
+                  }
+              - pour:
+                  {
+                    global item.invisible DRINK
                   }
       entities:
         - dragon:
