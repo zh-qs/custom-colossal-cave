@@ -2,6 +2,9 @@ TAB: \t lub 2 spacje
 
 GAME:
 
+unknownCommandMessages:
+  $list:string
+
 player:
   parameters:
     $list:parameter

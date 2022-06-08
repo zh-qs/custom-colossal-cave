@@ -48,6 +48,7 @@ data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: In
 
 -- |Structure that holds all information and state of the game.
 data Game = Game { 
+    unknownCommandMessage :: Action (),
     player :: Player, 
     initialMessage :: String, 
     finalMessage :: Desc,

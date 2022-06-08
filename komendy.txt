@@ -40,3 +40,6 @@ C	CLOCK1	NUMBER OF TURNS FROM FINDING LAST TREASURE TILL CLOSING
 C	CLOCK2	NUMBER OF TURNS FROM FIRST WARNING TILL BLINDING FLASH
 
 
+
+
+stack exec -- haddock --html src/Parsers/*.hs src/*.hs --hyperlinked-source --odir=docs
