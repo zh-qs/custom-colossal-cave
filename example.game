@@ -5,10 +5,6 @@ player:
     - hunger:
         value: 50
   inventory:
-  leftHand:
-    empty
-  rightHand:
-    empty
 
 initialMessage:
   Hej!

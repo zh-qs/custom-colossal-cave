@@ -186,10 +186,6 @@ player:
     - param64:
         value: 1
   inventory:
-  leftHand:
-    empty
-  rightHand:
-    empty
 initialMessage:
 
 finalMessage:

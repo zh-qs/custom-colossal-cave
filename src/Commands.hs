@@ -79,9 +79,9 @@ callGlobalOnEntry = perform (gets globalOnEntry) >>= id
 
 -- |Take an item in current room into inventory.
 takeItem :: ItemName -> Action ()
-takeItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+takeItem item = perform $ modify' (\(Game m (Player ps i) im fm goe gr gi ccnt rs n itMap) -> 
     Game m 
-        (Player ps (item:i) lh rh) 
+        (Player ps (item:i)) 
         im fm 
         goe gr gi ccnt
         (M.adjust 
@@ -92,9 +92,9 @@ takeItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi 
 
 -- |Give an item to inventory.
 giveItem :: ItemName -> Action ()
-giveItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+giveItem item = perform $ modify' (\(Game m (Player ps i) im fm goe gr gi ccnt rs n itMap) -> 
     Game m 
-        (Player ps (item:i) lh rh) 
+        (Player ps (item:i)) 
         im fm 
         goe gr gi ccnt
         rs 
@@ -129,9 +129,9 @@ putItem item = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n itMap) ->
 
 -- |Drop an item from an inventory.
 dropItem :: ItemName -> Action ()
-dropItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+dropItem item = perform $ modify' (\(Game m (Player ps i) im fm goe gr gi ccnt rs n itMap) -> 
     Game m 
-        (Player ps (filter (/= item) i) lh rh) 
+        (Player ps (filter (/= item) i)) 
         im fm 
         goe gr gi ccnt
         (M.adjust 
@@ -187,9 +187,9 @@ removeItem item = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n itMap)
 
 -- |Discard an item (remove it from inventory and from current room).
 discardItem :: ItemName -> Action ()
-discardItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+discardItem item = perform $ modify' (\(Game m (Player ps i) im fm goe gr gi ccnt rs n itMap) -> 
     Game m 
-        (Player ps (filter (/= item) i) lh rh) 
+        (Player ps (filter (/= item) i)) 
         im fm 
         goe gr gi ccnt
         (M.adjust 
@@ -200,9 +200,9 @@ discardItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr 
 
 -- |Drop all items from inventory.
 dropAllItemsInCurrentRoom :: Action ()
-dropAllItemsInCurrentRoom = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+dropAllItemsInCurrentRoom = perform $ modify' (\(Game m (Player ps i) im fm goe gr gi ccnt rs n itMap) -> 
     Game m 
-        (Player ps [] lh rh) 
+        (Player ps []) 
         im fm 
         goe gr gi ccnt
         (M.adjust 
@@ -237,7 +237,7 @@ goToRoom newName = perform (modify' (\(Game m p im fm goe gr gi ccnt rs n itmap)
 
 -- |Change specified player parameter with a function.
 changePlayerParameter :: Name -> (Int -> Int) -> Action ()
-changePlayerParameter name f = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itmap) -> Game m (Player (M.adjust f name ps) i lh rh) im fm goe gr gi ccnt rs n itmap)
+changePlayerParameter name f = perform $ modify' (\(Game m (Player ps i) im fm goe gr gi ccnt rs n itmap) -> Game m (Player (M.adjust f name ps) i) im fm goe gr gi ccnt rs n itmap)
 
 -- |Get specified player parameter. If a parameter does not exist, terminate execution with an error.
 getPlayerParameter :: Name -> Action Int

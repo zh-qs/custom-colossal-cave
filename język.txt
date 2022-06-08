@@ -10,10 +10,6 @@ player:
     $list:parameter
   inventory:
     $list:item
-  leftHand:
-    $item|empty
-  rightHand:
-    $item|empty
 
 initialMessage:
   $multilineText

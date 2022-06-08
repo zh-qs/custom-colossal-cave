@@ -14,7 +14,6 @@ type ParamName = String
 type Id = Int
 type ItemName = Name
 type Inventory = [ItemName]
-type Hand = Maybe ItemName
 type Visibility = Bool
 
 type StIO a = StateT Game IO a
@@ -41,7 +40,7 @@ instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
 
 -- |Structure that holds player parameters and items currently toting.
-data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory, leftHand :: Hand, rightHand :: Hand } deriving (Show, Read)
+data Player = Player { playerParameters :: M.Map Name Int, playerInventory :: Inventory } deriving (Show, Read)
 
 -- |Structure that holds all information and state of the game.
 data Game = Game { 

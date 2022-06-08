@@ -20,22 +20,11 @@ import Parsers.ParametersParser
 inventoryParser :: StParser Inventory
 inventoryParser = lift tabOrTwoSpaces *> itemListParser "inventory" 2 "Inventory definition" <* lift newLines
 
-handParser :: Text -> StParser Hand
-handParser keyword = 
-    (lift ((tabOrTwoSpaces *> string keyword *> char ':' *> newLines) <?> (unpack keyword ++ " header"))
-    *> lift (tabs 2)
-    *> (
-        lift (string "empty" *> newLines *> return Nothing)
-        <|> (Just <$> itemParser 1)
-    )) <??> (unpack keyword ++ " definition")
-
 playerParser :: StParser Player
 playerParser = (lift (string "player:\n") 
     *> (Player 
         <$> lift (parametersParser 1)
-        <*> inventoryParser
-        <*> handParser "leftHand" 
-        <*> handParser "rightHand")) 
+        <*> inventoryParser))
     <??> "Player definition"
 
 testPlayerParser :: Result Player
