@@ -20,7 +20,7 @@ getFileNameFromArgs _ = return $ Left usage
 execStateT_ :: Monad m => StateT s m a -> s -> m ()
 execStateT_ st s = void $ execStateT st s
 
--- |The main entry of the application.
+-- |The entry point of the application.
 main :: IO ()
 main = do
   eitherFile <- getArgs >>= getFileNameFromArgs

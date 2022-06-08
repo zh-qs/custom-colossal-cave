@@ -11,6 +11,7 @@ import System.IO
 import Data.Maybe
 import GameIO
 import Data.Either
+import System.Random
 
 -- |Find the value at a key. Returns 'Left k' when the element cannot be found.
 (!??) :: Ord k => M.Map k a -> k -> Either k a
@@ -78,8 +79,8 @@ callGlobalOnEntry = perform (gets globalOnEntry) >>= id
 
 -- |Take an item in current room into inventory.
 takeItem :: ItemName -> Action ()
-takeItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+takeItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         (Player ps (item:i) lh rh) 
         im fm 
         goe gr gi ccnt
@@ -91,8 +92,8 @@ takeItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi cc
 
 -- |Give an item to inventory.
 giveItem :: ItemName -> Action ()
-giveItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+giveItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         (Player ps (item:i) lh rh) 
         im fm 
         goe gr gi ccnt
@@ -102,8 +103,8 @@ giveItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi cc
 
 -- |Put an item in a specified room.
 putItemInRoom :: ItemName -> Name -> Action ()
-putItemInRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+putItemInRoom item room = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         p
         im fm 
         goe gr gi ccnt
@@ -115,8 +116,8 @@ putItemInRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n 
 
 -- |Put an item in a current room.
 putItem :: ItemName -> Action ()
-putItem item = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+putItem item = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         p
         im fm 
         goe gr gi ccnt
@@ -128,8 +129,8 @@ putItem item = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) ->
 
 -- |Drop an item from an inventory.
 dropItem :: ItemName -> Action ()
-dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+dropItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         (Player ps (filter (/= item) i) lh rh) 
         im fm 
         goe gr gi ccnt
@@ -143,8 +144,8 @@ dropItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi cc
 moveItemToRoom :: ItemName -> Name -> Action ()
 moveItemToRoom item room = perform $ gets (\g -> item `elem` interactables (rooms g M.! currentRoomName g))
     >>= (\b -> if b 
-        then modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
-            Game 
+        then modify' (\(Game m p im fm goe gr gi ccnt rs n itMap) -> 
+            Game m 
                 p
                 im fm 
                 goe gr gi ccnt
@@ -160,8 +161,8 @@ moveItemToRoom item room = perform $ gets (\g -> item `elem` interactables (room
 
 -- |Remove an item from specified room.
 removeItemFromRoom :: ItemName -> Name -> Action ()
-removeItemFromRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+removeItemFromRoom item room = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         p
         im fm 
         goe gr gi ccnt
@@ -173,8 +174,8 @@ removeItemFromRoom item room = perform $ modify' (\(Game p im fm goe gr gi ccnt 
 
 -- |Remove an item from current room.
 removeItem :: ItemName -> Action ()
-removeItem item = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+removeItem item = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         p
         im fm 
         goe gr gi ccnt
@@ -186,8 +187,8 @@ removeItem item = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n itMap) -
 
 -- |Discard an item (remove it from inventory and from current room).
 discardItem :: ItemName -> Action ()
-discardItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+discardItem item = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         (Player ps (filter (/= item) i) lh rh) 
         im fm 
         goe gr gi ccnt
@@ -199,8 +200,8 @@ discardItem item = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi
 
 -- |Drop all items from inventory.
 dropAllItemsInCurrentRoom :: Action ()
-dropAllItemsInCurrentRoom = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
-    Game 
+dropAllItemsInCurrentRoom = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itMap) -> 
+    Game m 
         (Player ps [] lh rh) 
         im fm 
         goe gr gi ccnt
@@ -216,7 +217,7 @@ getCommandCount = perform $ gets commandCount
 
 -- |Increase command count by one.
 increaseCommandCount :: Action ()
-increaseCommandCount = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n imap) -> Game p im fm goe gr gi (ccnt+1) rs n imap)
+increaseCommandCount = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n imap) -> Game m p im fm goe gr gi (ccnt+1) rs n imap)
 
 -- |Print a 'String' to a user, without new line at the end.
 printMessage :: String -> Action ()
@@ -232,19 +233,19 @@ printInt x = perform $ lift $ (putStr $ show x) >> hFlush stdout
 
 -- |Go to specified room (changes 'currentRoomName').
 goToRoom :: Name -> Action ()
-goToRoom newName = perform (modify' (\(Game p im fm goe gr gi ccnt rs n itmap) -> Game p im fm goe gr gi ccnt rs newName itmap)) >> showAndExecuteOnEntryCurrentRoom
+goToRoom newName = perform (modify' (\(Game m p im fm goe gr gi ccnt rs n itmap) -> Game m p im fm goe gr gi ccnt rs newName itmap)) >> showAndExecuteOnEntryCurrentRoom
 
 -- |Change specified player parameter with a function.
 changePlayerParameter :: Name -> (Int -> Int) -> Action ()
-changePlayerParameter name f = perform $ modify' (\(Game (Player ps i lh rh) im fm goe gr gi ccnt rs n itmap) -> Game (Player (M.adjust f name ps) i lh rh) im fm goe gr gi ccnt rs n itmap)
+changePlayerParameter name f = perform $ modify' (\(Game m (Player ps i lh rh) im fm goe gr gi ccnt rs n itmap) -> Game m (Player (M.adjust f name ps) i lh rh) im fm goe gr gi ccnt rs n itmap)
 
 -- |Get specified player parameter. If a parameter does not exist, terminate execution with an error.
 getPlayerParameter :: Name -> Action Int
-getPlayerParameter name = perform (gets (\(Game p im fm goe gr gi ccnt rs n itMap) -> playerParameters p M.!? name)) >>= assertNotNothing ("ERROR: Parameter not found: player." ++ name)
+getPlayerParameter name = perform (gets (\(Game m p im fm goe gr gi ccnt rs n itMap) -> playerParameters p M.!? name)) >>= assertNotNothing ("ERROR: Parameter not found: player." ++ name)
 
 -- |Change specified entity parameter with a function.
 changeEntityParameter :: Name -> Name -> (Int -> Int) -> Action ()
-changeEntityParameter entityName name f = perform $ modify' (\(Game p im fm goe gr gi ccnt rs n imap) -> Game p im fm goe gr gi ccnt rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
+changeEntityParameter entityName name f = perform $ modify' (\(Game m p im fm goe gr gi ccnt rs n imap) -> Game m p im fm goe gr gi ccnt rs n (M.adjust (\e -> Entity (getDescription e) (M.adjust f name $ entityParameters e) $ getCommands e) entityName imap))
 
 -- |Get specified entity parameter. If a parameter does not exist, terminate execution with an error.
 getEntityParameter :: Name -> Name -> Action Int
@@ -290,3 +291,7 @@ restoreGame = perform $ do
   maybeGameState <- lift $ getLine >>= importGameStateFromFile
   game <- get
   put $ maybe game (flip setGameState game) maybeGameState
+
+-- |Get a random element of a list.
+getRandomListElement :: [a] -> Action a 
+getRandomListElement l = randomIO >>= (pure . (l !!) . (`mod` length l))

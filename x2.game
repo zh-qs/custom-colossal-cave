@@ -1,3 +1,8 @@
+unknownCommandMessages:
+  - HUH...
+  - I DON'T KNOW WHAT TO RESPOND.
+  - I DON'T UNDERSTAND YOU.
+
 player:
   parameters:
     - dark:

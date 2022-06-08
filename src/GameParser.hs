@@ -31,10 +31,16 @@ initialMessageParser = lift $ multilineContentParser "initialMessage" 0 "Initial
 finalMessageParser :: StParser Desc
 finalMessageParser = lift $ switchParser "finalMessage" 0 "Final message definition"
 
+unknownCommandMessageParser :: StParser (Action ())
+unknownCommandMessageParser = lift $ 
+    ((>>=printMessageLine) <$> (getRandomListElement <$> listParser "unknownCommandMessages" ((unpack <$> takeTill isNewline) <* newLines) 1 "Unknown command messages definition")) 
+    <|> (pure $ printMessageLine "Unknown command")
+
 gameParserSt :: StParser (M.Map Name Interactable -> Game)
 gameParserSt = 
     (Game
-        <$> playerParser
+        <$> unknownCommandMessageParser
+        <*> playerParser
         <*> initialMessageParser
         <*> (finalMessageParser <* itemListParser "items" 1 "Initial item list")
         <*> (globalHeaderParser *> globalOnEntryParser)
