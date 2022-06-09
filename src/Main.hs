@@ -138,6 +138,20 @@ import GamePlay
 -- @
 -- 
 
+-- ** Expressions
+--
+-- $expressions
+--
+-- GAML provides following type of expressions:
+--
+-- * a number ('Int')
+-- * @rnd@ - random number
+-- * @invcount@ - current inventory count
+-- * @cmdcount@ - number of commands entered by user, also incorrect ones
+-- * @player.\<parameter\>@ - value of specified player's parameter
+-- * @item.\<name\>.\<parameter\>@ - value of specified item parameter
+--
+
 -- ** GAML structure
 --
 -- $structure
