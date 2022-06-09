@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |Provides 'playerParser', which is used to parse player definition (with parameters and initial inventory).
 module Parsers.PlayerParser where
 
 import DataStructures
@@ -17,9 +18,11 @@ import Parsers.Utilities
 import Parsers.ItemParser
 import Parsers.ParametersParser
 
+-- |Match an inventory.
 inventoryParser :: StParser Inventory
 inventoryParser = lift tabOrTwoSpaces *> itemListParser "inventory" 2 "Inventory definition" <* lift newLines
 
+-- |Match a player definition.
 playerParser :: StParser Player
 playerParser = (lift (string "player:\n") 
     *> (Player 

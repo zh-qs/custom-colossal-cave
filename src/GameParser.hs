@@ -51,7 +51,7 @@ gameParserSt =
         <*> startRoomParser)
     <??> "Game definition"
     where
-        roomMapParser = M.fromList <$> roomListParser -- PRZEROBIĆ TAK, ŻEBY DZIAŁAŁ PARITAMI!!!!!
+        roomMapParser = M.fromList <$> roomListParser
 
 gameParser :: Parser Game
 gameParser = (\(f,(s,_)) -> f s) <$> runStateT gameParserSt (M.empty, noAction) 
@@ -62,38 +62,7 @@ checkGame g = if M.member (currentRoomName g) (rooms g)
     else Left "Unknown start room name"
 
 parseGame :: Text -> Either String Game 
-parseGame gaml = (eitherResult' $ feed (parse (gameParser <* endOfInput) gaml) "") >>= checkGame -- ZMIENIĆ BO NIE DZIAŁA!!!
+parseGame gaml = (eitherResult' $ feed (parse (gameParser <* endOfInput) gaml) "") >>= checkGame
 
 parseGameFromFile :: FilePath -> IO (Either String Game)
 parseGameFromFile path = parseGame <$> Data.Text.IO.readFile path
-
-testGameParser :: Result Game
-testGameParser = feed 
-    (parse (gameParser <* endOfInput)
-        "player:\n\
-        \  parameters:\n\
-        \    - life:\n\
-        \        value: 10\n\
-        \  inventory:\n\
-        \  leftHand:\n\
-        \    empty\n\
-        \  rightHand:\n\
-        \    empty\n\
-        \initialMessage:\n\
-        \  Witaj!\n\
-        \rooms:\n\
-        \  - jeden:\n\
-        \      description:\n\ 
-        \        Pierwszy pokoj\n\
-        \      items:\n\
-        \        - axe:\n\
-        \            commands:\n\
-        \      commands:\n\
-        \        - nop:\n\
-        \        {\n\
-        \          print Do nothing\n\
-        \          goto jeden\n\
-        \        }\n\
-        \\n\
-        \start: jeden\n"
-    ) ""

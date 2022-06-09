@@ -1,3 +1,5 @@
+-- |This module contains all definitions of structures used in program (except structures used to export the game state (see 'GameIO')).
+-- Also provides an 'Action' type, which is used to support and control execution flow.
 module DataStructures where
 
 import qualified Data.Map.Strict as M
@@ -9,14 +11,22 @@ import Control.Applicative
 import Control.Monad.IO.Class
 import Data.List
 
+-- |The name of an object.
 type Name = String
-type ParamName = String
-type Id = Int
+
+-- |The name of an item.
 type ItemName = Name
+
+-- |Player inventory.
 type Inventory = [ItemName]
+
+-- |The flag determining if user can enter this command in a console.
 type Visibility = Bool
 
+-- |Stateful 'IO', used to interact with user, mainatining the 'Game' state. 
 type StIO a = StateT Game IO a
+
+-- |Description type (see 'Parsers.SwitchParser').
 type Desc = Action String
 
 -- |Stateful 'Parser' with a map of interactables already read and default room entry action as a state.
@@ -29,12 +39,14 @@ type StParser a = StateT (M.Map Name Interactable, Action ()) Parser a
 -- |Representation of a command entered in a console by user
 type Command = (Visibility, Name, Action ())
 
+-- |A non-room object which the user can interact with (actually only 'Item' since it provides also entity functionality).
 data Interactable = Item { longName :: Name, getDescription :: Desc, itemParameters :: M.Map Name Int, getCommands :: [Command] }
 
 instance Show Interactable where
     show item = "Item(commands:" ++ foldl' (\s (b,n,_) -> s ++ " " ++ if b then "*" else "" ++ n) "" (getCommands item) ++ ")"
 
-data Room = Room { description :: Desc, onEntry :: Action (), interactables :: [Name], roomCommands :: [Command] }
+-- |A room object.
+data Room = Room { description :: Desc, onEntry :: Action (), interactables :: [ItemName], roomCommands :: [Command] }
 
 instance Show Room where
     show room = "Room(items:" ++ (foldl' (\str item -> str ++ " " ++ item) "" $ interactables room) ++ ")"
@@ -88,5 +100,3 @@ perform = Action . (>>= return . Right)
 -- |Terminate an action flow with a custom message in 'String'.
 terminate :: String -> Action a
 terminate = Action . lift . return . Left
-
-

@@ -57,6 +57,8 @@ modificationParser =
     stringWithSpaces "+=" *> ((\sti -> return (+) <*> sti) <$> expressionParser) 
     <|> stringWithSpaces "-=" *> ((\sti -> return (flip (-)) <*> sti) <$> expressionParser)
     <|> stringWithSpaces "*=" *> ((\sti -> return (*) <*> sti) <$> expressionParser) 
+    <|> stringWithSpaces "/=" *> ((\sti -> return div <*> sti) <$> expressionParser) 
+    <|> stringWithSpaces "%=" *> ((\sti -> return mod <*> sti) <$> expressionParser) 
 
 -- |Match either an assignment or a modification instruction.
 parameterFunctionParser :: Parser (Action (Int -> Int))

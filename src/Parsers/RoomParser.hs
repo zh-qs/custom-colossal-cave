@@ -1,5 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+-- |Provides 'roomParser' and 'roomListParser', which are used to parse single room and room list.
 module Parsers.RoomParser where
 
 import DataStructures
@@ -20,9 +21,11 @@ import Parsers.CommandParser
 import Parsers.CodeParser
 import Parsers.SwitchParser
 
+-- |Parse a room description, which is prints text in case of some condition (see 'switchParser').
 descriptionParser :: Parser Desc
 descriptionParser = switchParser "description" 3 "Description definition"
 
+-- |Match a room definition and return an ordered pair of its name and itself.
 roomParser :: StParser (Name,Room)
 roomParser = gets snd >>= (\action -> 
     ((,)
@@ -34,5 +37,6 @@ roomParser = gets snd >>= (\action ->
             <*> lift (((tabs 3) *> commandListParser 4 codeParser <* newLines) <?> "Command List")))
     <??> "Room definition")
 
+-- |Match a room list.
 roomListParser :: StParser [(Name,Room)]
 roomListParser = listParserSt "rooms" roomParser 1 "Room list definition"
