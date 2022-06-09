@@ -17,6 +17,7 @@ import GamePlay
 -- 
 -- The GAML language was created to simplify text adventure games creation, which balances between maximal functionality and language simplicity.
 -- It is based on a YAML language (where a tab is either a @\t@ char ot two spaces), with an addition of code blocks.
+-- Hint for a list: if you want to leave list empty, simply write only its keyword.
 --
 
 -- ** Types
@@ -63,7 +64,9 @@ import GamePlay
 -- $command
 --
 -- The command represents an action which will be performed after user types its name in a console.
--- It consists of its name and a code block (defined below).
+-- It consists of its name and a code block (defined in next section). Command can be defined as silent,
+-- so that it won't be available for a user. We define silent command by preceding its name with asterisk (@*@).
+-- One command may have more than one name, simply define them separated by comma (without spaces!).
 --
 -- Example:
 --
@@ -74,8 +77,93 @@ import GamePlay
 --   }
 -- @
 --
+-- @
+-- *silent:
+--   {
+--     # this is a silent command
+--     (here are some instructions)
+--   }
+-- @
+--
+-- @
+-- take,carry,tote:
+--   {
+--     # this is a command with multiple names
+--     (here are some instructions)
+--   }
+-- @
 
--- *** Code block
+-- *** Item
+--
+-- $item
+--
+-- Item is an object user can interact with. It is identified by its name. Its attributes are:
+--
+-- * @longName@ - the name shown in inventory
+-- * @description@ - the switch showing an item description depending on given condiitons (e.g. item parameters)
+-- * @parameters@ - YAML-like list of parameters
+-- * @commands@ - YAML-like list of item commands. Commands for an item are invoked via its name and name of item after space, e.g. @throw axe@ or @punch dragon@.
+--
+-- Example:
+--
+-- @
+-- bottle:
+--   longName: A small bottle.
+--   description:
+--     - item.bottle.full == 1:
+--         There is a bottle full of water.
+--     - true:
+--         There is an empty small bottle.
+--   parameters:
+--     - full:
+--         value: 1
+--   commands:
+--     - drink:
+--         {
+--           println You drank all the water!
+--           item.bottle.full = 0
+--         }
+-- @
+--
+
+-- *** Room
+--
+-- $room
+--
+-- Room is a place the player can stay and take actions. It is also identified by name and has the following attributes:
+--
+-- * @description@ - the switch showing a room description depending on given condiitons (e.g. some parameters)
+-- * @onEntry@ (optional) - a code block which is run immediately after printing a description.
+-- * @items@ - an item list initially present in a room.
+-- * @commands@ - a command list for a given room. Room commands are invoked simply by their name.
+--
+-- Example:
+--
+-- @
+-- kitchen:
+--   description:
+--     - true:
+--         You are in the kitchen.
+--   onEntry:
+--     {
+--       if has milk then
+--       {
+--         println Put that milk in a fridge! 
+--       }
+--     }
+--   items:
+--     - knife       -> only if defined earlier!
+--     - fridge:
+--         ...
+--   commands:
+--     - leave:
+--         {
+--           goto hall 
+--         }
+-- @
+--
+
+-- ** Code blocks
 --
 -- $codeBlock
 --
@@ -107,6 +195,7 @@ import GamePlay
 -- * @restore@ - prompts for a file name and tries to restore game state from a file. In case of failure, no action is performed. As above, prompt is also silent.
 -- * @showInventory@ - prints long names of items in player's inventory.
 -- * @dropall@ - drops all items from inventory. Useful when player dies.
+-- * @look@ - prints a room and items description (does not execute 'onEntry' of current room).
 -- * @# \<comment\>@ - a comment
 --
 -- For commands defined for items, the additional instructions are defined:
@@ -151,12 +240,33 @@ import GamePlay
 -- * @player.\<parameter\>@ - value of specified player's parameter
 -- * @item.\<name\>.\<parameter\>@ - value of specified item parameter
 --
+-- There are also defined operators @+@, @-@, @*@, @/@ and @%@. The first two operators have lower priority, 
+-- all operators are left-associative.
+--
+
+-- ** Boolean conditions
+--
+-- $conditions
+--
+-- GAML provides following types of conditions:
+--
+-- * @true@ (or @True@ or @TRUE@)
+-- * @false@ (or @False@ or @FALSE@)
+-- * comparison operators between arithmetic expressions: @==@, @!=@, @>@, @<@, @>=@ and @<=@
+-- * @has \<item\>@ - true if specified item is in inventory
+-- * @present \<item\>@ - true if specified item is in current room or in inventory
+-- * @present \<item\> in \<room\>@ - true if specified item is in given room
+-- * @askYesNo@ - prompts for an input, true if user enters @yes@ or @y@ (case insensitive), otherwise false
+-- * @prompt \<word\>@ - prompts for an input, true if user enters the specified word, otherwise false
+--
+-- There are also defined logical operators: @&&@ (and) and @||@ (or). They have the same priority and are right-associative.
+--
 
 -- ** GAML structure
 --
 -- $structure
 --
--- The structure of a GAML file consists of the following sections:
+-- The structure of a GAML file consists of the following sections (in exactly that order):
 --
 
 -- *** Messages in case of unknown command
@@ -181,9 +291,139 @@ import GamePlay
 -- $player
 --
 -- In this section we define player attributes: his parameters and initial values, and his initial inventory. 
+-- Inventory is defined as a list of items.
+--
+-- Example:
+--
+-- @
+-- player:
+--   parameters:
+--     - life:
+--         value: 100
+--   inventory:
+--     - coin:
+--         ...
+-- @
 --
 
--- ** Gameplay
+-- *** Initial message
+--
+-- $initialMessage
+--
+-- Initial message is a multiline text printed at a startup.
+--
+-- Example:
+--
+-- @
+-- initialMessage:
+--   Welcome!
+--   Would you like to see instructions?
+-- @
+--
+
+-- *** Final message
+--
+-- $finalMessage
+--
+-- Final message is a switch, which can print different texts depending on e.g. game scenario.
+--
+-- Example:
+--
+-- @
+-- finalMessage:
+--   - player.life > 0
+--       You win!
+--   - true:
+--       You lose.
+--       Would you like to try again?
+-- @
+--
+
+-- *** Items
+--
+-- $items
+--
+-- This section allows to define items which are not intended to be initially put in any room. It is a regular item list.
+-- Remember that you cannot define item with the same name twice.
+--
+-- Example:
+--
+-- @
+-- items:
+--   - knife:
+--       ...
+-- @
+--
+
+-- *** Global commands
+--
+-- $globalCommands
+--
+-- In this section we can define:
+--
+-- * global 'onEntry' command (optional), which will be executed every time we go to any room, for which 'onEntry' is not defined
+-- * global room commands, which will match for every room (e.g. @quit@ or @inv@)
+-- * global item commands, which will match for every item (e.g. @take@)
+--
+-- Every global command can be overriden in room or item definition.
+--
+-- Example:
+--
+-- @
+-- global:
+--   onEntry:
+--     {
+--       ...
+--     }
+--   room:
+--     - quit:
+--        {
+--          quit
+--        }
+--     ...
+--   item:
+--     - take:
+--         {
+--           if has then
+--           {
+--             take  
+--           }
+--           else
+--           {
+--             println You already have it!
+--           }
+--         }
+--     ...
+-- @
+--
+
+-- *** Rooms
+--
+-- $rooms
+--
+-- This section defines list of rooms used in game. Note that room may be used not only for interaction with user.
+--
+-- Example:
+--
+-- @
+-- rooms:
+--   - startRoom:
+--       ...
+--   ...
+-- @
+--
+
+-- *** Start room name
+--
+-- $startRoomName
+--
+-- Here you have to specify the room which will be initial for a game.
+--
+-- Example:
+--
+-- @
+-- start: garden
+-- @
 --
 
 -- * Documentation
